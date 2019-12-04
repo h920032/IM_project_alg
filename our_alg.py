@@ -8,6 +8,8 @@ import data.fixed.gene_alg as gen
 """============================================================================#
 12/3
 	- 建立主架構
+12/4
+	- 建立POOL
 ============================================================================#"""
 
 #=======================================================================================================#
@@ -24,9 +26,9 @@ import data.fixed.gene_alg as gen
 # import data
 f = open('path.txt', "r")
 dir_name = f.read().replace('\n', '')
-result_x = './排班結果_'+str(year)+'_'+str(month)+'.csv'
-result_y = './冗員與缺工人數_'+str(year)+'_'+str(month)+'.csv'
-result = './其他資訊_'+str(year)+'_'+str(month)+'.xlsx'
+#result_x = './排班結果_'+str(year)+'_'+str(month)+'.csv'
+#result_y = './冗員與缺工人數_'+str(year)+'_'+str(month)+'.csv'
+#result = './其他資訊_'+str(year)+'_'+str(month)+'.xlsx'
 #basic
 A_t = pd.read_csv(dir_name + 'fixed/fix_class_time.csv', header = 0, index_col = 0)
 DEMAND_t = pd.read_csv(dir_name+"進線人力.csv", header = 0, index_col = 0, engine='python').T
@@ -73,28 +75,44 @@ Kset_t = pd.read_csv(dir_name + 'fixed/fix_classes.csv', header = None, index_co
 SKset_t = pd.read_csv(dir_name + 'parameters/skills_classes.csv', header = None, index_col = 0) #class set for skills
 # 下面的try/except都是為了因應條件全空時
 try:
-	M_t = pd.read_csv(dir_name + "特定班別、休假.csv", header = None, skiprows=[0])
+	M_t = pd.read_csv(dir_name + "特定班別、休假.csv", header = None, skiprows=[0], engine='python')
 except:
 	M_t = pd.DataFrame()
 try:
-	L_t = pd.read_csv(dir_name + "parameters/下限.csv", header = None, skiprows=[0])
+	L_t = pd.read_csv(dir_name + "parameters/下限.csv", header = None, skiprows=[0], engine='python')
 except:
 	L_t = pd.DataFrame()
 try:
-	U_t = pd.read_csv(dir_name + "parameters/上限.csv", header = None, skiprows=[0])
+	U_t = pd.read_csv(dir_name + "parameters/上限.csv", header = None, skiprows=[0], engine='python')
 except:
 	U_t = pd.DataFrame()
 try:
-	Ratio_t = pd.read_csv(dir_name + "parameters/CSR年資占比.csv",header = None, skiprows=[0])
+	Ratio_t = pd.read_csv(dir_name + "parameters/CSR年資占比.csv",header = None, skiprows=[0], engine='python')
 	SENIOR_bp = Ratio_t[3]
 except:
 	Ratio_t = pd.DataFrame()
 	SENIOR_bp = []
 try:
-	timelimit = pd.read_csv(dir_name + "parameters/時間限制.csv", header = 0)
+	timelimit = pd.read_csv(dir_name + "parameters/時間限制.csv", header = 0, engine='python')
 except:
 	timelimit = 300	#預設跑五分鐘
 nightdaylimit = EMPLOYEE_t['night_perWeek']
+
+#============================================================================#
+#Indexs 都從0開始
+
+#i 員工 i
+#j 日子 j，代表一個月中的需要排班的第 j 個日子
+#k 班別 k，代表每天可選擇的不同上班別態
+#t 工作時段 t，表示某日的第 t 個上班的小時
+#w 週次 w，代表一個月中的第 w 週
+#r 午休方式r，每個班別有不同的午休方式
+
+#休假:0
+#早班-A2/A3/A4/A5/MS/AS:1~6
+#午班-P2/P3/P4/P5:7~10
+#晚班-N1/M1/W6:11~13
+#其他-CD/C2/C3/C4/OB:14~18
 
 #============================================================================#
 #Parameters
@@ -168,7 +186,34 @@ for ki in range(len(SKset_t)):
     sk = [ tl.TranK_t2n(x) for x in SKset_t.iloc[ki].dropna().values ]  #各個技能的優先班別
     K_skill_not.append( list( set(range(0,nK)).difference(set(sk)) ) )      #非優先的班別
 
+#============================================================================#
+#Variables
 
+work = {}  #work_ijk - 1表示員工i於日子j值班別為k的工作，0 則否 ;workij0=1 代表員工i在日子j休假
+for i in range(nEMPLOYEE):
+    for j in range(nDAY):
+        for k in range(nK):
+            work[i, j, k] = False  
+            
+lack = {}  #y_jt - 代表第j天中時段t的缺工人數
+for j in range(nDAY):
+    for t in range(nT):
+        lack[j, t] = 0
+        
+surplus = 0 #每天每個時段人數與需求人數的差距中的最大值
+nightCount = 0 #員工中每人排晚班總次數的最大值
+
+breakCount = {}  #breakCount_iwr - 1表示員工i在第w周中在午休時段r有午休，0則否
+for i in range(nEMPLOYEE):
+    for w in range(nW):
+        for r in range(nR):
+            breakCount[i, w, r] = False
+
+
+complement =  0  #complement - 擁有特定員工技能的員工集合va的員工排非特定班別數的最大值
+
+
+#============================================================================#
 
 """============================================================================#
 新變數
@@ -198,14 +243,26 @@ BOUND: 人數下限
 #========================================================================#
 # class
 #========================================================================#
-# public class Pool{
-# 	df_x : 員工班表
-# 	df_y: 缺工人數表
-# 	df_percent_day: 每天缺工百分比表
-# 	df_percent_time: 每個時段缺工百分比表
-# 	df_nightcount: 員工本月晚班次數
-# 	df_resttime: 員工休息時間表
-# }
+class Pool():
+	def __init__(self, df_x, df_y, df_percent_day, df_percent_time, df_nightcount, df_resttime, df_result_x, df_result_y):
+ 	#df_x : 員工班表
+	self.df_x = df_x
+ 	#df_y: 缺工人數表
+	self.df_y =  df_y
+ 	#df_percent_day: 每天缺工百分比表
+	self.df_percent_day = df_percent_day 
+ 	#df_percent_time: 每個時段缺工百分比表
+	self.df_percent_time = df_percent_time
+ 	#df_nightcount: 員工本月晚班次數
+	self.df_nightcount = df_nightcount
+ 	#df_resttime: 員工休息時間表
+	self.df_resttime = df_resttime
+	#df_result_x: 排班結果
+	self.df_result_x = df_result_x
+	#df_result_y: 冗員與缺工人數
+	self.df_result_y = df_result_y
+	
+
 
 #========================================================================#
 # Global Variables
@@ -213,11 +270,11 @@ BOUND: 人數下限
 year = 2019
 month = 4
 
-# 生成Initial pool的100個親代
-# Pool INITIAL_POOL[100]
-
 # 產生親代的迴圈數
 parent = 100	# int
+
+# 生成Initial pool的100個親代
+INITIAL_POOL = [tmp for tmp in range(parent)]
 
 
 #=======================================================================================================#
@@ -228,6 +285,17 @@ parent = 100	# int
 #====================================================================================================#
 #=======================================================================================================#
 
+#=======================================================================================================#
+#====================================================================================================#
+#=================================================================================================#
+# main function
+#=================================================================================================#
+
+#====================================================================================================#
+#=======================================================================================================#
+
+
+
 #========================================================================#
 # LIMIT_ORDER(): 生成多組限制式 matrix 的函數 (林亭)
 #========================================================================#
@@ -235,7 +303,7 @@ parent = 100	# int
 
 
 #========================================================================#
-# CSR_ORDER(): 排序員工沒用度的函數 (林亭)
+# CSR_ORDER(): 排序員工沒用度的函數 (碩珉)
 #========================================================================#
 
 
@@ -249,14 +317,14 @@ parent = 100	# int
 
 
 #========================================================================#
-# ARRANGEMENT(): 安排好空著的班別的函數 (嬿鎔)
+# ARRANGEMENT(): 安排好空著的班別的函數 (星宇)
 #========================================================================#
 
 
 #========================================================================#
 # CONFIRM(): 確認解是否可行的函數 (學濂)
 #========================================================================#
-
+#需檢查變數不為負數
 
 
 
@@ -268,13 +336,7 @@ def GENE(avaliable_sol, fix, nDAY, nEMPLOYEE, gen):
 
 
 
-#=======================================================================================================#
-#====================================================================================================#
-#=================================================================================================#
-# main function
-#=================================================================================================#
-#====================================================================================================#
-#=======================================================================================================#
+
 
 
 
@@ -283,9 +345,203 @@ def GENE(avaliable_sol, fix, nDAY, nEMPLOYEE, gen):
 #=================================================================================================#
 # 輸出
 #=================================================================================================#
-#====================================================================================================#
-#=======================================================================================================#
 
+#Dataframe_x
+K_type = ['O','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','CD','C2','C3','C4','OB']
+
+
+employee_name = E_NAME
+which_worktime = []
+for i in EMPLOYEE:
+    tmp = []
+    for j in DAY:
+        for k in SHIFT:
+            if(work[i,j,k]==1):
+                tmp.append(K_type[k])
+                break
+        else:
+            print('CSR ',E_NAME[i],' 在',DATES[j],'號的排班發生錯誤。')
+            print('請嘗試讓程式運行更多時間，或是減少限制條件。\n')
+    which_worktime.append(tmp)
+        
+
+df_x = pd.DataFrame(which_worktime, index = employee_name, columns = DATES)
+
+
+#Dataframe_y
+T_type = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30'
+        ,'15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30']
+
+lesspeople_count = []
+for j in DAY:
+    tmp = []
+    for t in TIME:
+        tmp.append(int(lack[j,t]))
+    lesspeople_count.append(tmp)
+
+
+df_y = pd.DataFrame(lesspeople_count, index = DATES, columns = T_type) #which_day , columns = T_type)
+
+#計算總和
+df_y['SUM_per_day'] = df_y.sum(axis=1)
+df_y.loc['SUM_per_time'] = df_y.sum()
+
+#計算需求
+demand_day = DEMAND_t.sum(axis=1).values
+demand_time = DEMAND_t.sum().values
+#計算缺工比例
+less_percent_day = (df_y['SUM_per_day'].drop(['SUM_per_time']).values)/demand_day
+less_percent_time = (df_y.loc['SUM_per_time'].drop(['SUM_per_day']).values)/demand_time
+df_percent_day = pd.DataFrame(less_percent_day, index = DATES, columns = ["Percentage"]) #which_day , columns = ["Percentage"])
+df_percent_time = pd.DataFrame(less_percent_time, index = T_type , columns = ["Percentage"])
+
+
+#h1h2
+#print("\n所有天每個時段人數與需求人數的差距中的最大值 = "+str(int(surplus.x))+"\n")
+
+
+
+#晚班次數dataframe
+night_work_total = []
+for i in EMPLOYEE:
+    count = 0
+    for j in DAY:
+        for k in range(11,14):
+            if(int(work[i,j,k])==1):
+                count+=1
+    night_work_total.append(count)
+
+
+df_nightcount = pd.DataFrame(night_work_total, index = employee_name, columns = ['NW_count'])
+#print("\n員工中每人排晚班總次數的最大值 = "+str(int(nightCount))+"\n")
+
+
+
+      
+#休息時間 Dataframe_z
+R_type = ['11:30','12:00','12:30','13:00','13:30']     
+which_week = [tmp+1 for tmp in WEEK] 
+which_resttime = []     
+for i in EMPLOYEE:
+    tmp = []
+    for w in WEEK:
+        tmp2 = []
+        for r in BREAK:
+            if(breakCount[i,w,r]==1):
+                tmp2.append(R_type[r])
+        tmp.append(tmp2)
+    which_resttime.append(tmp)
+
+
+df_resttime = pd.DataFrame(which_resttime, index=employee_name, columns=which_week)
+
+
+#print("Final MIP gap value: %f" % m.MIPGap)
+#print("\n目標值 = "+str(m.objVal) + "\n")
+
+
+"""#============================================================================#
+#輸出其他資訊
+#============================================================================#
+with pd.ExcelWriter(result) as writer:
+    df_x.to_excel(writer, sheet_name="員工排班表")
+    df_nightcount.to_excel(writer, sheet_name="員工本月晚班次數")
+    df_percent_time.to_excel(writer, sheet_name="每個時段缺工百分比表")
+    df_percent_day.to_excel(writer, sheet_name="每天缺工百分比表")
+    df_nightcount.to_excel(writer, sheet_name="員工本月晚班次數")
+    df_y.to_excel(writer, sheet_name="缺工人數表")
+    df_resttime.to_excel(writer, sheet_name="員工每週有哪幾種休息時間")
+"""
+
+#============================================================================#
+#輸出班表
+#============================================================================#
+output_name = []
+output_id = []
+for i in range(0,nEMPLOYEE):
+    output_id.append(str(EMPLOYEE_t.ID.values.tolist()[i]))
+for i in range(0,nEMPLOYEE):
+    output_name.append(EMPLOYEE_t.Name_Chinese.values.tolist()[i])
+mDAY = int(calendar.monthrange(year,month)[1])
+date_list = []
+date_name = []
+for i in range(1,mDAY+1): #產生日期清單
+    weekday=""
+    date = datetime.datetime.strptime(str(year)+'-'+str(month)+'-'+str(i), "%Y-%m-%d")
+    date_list.append(date)
+    if date.weekday()==5:
+        weekday="六"
+    elif date.weekday()==6:
+        weekday="日"
+    elif date.weekday()==0:
+        weekday="一"
+    elif date.weekday()==1:
+        weekday="二"
+    elif date.weekday()==2:
+        weekday="三"
+    elif date.weekday()==3:
+        weekday="四"
+    else:
+        weekday="五"
+    date_name.append(date.strftime("%Y-%m-%d")+' ('+weekday+')')
+
+new = pd.DataFrame()
+new['name'] = output_name
+NO_WORK=[]
+for i in range(0,nEMPLOYEE): #假日全部填X
+    NO_WORK.append("X")
+
+for i in range(0,mDAY):
+    if (i+1) not in DATES:
+        new[date_name[i]] = NO_WORK
+    else:
+        new[date_name[i]] = df_x[i+1].values.tolist()
+#print('check point 2\n')
+new['id']=output_id
+new.set_index("id",inplace=True)
+#new.to_csv(result_x, encoding="utf-8_sig")
+#print(new)
+
+#============================================================================#
+#輸出冗員與缺工人數表
+#============================================================================#
+K_type_dict = {0:'',1:'O',2:'A2',3:'A3',4:'A4',5:'A5',6:'MS',7:'AS',8:'P2',9:'P3',10:'P4',11:'P5',12:'N1',13:'M1',14:'W6',15:'CD',16:'C2',17:'C3',18:'C4',19:'OB'}
+try:
+    x_nb = np.vectorize({v: k for k, v in K_type_dict.items()}.get)(np.array(which_worktime))
+except:
+    print('無法輸出缺工冗員表：排班班表不完整，請嘗試讓程式運行更多時間。')
+    try:
+        sys.exit(0)     #出錯的情況下，讓程式退出
+    except:
+        print('\n程式已結束。')
+
+
+people = np.zeros((nDAY,24))
+for i in range(0,nEMPLOYEE):
+    for j in range(0,nDAY):
+        for k in range(0,24):
+            people[j][k] = people[j][k] + A_t.values[x_nb[i][j]-1][k]
+output_people = (people - DEMAND).tolist()
+NO_PEOPLE=[]
+new_2=pd.DataFrame()
+for i in range(0,24):
+    NO_PEOPLE.append('X')
+j = 0
+for i in range(0,mDAY):
+    if (i+1) not in DATES:
+        new_2[date_name[i]]=NO_PEOPLE
+    else:
+        new_2[date_name[i]]=output_people[j]
+        j = j + 1
+new_2['name']=T_type
+new_2.set_index("name",inplace=True)
+#new_2.to_csv(result_y, encoding="utf-8_sig")
+# print(new_2.T)
+
+#====================================================================================================#
+#將結果放入INITIAL_POOL中
+#====================================================================================================#
+INITIAL_POOL.append(Pool(df_x, df_y, df_percent_day, df_percent_time, df_nightcount, df_resttime, new, new_2))
 
 
 
