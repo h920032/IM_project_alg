@@ -62,6 +62,22 @@ def SetDAYW(day, total_day, total_week):   #第一天上班是星期幾/幾天/�
         ans.append(tmp)
     return ans
 
+def SetWEEKD(day, total_day, total_week):   #第一天上班是星期幾/幾天/幾週
+    ans = []
+    count  = 0
+    for i in range(total_week):
+        if(i == 0):
+            for j in range(6-day):
+                ans.append(i)
+                count+=1
+        else:
+            for j in range(5):
+                ans.append(i)
+                count+=1
+                if count == total_day:
+                    break
+    return ans
+
 #JW_fri 第w周的星期五與下周一的集合
 #JW_fri 無國定假日的話
 def SetDAYW_fri(JWset, total_week):   #JW日子集合/幾週
