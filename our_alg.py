@@ -13,6 +13,8 @@ import data.fixed.gene_alg as gen
 12/6
     - main function
     - 在tool中建立製作WEEK_of_DAY的函數
+12/8
+    -ABLE函數完成
 ============================================================================#"""
 
 #=======================================================================================================#
@@ -150,7 +152,7 @@ for c in range(M_t.shape[0]):
     ASSIGN.append( (e, d, k) )
 
 LMNIGHT = NM_t.values            #LMNIGHT_i - 表示員工i在上月終未滿一週的日子中曾排幾次晚班
-FRINIGHT = NW_t.values           #FRINIGHT_i - 1表示員工i在上月最後一日且為週五的日子排晚班，0則否
+FRINIGHT = NW_t.values           #FRINIGHT_i - 1表示員工i在上月最後一日排晚班，0則否
 # -------調整權重-------#
 P0 = 100    					#目標式中的調整權重(lack)
 P1 = P_t[1]['P1']    			#目標式中的調整權重(surplus)
@@ -317,9 +319,91 @@ INITIAL_POOL = [tmp for tmp in range(parent)]
 #========================================================================#
 # ABLE(i,j,k): 確認員工i在日子j是否可排班別k (嬿鎔)
 #========================================================================#
+def ABLE(this_i,this_j,this_k):
+    ans = True
+    
+    #only one work a day
+    for k in SHIFT:
+        if( work[this_i,this_j,k] == 1 and k!=this_k):
+            ans = False
+            return ans
+    #被指定的排班及當天被排除的排班
+    for tmp in ASSIGN:
+        if(tmp[0]==this_i):
+            if(tmp[1]==this_j):
+                #被指定的排班
+                if(tmp[2]==this_k):
+                    return ans
+                else:
+                    ans = False
+                    return ans
 
-
-
+    #判斷是否正在排晚班
+    arrangenightshift = False
+    for tmp in S_NIGHT:
+        if(this_k == tmp):
+            arrangenightshift = True
+            
+    #正在排晚班才進去判斷
+    if(arrangenightshift == True):
+        #no continuous night shift:
+        #非第一天
+        if(this_j!=0):
+            for tmp in S_NIGHT:
+                if(work[this_i,this_j-1,tmp] == 1):
+                    ans = False
+                    return ans
+        
+        #第一天
+        else:
+            if(FRINIGHT[this_i] == 1):
+                ans = False
+                return ans
+        #no too many night shift a week:
+        whichweek = WEEK_of_DAY[this_j]
+        #非第一週
+        if(whichweek!=0):
+            countnightshift = 0
+            for theday in D_WEEK[whichweek]:
+                for tmp in S_NIGHT:
+                    if(work[this_i,theday,tmp] == 1):
+                        if(theday == this_j and tmp == this_k):
+                            countnightshift += 0
+                        else:
+                            countnightshift += 1
+            if(countnightshift >= nightdaylimit[this_i]):
+                ans = False
+                return ans              
+        #第一週
+        else:
+            countnightshift = 0
+            for theday in D_WEEK[0]:
+                for tmp in S_NIGHT:
+                    if(work[this_i,theday,tmp] == 1):
+                        if(theday == this_j and tmp == this_k):
+                            countnightshift += 0
+                        else:
+                            countnightshift += 1
+            if(countnightshift+LMNIGHT[this_i] >= nightdaylimit[this_i]):
+                ans = False
+                return ans            
+            
+    #排班的上限
+    for item in UPPER:
+        if(this_j in DAYset[item[0]] and this_k in SHIFTset[item[1]]):
+            tmpcount = 0
+            for theday in DAYset[item[0]]:
+                for tmp in  SHIFTset[item[1]]:
+                    if(work[this_i,theday,tmp]==1):
+                        if(theday == this_j and tmp == this_k):
+                            tmpcount+=0
+                        else:
+                            tmpcount+=1
+            if(tmpcount>=item[2]):
+                ans = False
+                return ans
+    return ans                 
+                    
 #========================================================================#
 # ARRANGEMENT(): 安排好空著的班別的函數 (星宇)
 #========================================================================#
