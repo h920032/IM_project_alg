@@ -741,6 +741,26 @@ for p in range(parent):
     #====================================================================================================#
     INITIAL_POOL.append(Pool(result, df_x, df_y, df_percent_day, df_percent_time, df_nightcount, df_resttime, new, new_2))
 
+    for i in range(nEMPLOYEE):
+        for j in range(nDAY):
+            for k in range(nK):
+                work[i, j, k] = False
+    
+    for j in range(nDAY):
+        for t in range(nT):
+            lack[j, t] = 0
+    
+    surplus = 0
+    nightCount = 0
+
+    for i in range(nEMPLOYEE):
+        for w in range(nW):
+            for r in range(nR):
+                breakCount[i, w, r] = False
+    
+    complement =  0
+
+
     #====================================================================================================#
     #====================================================================================================#
 
