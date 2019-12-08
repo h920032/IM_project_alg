@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import data.fixed.tool as tl
 import data.fixed.gene_alg as gen
+from data.fixed.LIMIT_ORDER import LIMIT_ORDER
 # import datetime, calendar, sys
 """============================================================================#
 12/3
