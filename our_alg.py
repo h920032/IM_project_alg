@@ -521,8 +521,6 @@ for p in range(parent):
     BOUND = [] #限制人數
     for l in LIMIT_LIST:
         LIMIT = LIMIT_LIST[l]
-        if LIMIT[0] == "upper":
-            break
         CSR_LIST = CSR_ORDER(LIMIT[1])
         for j in LIMIT[2]:
             BOUND = LIMIT[4]
