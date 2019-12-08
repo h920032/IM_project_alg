@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import re
 import numpy as np
 import pandas as pd
 import data.fixed.tool as tl
@@ -28,88 +29,184 @@ from data.fixed.LIMIT_ORDER import LIMIT_ORDER
 #=======================================================================================================#
 
 
-#=============================================================================#
-# import data
-f = open('path.txt', "r")
-dir_name = f.read().replace('\n', '')
+# #=============================================================================#
+# # import data
+# f = open('path.txt', "r")
+# dir_name = f.read().replace('\n', '')
 
+# #year/month
+# date = pd.read_csv(dir_name + 'date.csv', header = None, index_col = 0)
+# year = int(date.iloc[0,0])
+# month = int(date.iloc[1,0])
+
+# #result_x = './排班結果_'+str(year)+'_'+str(month)+'.csv'
+# #result_y = './冗員與缺工人數_'+str(year)+'_'+str(month)+'.csv'
+# #result = './其他資訊_'+str(year)+'_'+str(month)+'.xlsx'
+
+# #basic
+# A_t = pd.read_csv(dir_name + 'fixed/fix_class_time.csv', header = 0, index_col = 0)
+# DEMAND_t = pd.read_csv(dir_name+"進線人力.csv", header = 0, index_col = 0, engine='python').T
+# DATES = [ int(x) for x in DEMAND_t.index ]    #所有的日期 - 對照用
+# print('DATES = ',end='')
+# print(DATES)
+# #employees data
+# EMPLOYEE_t = pd.read_csv(dir_name+"EMPLOYEE.csv", header = 0) 
+
+
+
+# ####NM 及 NW 從人壽提供之上個月的班表裡面計算
+# if month>1:
+# 	lastmonth = pd.read_csv(dir_name + '排班結果_'+str(year)+'_'+str(month-1)+'.csv', engine='python')
+# else:
+# 	lastmonth = pd.read_csv(dir_name + '排班結果_'+str(year-1)+'_1.csv', engine='python')
+# lastday_column = len(lastmonth.columns) 
+# lastday_row = lastmonth.shape[0]
+# lastday_ofmonth = lastmonth.iloc[0,(lastday_column-1)]
+# nEMPLOYEE = EMPLOYEE_t.shape[0]
+
+# #上個月的最後一天是週五，且有排晚班者，有則是1，沒有則是0
+
+# tl.calculate_NW (EMPLOYEE_t,lastday_ofmonth,lastday_row,lastday_column,lastmonth,nEMPLOYEE)
+
+# #上個月為斷頭週，並計算該週總共排了幾次晚班
+
+# tl.calculate_NM (EMPLOYEE_t,lastday_ofmonth,lastday_row,lastday_column,lastmonth,nEMPLOYEE)
+# NM_t = EMPLOYEE_t['NM']
+# NW_t = EMPLOYEE_t['NW']
+# #####
+
+# E_NAME = list(EMPLOYEE_t['Name_English'])       #E_NAME - 對照名字與員工index時使用
+# E_ID = [ str(x) for x in EMPLOYEE_t['ID'] ]   	#E_ID - 對照ID與員工index時使用
+# E_SENIOR_t = EMPLOYEE_t['Senior']
+# E_POSI_t = EMPLOYEE_t['Position']
+# E_SKILL_t = EMPLOYEE_t[['skill-phone','skill-CD','skill-chat','skill-outbound']]
+# SKILL_NAME = list(E_SKILL_t.columns)        #SKILL_NAME - 找員工組合、班別組合時使用
+
+# P_t = pd.read_csv(dir_name + 'parameters/軟限制權重.csv', header = None, index_col = 0, engine='python') 
+
+# #const
+# Kset_t = pd.read_csv(dir_name + 'fixed/fix_classes.csv', header = None, index_col = 0) #class set
+# SKset_t = pd.read_csv(dir_name + 'parameters/skills_classes.csv', header = None, index_col = 0) #class set for skills
+# # 下面的try/except都是為了因應條件全空時
+# try:
+# 	M_t = pd.read_csv(dir_name + "特定班別、休假.csv", header = None, skiprows=[0], engine='python')
+# except:
+# 	M_t = pd.DataFrame()
+# try:
+# 	L_t = pd.read_csv(dir_name + "parameters/下限.csv", header = None, skiprows=[0], engine='python')
+# except:
+# 	L_t = pd.DataFrame()
+# try:
+# 	U_t = pd.read_csv(dir_name + "parameters/上限.csv", header = None, skiprows=[0], engine='python')
+# except:
+# 	U_t = pd.DataFrame()
+# try:
+# 	Ratio_t = pd.read_csv(dir_name + "parameters/CSR年資占比.csv",header = None, skiprows=[0], engine='python')
+# 	SENIOR_bp = Ratio_t[3]
+# except:
+# 	Ratio_t = pd.DataFrame()
+# 	SENIOR_bp = []
+# try:
+# 	timelimit = pd.read_csv(dir_name + "parameters/時間限制.csv", header = 0, engine='python')
+# except:
+# 	timelimit = 300	#預設跑五分鐘
+# nightdaylimit = EMPLOYEE_t['night_perWeek']
+
+
+
+
+
+#=======================================================================================================#
+#====================================================================================================#
+#=================================================================================================#
+# import data
+#=================================================================================================#
+#====================================================================================================#
+#=======================================================================================================#
+#讀檔路徑import data
+try:
+    f = open('path.txt', "r")
+    dir_name = f.read().replace('\n', '')
+except:
+    f = './data/'   #預設資料路徑：./data/
+
+#=============================================================================#
+#每月更改的資料
+#=============================================================================#
 #year/month
-date = pd.read_csv(dir_name + 'date.csv', header = None, index_col = 0)
+date = pd.read_csv(dir_name + 'per_month/Date.csv', header = None, index_col = 0)
 year = int(date.iloc[0,0])
 month = int(date.iloc[1,0])
 
-#result_x = './排班結果_'+str(year)+'_'+str(month)+'.csv'
-#result_y = './冗員與缺工人數_'+str(year)+'_'+str(month)+'.csv'
-#result = './其他資訊_'+str(year)+'_'+str(month)+'.xlsx'
-
-#basic
-A_t = pd.read_csv(dir_name + 'fixed/fix_class_time.csv', header = 0, index_col = 0)
-DEMAND_t = pd.read_csv(dir_name+"進線人力.csv", header = 0, index_col = 0, engine='python').T
+#指定排班
+M_t = tl.readFile(dir_name + 'per_month/Assign.csv')
+#進線需求預估
+DEMAND_t = pd.read_csv(dir_name+"per_month/Need.csv", header = 0, index_col = 0, engine='python').T
 DATES = [ int(x) for x in DEMAND_t.index ]    #所有的日期 - 對照用
-print('DATES = ',end='')
-print(DATES)
+
 #employees data
-EMPLOYEE_t = pd.read_csv(dir_name+"EMPLOYEE.csv", header = 0) 
+EMPLOYEE_t = pd.read_csv(dir_name+"per_month/Employee.csv", header = 0) 
+E_NAME = list(EMPLOYEE_t['Name_English'])       #E_NAME - 對照名字與員工index時使用
+E_ID = [ str(x) for x in EMPLOYEE_t['ID'] ]     #E_ID - 對照ID與員工index時使用
+E_SENIOR_t = EMPLOYEE_t['Senior']
+E_POSI_t = EMPLOYEE_t['Position']
+SKILL_NAME = list(filter(lambda x: re.match('skill-',x), EMPLOYEE_t.columns)) #自動讀取技能名稱
+E_SKILL_t = EMPLOYEE_t[ SKILL_NAME ]            #員工技能表
 
-
-
+#=============================================================================#
 ####NM 及 NW 從人壽提供之上個月的班表裡面計算
 if month>1:
-	lastmonth = pd.read_csv(dir_name + '排班結果_'+str(year)+'_'+str(month-1)+'.csv', engine='python')
+    lastmonth = pd.read_csv(dir_name + 'per_month/Schedule_'+str(year)+'_'+str(month-1)+'.csv', engine='python')
 else:
-	lastmonth = pd.read_csv(dir_name + '排班結果_'+str(year-1)+'_1.csv', engine='python')
+    lastmonth = pd.read_csv(dir_name + 'per_month/Schedule_'+str(year-1)+'_1.csv', engine='python')
 lastday_column = len(lastmonth.columns) 
 lastday_row = lastmonth.shape[0]
 lastday_ofmonth = lastmonth.iloc[0,(lastday_column-1)]
 nEMPLOYEE = EMPLOYEE_t.shape[0]
 
 #上個月的最後一天是週五，且有排晚班者，有則是1，沒有則是0
-
 tl.calculate_NW (EMPLOYEE_t,lastday_ofmonth,lastday_row,lastday_column,lastmonth,nEMPLOYEE)
 
 #上個月為斷頭週，並計算該週總共排了幾次晚班
-
 tl.calculate_NM (EMPLOYEE_t,lastday_ofmonth,lastday_row,lastday_column,lastmonth,nEMPLOYEE)
 NM_t = EMPLOYEE_t['NM']
 NW_t = EMPLOYEE_t['NW']
 #####
 
-E_NAME = list(EMPLOYEE_t['Name_English'])       #E_NAME - 對照名字與員工index時使用
-E_ID = [ str(x) for x in EMPLOYEE_t['ID'] ]   	#E_ID - 對照ID與員工index時使用
-E_SENIOR_t = EMPLOYEE_t['Senior']
-E_POSI_t = EMPLOYEE_t['Position']
-E_SKILL_t = EMPLOYEE_t[['skill-phone','skill-CD','skill-chat','skill-outbound']]
-SKILL_NAME = list(E_SKILL_t.columns)        #SKILL_NAME - 找員工組合、班別組合時使用
-
-P_t = pd.read_csv(dir_name + 'parameters/軟限制權重.csv', header = None, index_col = 0, engine='python') 
-
-#const
-Kset_t = pd.read_csv(dir_name + 'fixed/fix_classes.csv', header = None, index_col = 0) #class set
-SKset_t = pd.read_csv(dir_name + 'parameters/skills_classes.csv', header = None, index_col = 0) #class set for skills
-# 下面的try/except都是為了因應條件全空時
-try:
-	M_t = pd.read_csv(dir_name + "特定班別、休假.csv", header = None, skiprows=[0], engine='python')
+#=============================================================================#
+#半固定參數
+#=============================================================================#
+P_t = pd.read_csv(dir_name + 'parameters/weight_p1-4.csv', header = None, index_col = 0, engine='python') #權重
+SKset_t = tl.readFile(dir_name + 'parameters/skills_classes.csv')   #class set for skills
+L_t = tl.readFile(dir_name + "parameters/lower_limit.csv")          #指定日期、班別、職位，人數下限
+U_t = tl.readFile(dir_name + "parameters/upper_limit.csv")          #指定星期幾、班別，人數上限
+Ratio_t = tl.readFile(dir_name + "parameters/senior_limit.csv")     #指定年資、星期幾、班別，要占多少比例以上
+try:    # 下面的try/except都是為了因應條件全空時
+    SENIOR_bp = Ratio_t[3]
 except:
-	M_t = pd.DataFrame()
+    SENIOR_bp = []
 try:
-	L_t = pd.read_csv(dir_name + "parameters/下限.csv", header = None, skiprows=[0], engine='python')
+    timelimit = pd.read_csv(dir_name + "parameters/time_limit.csv", header = 0, engine='python')
 except:
-	L_t = pd.DataFrame()
-try:
-	U_t = pd.read_csv(dir_name + "parameters/上限.csv", header = None, skiprows=[0], engine='python')
-except:
-	U_t = pd.DataFrame()
-try:
-	Ratio_t = pd.read_csv(dir_name + "parameters/CSR年資占比.csv",header = None, skiprows=[0], engine='python')
-	SENIOR_bp = Ratio_t[3]
-except:
-	Ratio_t = pd.DataFrame()
-	SENIOR_bp = []
-try:
-	timelimit = pd.read_csv(dir_name + "parameters/時間限制.csv", header = 0, engine='python')
-except:
-	timelimit = 300	#預設跑五分鐘
+    timelimit = 300 #預設跑五分鐘
 nightdaylimit = EMPLOYEE_t['night_perWeek']
+
+
+#=============================================================================#
+#固定參數：班別總數與時間
+#=============================================================================#
+Kset_t = pd.read_csv(dir_name + 'fixed/fix_classes.csv', header = None, index_col = 0) #class set
+A_t = pd.read_csv(dir_name + 'fixed/fix_class_time.csv', header = 0, index_col = 0)
+
+
+
+
+
+
+
+
+
+
 
 #============================================================================#
 #Indexs 都從0開始
@@ -325,7 +422,7 @@ def ABLE(this_i,this_j,this_k):
     
     #only one work a day
     for k in SHIFT:
-        if( work[this_i,this_j,k] == 1 and k!=this_k):
+        if( work[this_i,this_j,k] == 1 and k!=this_k):    #!!!報錯：KeyError: ('phone', 0, 0)
             ans = False
             return ans
     #被指定的排班及當天被排除的排班
@@ -429,7 +526,7 @@ def GENE(avaliable_sol, fix, nDAY, nEMPLOYEE, gen):
 #=================================================================================================#
 # main function
 #=================================================================================================#
-LIMIT_MATRIX = LIMIT_ORDER() #生成多組限制式順序 matrix
+LIMIT_MATRIX = LIMIT_ORDER(LOWER,UPPER,PERCENT,DEMAND,E_POSITION,E_SENIOR,DAYset,SHIFTset) #生成多組限制式順序 matrix
 sequence = 0 #限制式順序
 
 #產生100個親代的迴圈
@@ -494,8 +591,8 @@ for p in range(parent):
     #特定技能CSR排優先班別
     for j in range(nDAY):
         for k in sk:
-            for i in E_SKILL:
-                if ABLE(i, j, k) == True:
+            for i in E_SKILL:       #!!!E_SKILL是dict，所以取出的i是個字串(key)，要用E_SKILL[i]才能取得作為value的list
+                if ABLE(i, j, k) == True:       #!!!報錯：  File "our_alg.py", line 425, in ABLE    if( work[this_i,this_j,k] == 1 and k!=this_k): KeyError: ('phone', 0, 0)
                     work[i, j, k] = True
                     ALREADY[i, j] = True
                     for n in range(nS_NIGHT):
@@ -521,7 +618,7 @@ for p in range(parent):
     CSR_LIST = [] #可排的員工清單
     BOUND = [] #限制人數
     for l in LIMIT_LIST:
-        LIMIT = LIMIT_LIST[l]
+        LIMIT = LIMIT_LIST[l]           #!!!!這裡出現錯誤：TypeError: list indices must be integers or slices, not str
         CSR_LIST = CSR_ORDER(LIMIT[1])
         for j in LIMIT[2]:
             BOUND = LIMIT[4]
