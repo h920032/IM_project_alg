@@ -204,7 +204,7 @@ for ki in range(len(SKset_t)):
 #============================================================================#
 #Variables
 
-work = {}  #work_ijk - 1表示員工i於日子j值班別為k的工作，0 則否 ;workij0=1 代表員工i在日子j休假
+work = {}  #work_ijk - True表示員工i於日子j值班別為k的工作，False 則否 ;workij0=True 代表員工i在日子j休假
 for i in range(nEMPLOYEE):
     for j in range(nDAY):
         for k in range(nK):
@@ -218,7 +218,7 @@ for j in range(nDAY):
 surplus = 0 #每天每個時段人數與需求人數的差距中的最大值
 nightCount = 0 #員工中每人排晚班總次數的最大值
 
-breakCount = {}  #breakCount_iwr - 1表示員工i在第w周中在午休時段r有午休，0則否
+breakCount = {}  #breakCount_iwr - True表示員工i在第w周中在午休時段r有午休，False則否
 for i in range(nEMPLOYEE):
     for w in range(nW):
         for r in range(nR):
@@ -430,9 +430,14 @@ def GENE(avaliable_sol, fix, nDAY, nEMPLOYEE, gen):
 #=================================================================================================#
 LIMIT_MATRIX = LIMIT_ORDER() #生成多組限制式順序 matrix
 sequence = 0 #限制式順序
+full = False #True為先排滿上限，False則否
 
 #產生100個親代的迴圈
 for p in range(parent):
+
+    #後50個親代排滿上限
+    if p >= 50:
+        full = True
     
     #擷取上個月的資料
     LMNIGHT_p = {}
@@ -521,6 +526,8 @@ for p in range(parent):
     BOUND = [] #限制人數
     for l in LIMIT_LIST:
         LIMIT = LIMIT_LIST[l]
+        if LIMIT[0] == "upper" and full == False:
+            break
         CSR_LIST = CSR_ORDER(LIMIT[1])
         for j in LIMIT[2]:
             BOUND = LIMIT[4]
