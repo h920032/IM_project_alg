@@ -23,7 +23,7 @@ output：
 ============================================================================#"""
 
 #計算平均需求人數（用以估計滿足限制所需人數）
-def avg_need(dates,classes, DAY,K,K_TIME,Need):
+def avgNeed(dates,classes, DAY,K,K_TIME,Need):
 	avg_all = 0							#總平均需求人數
 	for d in DAY[dates]:				#for all relative dates
 		avg_day = 0							#本日各班別平均需求人數
@@ -60,7 +60,8 @@ def LIMIT_ORDER(L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 	#upper limit: (all), j_set, k_set, n
 	for i in U:
 		n = int(i[2])
-		neck = float( len(POSI['任意']) - n )
+		avg = avgNeed(i[0],i[1], DAY,K,K_TIME,Need)
+		neck = float( n - avg )						#剩餘可動人手 = 上限人數 - 平均需求人數 (很可能是負數)
 		limits.append([ 'upper', POSI['任意'], DAY[i[0]], K[i[1]], n, neck])
 
 	#lower limit: j, k_set, i(position), n
@@ -74,7 +75,7 @@ def LIMIT_ORDER(L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 		i = S[ii]
 		n = float(i[2])
 		#計算瓶頸程度：總可用人數 - 需求人數(n*平均需求人數)
-		neck = len(SENIOR[ii]) - n*avg_need(i[0], i[1], DAY,K,K_TIME,Need)	#瓶頸程度
+		neck = len(SENIOR[ii]) - n*avgNeed(i[0], i[1], DAY,K,K_TIME,Need)	#瓶頸程度=剩餘可動人手
 		limits.append([ 'ratio', SENIOR[ii], DAY[i[0]], K[i[1]], n, neck])
 
 	#sort
