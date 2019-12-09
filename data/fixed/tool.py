@@ -4,26 +4,23 @@
 For caculate weekdays
 @author: Ting
 """
-import math,re
+import math, re
 import pandas as pd
 from datetime import datetime, date
 
 K_type = ['O','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','CD','C2','C3','C4','OB']
 
 # 下面的try/except是為了因應條件全空時
-def readFile(dir, header_=None, skiprows_=[0]):
+def readFile(dir, header_=None, skiprows_=[0], index_col_=None):
     try:
-        t = pd.read_csv(dir, header = header_, skiprows=skiprows_, engine='python')
+        t = pd.read_csv(dir, header = header_, skiprows=skiprows_, index_col=index_col_, engine='python')
     except:
         t = pd.DataFrame()
     return t
+
 """===========================================
 	nJ, nW
 ==========================================="""
-# get weekday of 1st date and total days
-# startDay = date(year,month,1).weekday()	#Mon=0,Tue=1...
-# totalDay = (date(year,month+1,1) - date(year,month,1)).days if month<12 else 31
-# print(year,'/',month,' start in weekday',startDay,', total= ',totalDay,' days')
 
 #nW
 def get_nW(year,month):
@@ -146,22 +143,16 @@ def SetSENIOR(alist, bp):
 """===========================================
 	Text-numberID translate function
 ==========================================="""
-def TranK_t2n(text):
-	K_type = ['O','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','CD','C2','C3','C4','OB']
-	try:
-		c = K_type.index(text)
-	except:
-		print('class indexr to class name code:',text,"-> ?")
-		c = None
-	return  c
+def Tran_t2n(text, names=K_type):
+    try:
+        c = names.index(text)
+    except:
+        print('Tran_t2n():',text,"not in ",end='')
+        print(names[0:3],end='')
+        print('...')
+        c = None
+    return c
 
-def TranName_t2n(text, names):
-	try:
-		c = names.index(text)
-	except:
-		print('index to name:',text,"-> ?")
-		c = None
-	return c
 
 """
 Calculation of NW & NM from last month 
