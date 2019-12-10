@@ -453,6 +453,7 @@ def GENE(avaliable_sol, fix, nDAY, nEMPLOYEE, gen):
 
 LIMIT_MATRIX = LIMIT_ORDER(5, LOWER,UPPER,PERCENT,DEMAND,E_POSITION,E_SENIOR,DAYset,SHIFTset, DATES, CONTAIN) #生成多組限制式matrix
 sequence = 0 #限制式順序
+char = 'a' #CSR沒用度順序
 
 #產生100個親代的迴圈
 for p in range(parent):
@@ -544,7 +545,7 @@ for p in range(parent):
     BOUND = [] #限制人數
     for l in range(len(LIMIT_LIST)):
         LIMIT = LIMIT_LIST[l]
-        CSR_LIST = CSR_ORDER(LIMIT[0], LIMIT[1], EMPLOYEE_t) #員工沒用度排序
+        CSR_LIST = CSR_ORDER(char, LIMIT[0], LIMIT[1], EMPLOYEE_t) #員工沒用度排序
         for j in LIMIT[2]:
             BOUND = LIMIT[4]
             for i in CSR_LIST:
@@ -573,9 +574,18 @@ for p in range(parent):
                         BOUND -= 1
                     else:
                         continue
-    sequence += 1
+    #sequence += 1
     if sequence > len(LIMIT_MATRIX):
         sequence = 0
+    if char == 'a':
+        char = 'b'
+    elif char == 'b':
+        char = 'c'
+    elif char == 'c':
+        char = 'd'
+    elif char == 'd':
+        sequence += 1
+        char = 'a'
 
     #=================================================================================================#
     #安排空班別
