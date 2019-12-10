@@ -546,7 +546,7 @@ for p in range(parent):
     BOUND = [] #限制人數
     for l in range(len(LIMIT_LIST)):
         LIMIT = LIMIT_LIST[l]
-        CSR_LIST = CSR_ORDER(LIMIT[0], LIMIT[1]) #員工沒用度排序
+        CSR_LIST = CSR_ORDER(LIMIT[0], LIMIT[1], EMPLOYEE_t) #員工沒用度排序
         for j in LIMIT[2]:
             BOUND = LIMIT[4]
             for i in CSR_LIST:
