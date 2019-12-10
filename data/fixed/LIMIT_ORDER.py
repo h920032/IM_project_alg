@@ -42,7 +42,6 @@ def avgNeed(dates,classes, DAY,K,K_TIME,Need):
 
 def takeNeck(alist):
 	try:
-		print(alist[5])
 		return alist[5]
 	except:
 		print('找不到項目 ',end='')
@@ -97,7 +96,6 @@ def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 			if ii >= nl:								#要換的超過尾端，則不換，跳出
 				break
 			elif len(main) >= N:						#現有的排序數量比要的還要多
-				print('數量已足夠：',len(main),'>=',N)
 				break
 			else:
 				buff = limits							#buff存放交換過的序列
@@ -105,5 +103,5 @@ def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 			main.append(buff)
 
 	#return
-	print('\n\nready to return',len(main),'kinds of order')
+	print('\nLIMIT_ORDER(): return',len(main),'kinds of order\n')
 	return main
