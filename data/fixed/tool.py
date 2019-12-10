@@ -10,6 +10,7 @@ from datetime import datetime, date
 
 K_type = ['O','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','CD','C2','C3','C4','OB']
 
+
 # 下面的try/except是為了因應條件全空時
 def readFile(dir, header_=None, skiprows_=[0], index_col_=None):
     try:
@@ -21,7 +22,6 @@ def readFile(dir, header_=None, skiprows_=[0], index_col_=None):
 """===========================================
 	nJ, nW
 ==========================================="""
-
 #nW
 def get_nW(year,month):
 	startDay = date(year,month,1).weekday()	#Mon=0,Tue=1...
