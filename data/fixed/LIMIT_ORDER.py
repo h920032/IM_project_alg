@@ -50,10 +50,18 @@ def takeNeck(alist):
 		print(' 的瓶頸程度參數')
 		return None
 
+def exchange(index1, index2, alist):
+	print('exchange',index1,'&',index2)
+	buff = alist[index1]
+	alist[index1] = alist[index2]
+	alist[index2] = buff
+	return None
+
+
 #=============================================================================#
 # main function
 
-def LIMIT_ORDER(L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
+def LIMIT_ORDER(n, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 	# print(L)
 	# print(POSI)
 	limits = []
@@ -80,9 +88,23 @@ def LIMIT_ORDER(L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 
 	#sort
 	limits.sort(key=takeNeck, reverse=False)
-	main = limits
 
 	#change order
+	main = [limits]
+	nl = len(limits)
+	nn = 0					#nn = 現在有幾個排序
+	for dis in range(1, nl):			#dis = 要交換的兩項的距離(從1開始)
+		for i in range(nl-1):			#第一個要交換項的index
+			ii = i+dis
+			if ii >= nl:				#要換的超過尾端，則不換，跳出
+				break
+			elif nn > n:				#現有的排序數量比要的還要多
+				break
+			else:
+				buff = limits			#buff存放交換過的序列
+				exchange(i, ii, buff)
+				nn += 1
+			main.append(buff)
 
 	#return
 	print('\n\nready to return:')

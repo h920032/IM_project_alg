@@ -450,7 +450,7 @@ def GENE(avaliable_sol, fix, nDAY, nEMPLOYEE, gen):
 #====================================================================================================#
 #=======================================================================================================#
 
-LIMIT_MATRIX = LIMIT_ORDER(LOWER,UPPER,PERCENT,DEMAND,E_POSITION,E_SENIOR,DAYset,SHIFTset, DATES, CONTAIN) #生成多組限制式matrix
+LIMIT_MATRIX = LIMIT_ORDER(5, LOWER,UPPER,PERCENT,DEMAND,E_POSITION,E_SENIOR,DAYset,SHIFTset, DATES, CONTAIN) #生成多組限制式matrix
 print('\n\nLIMIT_MATRIX:')
 print(LIMIT_MATRIX)
 print('\n\n')
