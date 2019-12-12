@@ -524,8 +524,8 @@ for p in range(parent):
     #特定技能CSR排優先班別
     for j in range(nDAY):
         for k in sk:
-            for i in E_SKILL:       #!!!E_SKILL是dict，所以取出的i是個字串(key)，要用E_SKILL[i]才能取得作為value的list
-                if ABLE(i, j, k) == True:       #!!!報錯：  File "our_alg.py", line 425, in ABLE    if( work[this_i,this_j,k] == 1 and k!=this_k): KeyError: ('phone', 0, 0)
+            for i in E_SKILL:       #E_SKILL是dict，所以取出的i是個字串(key)，要用E_SKILL[i]才能取得作為value的list
+                if ABLE(i, j, k) == True:
                     work[i, j, k] = True
                     ALREADY[i, j] = True
                     for n in range(nS_NIGHT):
@@ -540,7 +540,7 @@ for p in range(parent):
                                     CAPACITY_NIGHT[i, d] = False
                             break
                     for t in range(nT):
-                        if COTAIN[k,t] == 1:
+                        if CONTAIN[k,t] == 1:            #這裡沒有報COTAIN not defined，因為ABLE總是False?
                             CURRENT_DEMAND[j, t] -= 1
                 else: 
                     continue
@@ -558,7 +558,7 @@ for p in range(parent):
             for i in CSR_LIST:
                 if BOUND <= 0:
                     break
-                for k in LIMIT[3]:
+                for k in LIMIT[3]:  #抓出來會是list，是個班別集合
                     if BOUND <= 0:
                         break
                     elif ABLE(i, j, k) == True:
@@ -576,7 +576,7 @@ for p in range(parent):
                                         CAPACITY_NIGHT[i, d] = False
                                 break
                         for t in range(nT):
-                            if COTAIN[k,t] == 1:            #這裡報錯：COTAIN not defined
+                            if CONTAIN[k,t] == 1:            #報錯：k為list，不能當index    #這裡報錯：COTAIN not defined
                                 CURRENT_DEMAND[j, t] -= 1
                         BOUND -= 1
                     else:
