@@ -94,7 +94,7 @@ NW_t = EMPLOYEE_t['NW']
 #半固定參數
 #=============================================================================#
 P_t = pd.read_csv(dir_name + 'parameters/weight_p1-4.csv', header = None, index_col = 0, engine='python') #權重
-SKset_t = tl.readFile(dir_name + 'parameters/skills_classes.csv', index_col_=[0])   #class set for skills
+SKset_t = pd.read_csv(dir_name + 'parameters/skills_classes.csv', header = None, index_col = 0, engine='python')   #class set for skills
 L_t = tl.readFile(dir_name + "parameters/lower_limit.csv")                          #指定日期、班別、職位，人數下限
 U_t = tl.readFile(dir_name + "parameters/upper_limit.csv")                          #指定星期幾、班別，人數上限
 Ratio_t = tl.readFile(dir_name + "parameters/senior_limit.csv")                     #指定年資、星期幾、班別，要占多少比例以上
@@ -220,10 +220,13 @@ SHIFTset= {}                                                    #SHIFTset - 通�
 for ki in range(len(Kset_t)):
     SHIFTset[Kset_t.index[ki]] = [ tl.Tran_t2n(x) for x in Kset_t.iloc[ki].dropna().values ]
 
-K_skill_not = []                                                #K_skill_not - 各技能的優先班別的補集
+SKILL_NAME = []                                             #SKILL_NAME - 技能的種類
 for ki in range(len(SKset_t)):
-    sk = [ tl.Tran_t2n(x) for x in SKset_t.iloc[ki].dropna().values ]       #各個技能的優先班別
-    K_skill_not.append( list( set(range(0,nK)).difference(set(sk)) ) )      #非優先的班別
+    SKILL_NAME.append(SKset_t.index[ki])
+
+K_skill = {}                                                #K_skill - 各技能的優先班別
+for ki in range(len(SKset_t)):
+    K_skill[SKset_t.index[ki]] = [ tl.Tran_t2n(x) for x in SKset_t.iloc[ki].dropna().values ]       #各個技能的優先班別
 
 #============================================================================#
 #Variables
@@ -523,27 +526,28 @@ for p in range(parent):
     
     #特定技能CSR排優先班別
     for j in range(nDAY):
-        for k in sk:
-            for i in E_SKILL:       #E_SKILL是dict，所以取出的i是個字串(key)，要用E_SKILL[i]才能取得作為value的list
-                if ABLE(i, j, k) == True:
-                    work[i, j, k] = True
-                    ALREADY[i, j] = True
-                    for n in range(nS_NIGHT):
-                        if k == S_NIGHT[n]:
-                            CAPACITY_NIGHT[i, j] = False
-                            CAPACITY_NIGHT[i, j-1] = False
-                            CAPACITY_NIGHT[i, j+1] = False
-                            w = WEEK_of_DAY[j]
-                            nightdaylimit_p[i, w] -= 1
-                            if nightdaylimit_p[i, w] <= 0:
-                                for d in D_WEEK[w]:
-                                    CAPACITY_NIGHT[i, d] = False
-                            break
-                    for t in range(nT):
-                        if CONTAIN[k,t] == 1:            #這裡沒有報COTAIN not defined，因為ABLE總是False?
-                            CURRENT_DEMAND[j, t] -= 1
-                else: 
-                    continue
+        for skill in SKILL_NAME:
+            for k in K_skill[skill]: 
+                for i in E_SKILL[skill]:       #E_SKILL是dict，所以取出的i是個字串(key)，要用E_SKILL[i]才能取得作為value的list
+                    if ABLE(i, j, k) == True:
+                        work[i, j, k] = True
+                        ALREADY[i, j] = True
+                        for n in range(nS_NIGHT):
+                            if k == S_NIGHT[n]:
+                                CAPACITY_NIGHT[i, j] = False
+                                CAPACITY_NIGHT[i, j-1] = False
+                                CAPACITY_NIGHT[i, j+1] = False
+                                w = WEEK_of_DAY[j]
+                                nightdaylimit_p[i, w] -= 1
+                                if nightdaylimit_p[i, w] <= 0:
+                                    for d in D_WEEK[w]:
+                                        CAPACITY_NIGHT[i, d] = False
+                                break
+                        for t in range(nT):
+                            if CONTAIN[k,t] == 1:            #這裡沒有報COTAIN not defined，因為ABLE總是False?
+                                CURRENT_DEMAND[j, t] -= 1
+                    else: 
+                        continue
     
     #瓶頸排班
     LIMIT_LIST = LIMIT_MATRIX[sequence] #一組限制式排序
@@ -576,7 +580,7 @@ for p in range(parent):
                                         CAPACITY_NIGHT[i, d] = False
                                 break
                         for t in range(nT):
-                            if CONTAIN[k,t] == 1:            #報錯：k為list，不能當index    #這裡報錯：COTAIN not defined
+                            if CONTAIN[k,t] == 1:            #報錯：k為list，不能當index  
                                 CURRENT_DEMAND[j, t] -= 1
                         BOUND -= 1
                     else:
