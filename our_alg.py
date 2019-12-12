@@ -589,6 +589,8 @@ for p in range(parent):
     elif char == 'c':
         char = 'd'
     elif char == 'd':
+        char = 'e'
+    elif char == 'e':
         sequence += 1
         char = 'a'
     if sequence > len(LIMIT_MATRIX):
