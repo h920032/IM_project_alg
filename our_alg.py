@@ -581,8 +581,6 @@ for p in range(parent):
                     else:
                         continue
     #sequence += 1
-    if sequence > len(LIMIT_MATRIX):
-        sequence = 0
     if char == 'a':
         char = 'b'
     elif char == 'b':
@@ -592,6 +590,8 @@ for p in range(parent):
     elif char == 'd':
         sequence += 1
         char = 'a'
+    if sequence > len(LIMIT_MATRIX):
+        sequence = 0
 
     #=================================================================================================#
     #安排空班別
