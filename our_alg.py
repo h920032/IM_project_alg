@@ -7,6 +7,7 @@ import data.fixed.tool as tl
 import data.fixed.gene_alg as gen
 from data.fixed.CSR_order import CSR_ORDER
 from data.fixed.LIMIT_ORDER import LIMIT_ORDER
+from data.fixed.ARRANGEMENT import ARRANGEMENT
 # import datetime, calendar, sys
 """============================================================================#
 12/3
@@ -500,9 +501,7 @@ for p in range(parent):
             ALREADY[i, j] = False
     
     #動態需工人數
-    CURRENT_DEMAND = {}
-    for j in range(nDAY):
-        CURRENT_DEMAND[j] = DEMAND[j]
+    CURRENT_DEMAND = DEMAND
     
     #指定班別
     for c in ASSIGN:
@@ -510,8 +509,8 @@ for p in range(parent):
         ALREADY[c[0],c[1]] = True
         if c[2] != 0: #非指定休假
             for t in range(nT):
-                if CONTAIN[c[2], t] == 1:
-                    CURRENT_DEMAND[c[1], t] -= 1
+                if CONTAIN[c[2]][t] == 1:
+                    CURRENT_DEMAND[c[1]][t] -= 1
         for n in range(nS_NIGHT): #指定晚班
             if c[2] == S_NIGHT[n]:
                 CAPACITY_NIGHT[c[0], c[1]] = False
@@ -528,7 +527,7 @@ for p in range(parent):
     for j in range(nDAY):
         for skill in SKILL_NAME:
             for k in K_skill[skill]: 
-                for i in E_SKILL[skill]:       #E_SKILL是dict，所以取出的i是個字串(key)，要用E_SKILL[i]才能取得作為value的list
+                for i in E_SKILL[skill]:       
                     if ABLE(i, j, k) == True:
                         work[i, j, k] = True
                         ALREADY[i, j] = True
@@ -544,8 +543,8 @@ for p in range(parent):
                                         CAPACITY_NIGHT[i, d] = False
                                 break
                         for t in range(nT):
-                            if CONTAIN[k,t] == 1:            #這裡沒有報COTAIN not defined，因為ABLE總是False?
-                                CURRENT_DEMAND[j, t] -= 1
+                            if CONTAIN[k][t] == 1:            
+                                CURRENT_DEMAND[j][t] -= 1
                     else: 
                         continue
     
@@ -580,8 +579,8 @@ for p in range(parent):
                                         CAPACITY_NIGHT[i, d] = False
                                 break
                         for t in range(nT):
-                            if CONTAIN[k,t] == 1:            #報錯：k為list，不能當index  
-                                CURRENT_DEMAND[j, t] -= 1
+                            if CONTAIN[k][t] == 1:            #報錯：k為list，不能當index  
+                                CURRENT_DEMAND[j][t] -= 1
                         BOUND -= 1
                     else:
                         continue
@@ -603,7 +602,7 @@ for p in range(parent):
     #=================================================================================================#
     #安排空班別
     #=================================================================================================#
-    ARRANGEMENT()
+    ARRANGEMENT(work)
 
 
     #=================================================================================================#
