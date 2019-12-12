@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import data.fixed.tool as tl
 import data.fixed.gene_alg as gen
+from data.fixed.CSR_order import CSR_ORDER
 from data.fixed.LIMIT_ORDER import LIMIT_ORDER
 # import datetime, calendar, sys
 """============================================================================#
@@ -575,7 +576,7 @@ for p in range(parent):
                                         CAPACITY_NIGHT[i, d] = False
                                 break
                         for t in range(nT):
-                            if COTAIN[k,t] == 1:
+                            if COTAIN[k,t] == 1:            #這裡報錯：COTAIN not defined
                                 CURRENT_DEMAND[j, t] -= 1
                         BOUND -= 1
                     else:
