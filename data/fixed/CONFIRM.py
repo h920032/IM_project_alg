@@ -24,7 +24,7 @@ necessary constraints:
 
 #schedule為班表二維list
 
-def confirm(schedule, employee, assign, lower_limit, upper_limit, senior_limit):
+def confirm(schedule, assign, S_NGIHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, weekdaylist, E_SENIOR):
     
 
     as_bool = True
