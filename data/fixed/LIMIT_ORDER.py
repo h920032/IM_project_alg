@@ -86,40 +86,47 @@ def LIMIT_ORDER(L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 
 	#sort
 	limits.sort(key=takeNeck, reverse=False)
-
+	
 	#change order
 	main = []
 	nl = len(limits)
+	
 	if nl < 4:                             #至少要4條限制式
 		print("error: not enough limits")
-	ll = range(1, nl)
+	
+	ll = list(range(nl))
+	
 	for i in ll:
+		dif = {i}
 		newlimits = []
 		newlimits.append(limits[i])
-		lla = list(set(ll).difference(i))           #第i個以外的限制式作排列組合
+		lla = list(set(ll).difference(dif))           #第i個以外的限制式作排列組合
 		if not lla:                                 #只有一條限制式的情況
 			main.append(newlimits)
 			break							
 		for ia in lla:
+			dif = {ia}
 			newlimits = []
 			newlimits.append(limits[i])
 			newlimits.append(limits[ia])
-			llb = list(set(lla).difference(ia))     #第i,ia個以外的限制式作排列組合
+			llb = list(set(lla).difference(dif))     #第i,ia個以外的限制式作排列組合
 			if not llb:                             #只有兩條限制式的情況
 				main.append(newlimits)
 				break
 			for ib in llb:
+				dif = {ib}
 				newlimits = []
 				newlimits.append(limits[i])
 				newlimits.append(limits[ia])
 				newlimits.append(limits[ib])
-				llc = list(set(llb).difference(ib)) #第i,ia,ib個以外的限制式作排列組合
+				llc = list(set(llb).difference(dif)) #第i,ia,ib個以外的限制式作排列組合
 				if not llc:                         #只有三條限制式的情況
 					main.append(newlimits)
 					break
 				for ic in llc:
+					dif = {ic}
 					newlimits.append(limits[ic])
-					lld = list(set(llc).difference(ic))
+					lld = list(set(llc).difference(dif))
 					if not lld == False:            #超過四條限制式的情況
 						for left in lld:
 							newlimits.append(limits[left])
