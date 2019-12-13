@@ -609,18 +609,32 @@ for p in range(parent):
     #=================================================================================================#
     #確認解是否可行
     #=================================================================================================#
-    #CONFIRM()
+    #confirm()
 
     #=================================================================================================#
     #計算變數
     #=================================================================================================#
+    surplus_temp = 0
     for j in DAY:
         for t in TIME:
             if CURRENT_DEMAND[j][t] > 0:    
                 lack[j, t] = CURRENT_DEMAND[j][t]
             else:
-                lack[j, t] = 0
+                surplus_temp = -1 * CURRENT_DEMAND[j][t]
+                if surplus_temp > surplus:
+                    surplus = surplus_temp
 
+    nightCount_temp = {}
+    for i in EMPLOYEE:
+        nightCount_temp[i] = 0
+        for j in DAY:
+            for k in S_NIGHT:
+                if work[i, j, k] == True:
+                    nightCount_temp[i] += 1
+                    break
+        if nightCount_temp[i] > nightCount:
+            nightCount = nightCount_temp[i]
+    
     #=================================================================================================#
     # 輸出
     #=================================================================================================#
