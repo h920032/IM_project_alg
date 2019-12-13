@@ -57,10 +57,10 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
     ### main function 裡 D_WEEK有錯!!!!!!!! 尚未修正!!!!!!!!!!
     night_bool = True
     night_err =''
-
+    
 
     for i in range(len(schedule)):
-        nightdaylimit[i] = int(nightdaylimit[i])
+        nightdaylimit_int = int(nightdaylimit[i])
         #第j周
         for j in range(len(D_WEEK)):
             
@@ -91,7 +91,7 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
             
             
             #晚班次數超過上限
-            if night_count > nightdaylimit[i] & night_err=='':
+            if night_count > nightdaylimit_int and night_err=='':
                 night_bool = False
                 night_err += str(i)
                 night_err += 'th employee'

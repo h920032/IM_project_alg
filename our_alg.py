@@ -265,10 +265,7 @@ complement =  0  #complement - 擁有特定員工技能的員工集合va的員�
 
 """============================================================================#
 新變數
-CAPACITY_NIGHT[i,j]: 1表示員工i在日子j能排晚班，0則否
-ALREADY[i,j]: 1表示員工i在日子已經排班，0則否
 CURRENT_DEMAND[j,t]: 日子j時段t的剩餘需求人數
-WEEK_of_DAY[j]: 日子j所屬的那一週
 LIMIT_MATRIX[a]: LIMIT_ORDER函數所生成的matrix，預設5種排序
 LIMIT_LIST[b]: LIMIT_MATRIX的第a種限制式排序的限制式順序
 n_LIMIT_LIST: 人數硬限制式的個數
@@ -324,29 +321,6 @@ parent = 100	# int
 
 # 生成Initial pool的100個親代
 INITIAL_POOL = []
-
-
-#=======================================================================================================#
-#====================================================================================================#
-#=================================================================================================#
-# 函數 (工作分配)
-#=================================================================================================#
-#====================================================================================================#
-#=======================================================================================================#
-
-
-#========================================================================#
-# LIMIT_ORDER(): 生成多組限制式 matrix 的函數 (林亭)
-#========================================================================#
-
-
-
-#========================================================================#
-# CSR_ORDER(): 排序員工沒用度的函數 (碩珉)
-#========================================================================#
-
-
-
 
 
 #========================================================================#
@@ -438,24 +412,10 @@ def ABLE(this_i,this_j,this_k):
     return ans                 
                     
 #========================================================================#
-# ARRANGEMENT(): 安排好空著的班別的函數 (星宇)
-#========================================================================#
-
-
-#========================================================================#
-# CONFIRM(): 確認解是否可行的函數 (學濂)
-#========================================================================#
-#需檢查變數不為負數
-
-
-#========================================================================#
 # GENE(): 切分並交配的函數 (星宇)
 #========================================================================#
 def GENE(avaliable_sol, fix, nDAY, nEMPLOYEE, gen):
 	return gen.gene_alg(avaliable_sol, fix, nDAY, nEMPLOYEE, gen)
-
-
-
 
 
 
@@ -476,36 +436,6 @@ fix = [] #存可行解的哪些部分是可以動的
 #產生100個親代的迴圈
 for p in range(parent):
     print(p)
-    #擷取上個月的資料
-    LMNIGHT_p = {}
-    FRINIGHT_p = {}
-    nightdaylimit_p = {}
-    for i in EMPLOYEE:
-        LMNIGHT_p[i] = LMNIGHT[i]
-        FRINIGHT_p[i] = FRINIGHT[i]
-        for w in range(nW):
-            nightdaylimit_p[i, w] = nightdaylimit[i] #nightdaylimit_p: 員工i第w週可排的晚班次數
-    
-    #晚班資訊更新
-    CAPACITY_NIGHT = {}
-    for i in EMPLOYEE:
-        for j in DAY:
-            CAPACITY_NIGHT[i,j] = True
-    
-    for i in EMPLOYEE:
-        if LMNIGHT_p[i] > 0:
-            nightdaylimit_p[i, 0] = nightdaylimit_p[i, 0] - LMNIGHT_p[i]
-            if nightdaylimit_p[i, 0] <= 0:
-                for j in D_WEEK[0]:
-                    CAPACITY_NIGHT[i, j] = False
-        elif FRINIGHT_p[i] == 1:
-            CAPACITY_NIGHT[i, j] = False
-
-    #確定每個人已經上班的日子
-    ALREADY = {}
-    for i in EMPLOYEE:
-        for j in DAY:
-            ALREADY[i, j] = False
     
     #動態需工人數
     CURRENT_DEMAND = DEMAND
@@ -513,22 +443,10 @@ for p in range(parent):
     #指定班別
     for c in ASSIGN:
         work[c[0],c[1],c[2]] = True
-        ALREADY[c[0],c[1]] = True
         if c[2] != 0: #非指定休假
             for t in range(nT):
                 if CONTAIN[c[2]][t] == 1:
                     CURRENT_DEMAND[c[1]][t] -= 1
-        for n in range(nS_NIGHT): #指定晚班
-            if c[2] == S_NIGHT[n]:
-                CAPACITY_NIGHT[c[0], c[1]] = False
-                CAPACITY_NIGHT[c[0], c[1]-1] = False
-                CAPACITY_NIGHT[c[0], c[1]+1] = False
-                w = WEEK_of_DAY[c[1]]
-                nightdaylimit_p[c[0], w] -= 1
-                if nightdaylimit_p[c[0], w] <= 0:
-                    for d in D_WEEK[w]:
-                        CAPACITY_NIGHT[c[0], d] = False
-                break
     
     #特定技能CSR排優先班別
     for j in DAY:
@@ -537,18 +455,6 @@ for p in range(parent):
                 for i in E_SKILL[skill]:       
                     if ABLE(i, j, k) == True:
                         work[i, j, k] = True
-                        ALREADY[i, j] = True
-                        for n in range(nS_NIGHT):
-                            if k == S_NIGHT[n]:
-                                CAPACITY_NIGHT[i, j] = False
-                                CAPACITY_NIGHT[i, j-1] = False
-                                CAPACITY_NIGHT[i, j+1] = False
-                                w = WEEK_of_DAY[j]
-                                nightdaylimit_p[i, w] -= 1
-                                if nightdaylimit_p[i, w] <= 0:
-                                    for d in D_WEEK[w]:
-                                        CAPACITY_NIGHT[i, d] = False
-                                break
                         for t in range(nT):
                             if CONTAIN[k][t] == 1:            
                                 CURRENT_DEMAND[j][t] -= 1
@@ -573,18 +479,6 @@ for p in range(parent):
                         break
                     elif ABLE(i, j, k) == True:
                         work[i, j, k] = True
-                        ALREADY[i, j] = True
-                        for n in range(nS_NIGHT):
-                            if k == S_NIGHT[n]:
-                                CAPACITY_NIGHT[i, j] = False
-                                CAPACITY_NIGHT[i, j-1] = False
-                                CAPACITY_NIGHT[i, j+1] = False
-                                w = WEEK_of_DAY[j]
-                                nightdaylimit_p[i, w] -= 1
-                                if nightdaylimit_p[i, w] <= 0:
-                                    for d in D_WEEK[w]:
-                                        CAPACITY_NIGHT[i, d] = False
-                                break
                         for t in range(nT):
                             if CONTAIN[k][t] == 1:            #報錯：k為list，不能當index  
                                 CURRENT_DEMAND[j][t] -= 1
@@ -858,7 +752,8 @@ for p in range(parent):
     new_2.set_index("name",inplace=True)
     #new_2.to_csv(result_y, encoding="utf-8_sig")
     # print(new_2.T)
-    print(type(ASSIGN))
+    
+    #print(D_WEEK)
     #=================================================================================================#
     #確認解是否可行
     #=================================================================================================#

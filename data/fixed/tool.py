@@ -65,7 +65,7 @@ def SetDAYW(day, total_day, total_week):   #第一天上班是星期幾/幾天/�
         ans.append(tmp)
     return ans
 
-def SetWEEKD(day, total_day, total_week):   #第一天上班是星期幾/幾天/幾週
+def SetWEEKD(day, total_day, total_week):  
     ans = []
     count  = 0
     for i in range(total_week):
