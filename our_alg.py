@@ -230,6 +230,11 @@ K_skill = {}                                                #K_skill - 各技能
 for ki in range(len(SKset_t)):
     K_skill[SKset_t.index[ki]] = [ tl.Tran_t2n(x) for x in SKset_t.iloc[ki].dropna().values ]       #各個技能的優先班別
 
+K_skill_not = {}                                                #K_skill_not - 各技能的優先班別的補集
+for ki in range(len(SKset_t)):
+    K_skill_not[SKset_t.index[ki]] = [ set(range(0,nK)).difference(set(tl.Tran_t2n(x) for x in SKset_t.iloc[ki].dropna().values)) ]  #各個技能的非優先班別
+    #.append( list(  ) )      #非優先的班別
+
 #============================================================================#
 #Variables
 
@@ -474,7 +479,7 @@ for p in range(parent):
     LMNIGHT_p = {}
     FRINIGHT_p = {}
     nightdaylimit_p = {}
-    for i in range(nEMPLOYEE):
+    for i in EMPLOYEE:
         LMNIGHT_p[i] = LMNIGHT[i]
         FRINIGHT_p[i] = FRINIGHT[i]
         for w in range(nW):
@@ -482,11 +487,11 @@ for p in range(parent):
     
     #晚班資訊更新
     CAPACITY_NIGHT = {}
-    for i in range(nEMPLOYEE):
-        for j in range(nDAY):
+    for i in EMPLOYEE:
+        for j in DAY:
             CAPACITY_NIGHT[i,j] = True
     
-    for i in range(nEMPLOYEE):
+    for i in EMPLOYEE:
         if LMNIGHT_p[i] > 0:
             nightdaylimit_p[i, 0] = nightdaylimit_p[i, 0] - LMNIGHT_p[i]
             if nightdaylimit_p[i, 0] <= 0:
@@ -497,8 +502,8 @@ for p in range(parent):
 
     #確定每個人已經上班的日子
     ALREADY = {}
-    for i in range(nEMPLOYEE):
-        for j in range(nDAY):
+    for i in EMPLOYEE:
+        for j in DAY:
             ALREADY[i, j] = False
     
     #動態需工人數
@@ -525,7 +530,7 @@ for p in range(parent):
                 break
     
     #特定技能CSR排優先班別
-    for j in range(nDAY):
+    for j in DAY:
         for skill in SKILL_NAME:
             for k in K_skill[skill]: 
                 for i in E_SKILL[skill]:       
@@ -634,6 +639,26 @@ for p in range(parent):
                     break
         if nightCount_temp[i] > nightCount:
             nightCount = nightCount_temp[i]
+    
+    for i in EMPLOYEE:
+        for w in WEEK:
+            for j in D_WEEK[w]:
+                for r in BREAK:
+                    for k in S_BREAK[r]:
+                        if work[i, j, k] == True:
+                            breakCount[i,w,r] = True
+    
+    
+    for ii in E_SKILL:      #type(E_SKILL)=dict，要兩步驟取出裡面每項的list
+        i_set = E_SKILL[ii]
+        if len(i_set) <= 0: continue        #沒有人持有此技能時，略過
+        k_set = K_skill_not[ii]
+        if len(k_set) >= nK: continue   #技能沒有設定優先班別時，略過
+        for i in i_set:
+            for j in DAY:
+                for k in k_set:
+                    if work[i, j, k] == True:
+                        complement += 1
     
     #=================================================================================================#
     # 輸出
@@ -896,6 +921,20 @@ for p in range(parent):
             for k in range(nK):
                 work[i, j, k] = False
     
+    for j in range(nDAY):
+        for t in range(nT):
+            lack[j, t] = 0
+    
+    surplus = 0
+    nightCount = 0
+
+    for i in range(nEMPLOYEE):
+        for w in range(nW):
+            for r in range(nR):
+                breakCount[i, w, r] = False
+    
+    complement =  0
+
     lack_t = 0
     surplus_t = 0
     nightCount_t = []
