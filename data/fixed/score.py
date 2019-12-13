@@ -1,11 +1,10 @@
 #initial
 import numpy as np
 import pandas as pd
-import data.tool as tl
+import tool as tl
 import datetime, calendar
 year = 2020
 month = 1
-
 
 def score(df_x,fixed_dir = './data/fixed', parameters_dir = './data/parameters', per_month_dir = './data/per_month'):
     A_t = pd.read_csv(parameters_dir + 'fix_class_time.csv', header = 0, index_col = 0)
