@@ -49,7 +49,7 @@ def alg(score_liz, nDAY, nEMPLOYEE):
     sort = sort[:100]
     return sort
 
-def gene_alg(avaliable_sol, fix, nDAY, nEMPLOYEE, gen):
+def gene_alg(avaliable_sol, fix, nDAY, nEMPLOYEE, gen): #avaliavle_sol 可行解列表 fix 不能移動的列表
     i_nb = np.vectorize({v: k for k, v in K_type_dict.items()}.get)(avaliable_sol)
     score_liz = []
     for i ,j in zip(i_nb,fix):
