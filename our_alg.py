@@ -8,7 +8,7 @@ import data.fixed.gene_alg as gen
 from data.fixed.CSR_order import CSR_ORDER
 from data.fixed.LIMIT_ORDER import LIMIT_ORDER
 from data.fixed.ARRANGEMENT import ARRANGEMENT
-# import datetime, calendar, sys
+import datetime, calendar, sys
 """============================================================================#
 12/3
 	- 建立主架構
@@ -237,7 +237,7 @@ for i in range(nEMPLOYEE):
     for j in range(nDAY):
         for k in range(nK):
             work[i, j, k] = False  
-            
+           
 lack = {}  #y_jt - 代表第j天中時段t的缺工人數
 for j in range(nDAY):
     for t in range(nT):
@@ -608,7 +608,17 @@ for p in range(parent):
     #=================================================================================================#
     #確認解是否可行
     #=================================================================================================#
-    CONFIRM()
+    #CONFIRM()
+
+    #=================================================================================================#
+    #計算變數
+    #=================================================================================================#
+    for j in DAY:
+        for t in TIME:
+            if CURRENT_DEMAND[j][t] > 0:    
+                lack[j, t] = CURRENT_DEMAND[j][t]
+            else:
+                lack[j, t] = 0
 
     #=================================================================================================#
     # 輸出
@@ -674,7 +684,7 @@ for p in range(parent):
         count = 0
         for j in DAY:
             for k in range(11,14):
-                if(int(work[i,j,k])==True):
+                if(work[i,j,k]==True):
                     count+=1
         night_work_total.append(count)
 
@@ -817,52 +827,48 @@ for p in range(parent):
             for k in range(0,24):
                 people[j][k] = people[j][k] + A_t.values[i_nb[i][j]-1][k]
     output_people = (people - DEMAND).tolist()
-    lack = 0
+    lack_t = 0
     for i in output_people:
         for j in i:
             if j < 0:
-                lack = -j + lack
+                lack_t = -j + lack_t
 
-    surplus = 0
-    for i in output_people:
-        for j in i:
-            if j > 0:
-                surplus = j + surplus
+    surplus_t = surplus
 
-    nightcount = []
+    nightcount_t = []
     for i in i_nb:
         count = 0
         for j in i:
             if j == 12 or j == 13 or j == 14:
                 count = count + 1
-        nightcount.append(count)
-    nightcount = max(nightcount)
+        nightcount_t.append(count)
+    nightcount_t = max(nightcount_t)
 
     date = datetime.datetime.strptime(str(year)+'-'+str(month)+'-'+str(1), "%Y-%m-%d")
     weekday = date.weekday()
     if weekday == 5 or weekday == 6:
         weekday = 0
 
-    breakCount = np.ones((nEMPLOYEE,nW,5))
+    breakCount_t = np.ones((nEMPLOYEE,nW,5))
     for i in range(nEMPLOYEE):
         for j in range(nDAY):
             w_d = int((j+weekday)/5)
             if i_nb[i][j]!=1:
                 for k in range(5):
                     if A_t.values[i_nb[i][j]-1][k+5]==1:
-                        breakCount[i][w_d][k]=0
-    breakCount = int(sum(sum(sum(breakCount))))
+                        breakCount_t[i][w_d][k]=0
+    breakCount_t = int(sum(sum(sum(breakCount_t))))
 
-    df_a = EMPLOYEE_t.drop(['name_English', 'name_Chinese', 'id', 'Senior', 'Position', 'NM','NW'],axis = 1).values
+    df_a = EMPLOYEE_t.drop(['Name_English', 'Name_Chinese', 'ID', 'Senior', 'Position', 'NM','NW'],axis = 1).values
     df_c = np.zeros((nEMPLOYEE,nK))
     for i in range(nEMPLOYEE):
         if sum(df_a[i]) > 0:
             for j in range(nDAY):
                 df_c[i][i_nb[i][j]-1]=df_c[i][i_nb[i][j]-1]+1
 
-    complement = int(max(max(df_c.reshape(1,nEMPLOYEE*nK))))
+    complement_t = int(max(max(df_c.reshape(1,nEMPLOYEE*nK))))
 
-    result = P0 * lack + P1 * surplus + P2 * nightcount + P3 * breakCount + P4 * complement
+    result = P0 * lack_t + P1 * surplus_t + P2 * nightcount_t + P3 * breakCount_t + P4 * complement_t
 
 
     #====================================================================================================#
@@ -875,19 +881,11 @@ for p in range(parent):
             for k in range(nK):
                 work[i, j, k] = False
     
-    for j in range(nDAY):
-        for t in range(nT):
-            lack[j, t] = 0
-    
-    surplus = 0
-    nightCount = 0
-
-    for i in range(nEMPLOYEE):
-        for w in range(nW):
-            for r in range(nR):
-                breakCount[i, w, r] = False
-    
-    complement =  0
+    lack_t = 0
+    surplus_t = 0
+    nightCount_t = []
+    breakCount_t = 0
+    complement_t =  0
 
 
     #====================================================================================================#
