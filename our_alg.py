@@ -604,7 +604,7 @@ for p in range(parent):
     elif char == 'e':
         sequence += 1
         char = 'a'
-    if sequence > len(LIMIT_MATRIX):
+    if sequence >= len(LIMIT_MATRIX):
         sequence = 0
 
     #=================================================================================================#
