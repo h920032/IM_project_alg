@@ -95,7 +95,7 @@ for i in range(nEMPLOYEE):
                     breakCount[i][w_d][k]=0
 breakCount = int(sum(sum(sum(breakCount))))
 
-df_a = EMPLOYEE_t.drop(['name_English', 'name_Chinese', 'id', 'Senior', 'Position', 'NM','NW'],axis = 1).values
+df_a = EMPLOYEE_t.drop(['Name_English', 'Name_Chinese', 'ID', 'Senior', 'Position', 'NM','NW'],axis = 1).values
 df_c = np.zeros((nEMPLOYEE,nK))
 for i in range(nEMPLOYEE):
     if sum(df_a[i]) > 0:
