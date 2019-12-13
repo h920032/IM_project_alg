@@ -323,7 +323,7 @@ month = 4
 parent = 100	# int
 
 # 生成Initial pool的100個親代
-INITIAL_POOL = [tmp for tmp in range(parent)]
+INITIAL_POOL = []
 
 
 #=======================================================================================================#
@@ -468,15 +468,14 @@ def GENE(avaliable_sol, fix, nDAY, nEMPLOYEE, gen):
 #=======================================================================================================#
 
 LIMIT_MATRIX = LIMIT_ORDER(LOWER,UPPER,PERCENT,DEMAND,E_POSITION,E_SENIOR,DAYset,SHIFTset, DATES, CONTAIN) #生成多組限制式matrix
-print(LIMIT_MATRIX)
+#print(LIMIT_MATRIX)
 sequence = 0 #限制式順序
 char = 'a' #CSR沒用度順序
 fix = [] #存可行解的哪些部分是可以動的
+
 #產生100個親代的迴圈
 for p in range(parent):
-    break
     print(p)
-    print(sequence)
     #擷取上個月的資料
     LMNIGHT_p = {}
     FRINIGHT_p = {}
@@ -918,7 +917,7 @@ for p in range(parent):
     #將結果放入INITIAL_POOL中
     #====================================================================================================#
     INITIAL_POOL.append(Pool(result, df_x, df_y, df_percent_day, df_percent_time, df_nightcount, df_resttime, new, new_2))
-
+    print(INITIAL_POOL[p].result)
     for i in range(nEMPLOYEE):
         for j in range(nDAY):
             for k in range(nK):
