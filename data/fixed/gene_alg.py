@@ -37,19 +37,19 @@ def alg(score_liz, nDAY, nEMPLOYEE):
                 b_two_one_two = np.concatenate((one_col_left, two_col_right), axis=0) + two_not_avb
                 b_one_two_one = np.concatenate((two_col_left, one_col_right), axis=0) + one_not_avb
                 b_two_two_one = np.concatenate((two_col_left, one_col_right), axis=0) + two_not_avb
-                sort.append((a_one_one_two,score_liz[i][1],score(a_one_one_two)))
-                sort.append((a_two_one_two,score_liz[j][1],score(a_two_one_two)))
-                sort.append((a_one_two_one,score_liz[i][1],score(a_one_two_one)))
-                sort.append((a_two_two_one,score_liz[j][1],score(a_two_two_one)))
-                sort.append((b_one_one_two,score_liz[i][1],score(b_one_one_two)))
-                sort.append((b_two_one_two,score_liz[j][1],score(b_two_one_two)))
-                sort.append((b_one_two_one,score_liz[i][1],score(b_one_two_one)))
-                sort.append((b_two_two_one,score_liz[j][1],score(b_two_two_one)))
+                sort.append((a_one_one_two,score_liz[i][1],score(a_one_one_two.tolist())))
+                sort.append((a_two_one_two,score_liz[j][1],score(a_two_one_two.tolist())))
+                sort.append((a_one_two_one,score_liz[i][1],score(a_one_two_one.tolist())))
+                sort.append((a_two_two_one,score_liz[j][1],score(a_two_two_one.tolist())))
+                sort.append((b_one_one_two,score_liz[i][1],score(b_one_one_two.tolist())))
+                sort.append((b_two_one_two,score_liz[j][1],score(b_two_one_two.tolist())))
+                sort.append((b_one_two_one,score_liz[i][1],score(b_one_two_one.tolist())))
+                sort.append((b_two_two_one,score_liz[j][1],score(b_two_two_one.tolist())))
     sort = sorted(sort, key = lambda s: s[2],reverse = True)
     sort = sort[:100]
     return sort
 
-def gene_alg(avaliable_sol, fix, nDAY, nEMPLOYEE, gen):
+def gene_alg(avaliable_sol, fix, nDAY, nEMPLOYEE, gen): #avaliavle_sol 可行解列表 fix 不能移動的列表
     i_nb = np.vectorize({v: k for k, v in K_type_dict.items()}.get)(avaliable_sol)
     score_liz = []
     for i ,j in zip(i_nb,fix):
