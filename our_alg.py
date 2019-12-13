@@ -8,6 +8,7 @@ import data.fixed.gene_alg as gen
 from data.fixed.CSR_order import CSR_ORDER
 from data.fixed.LIMIT_ORDER import LIMIT_ORDER
 from data.fixed.ARRANGEMENT import ARRANGEMENT
+from data.fixed.CONFIRM import comfrim
 import datetime, calendar, sys
 """============================================================================#
 12/3
