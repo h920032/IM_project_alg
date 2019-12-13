@@ -1,12 +1,13 @@
 import numpy as np
 import pandas as pd
 import random
+from score import score
 
 K_type = ['0','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','CD','C2','C3','C4','OB']
 K_type_dict = {1:'0',2:'A2',3:'A3',4:'A4',5:'A5',6:'MS',7:'AS',8:'P2',9:'P3',10:'P4',11:'P5',12:'N1',13:'M1',14:'W6',15:'CD',16:'C2',17:'C3',18:'C4',19:'OB'}
 
-def score(input):
-    return random.randint(1,10000)
+#def score(input):
+#    return random.randint(1,10000)
 
 def alg(score_liz, nDAY, nEMPLOYEE):
     sort = sorted(score_liz, key = lambda s: s[2],reverse = True)
