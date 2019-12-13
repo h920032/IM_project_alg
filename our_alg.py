@@ -471,7 +471,7 @@ def GENE(avaliable_sol, fix, nDAY, nEMPLOYEE, gen):
 LIMIT_MATRIX = LIMIT_ORDER(5, LOWER,UPPER,PERCENT,DEMAND,E_POSITION,E_SENIOR,DAYset,SHIFTset, DATES, CONTAIN) #生成多組限制式matrix
 sequence = 0 #限制式順序
 char = 'a' #CSR沒用度順序
-
+fix = [] #存可行解的哪些部分是可以動的
 #產生100個親代的迴圈
 for p in range(parent):
     
@@ -608,7 +608,8 @@ for p in range(parent):
     #=================================================================================================#
     #安排空班別
     #=================================================================================================#
-    ARRANGEMENT(work, nEMPLOYEE, nDAY, nK)
+    work, fix_temp = ARRANGEMENT(work, nEMPLOYEE, nDAY, nK)
+    fix.append(fix_temp)
 
 
     #=================================================================================================#
