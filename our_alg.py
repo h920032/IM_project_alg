@@ -8,7 +8,7 @@ import data.fixed.gene_alg as gen
 from data.fixed.CSR_order import CSR_ORDER
 from data.fixed.LIMIT_ORDER import LIMIT_ORDER
 from data.fixed.ARRANGEMENT import ARRANGEMENT
-from data.fixed.CONFIRM import comfrim
+from data.fixed.CONFIRM import confirm
 import datetime, calendar, sys
 """============================================================================#
 12/3
@@ -232,8 +232,7 @@ for ki in range(len(SKset_t)):
 
 K_skill_not = {}                                                #K_skill_not - 各技能的優先班別的補集
 for ki in range(len(SKset_t)):
-    K_skill_not[SKset_t.index[ki]] = [ set(range(0,nK)).difference(set(tl.Tran_t2n(x) for x in SKset_t.iloc[ki].dropna().values)) ]  #各個技能的非優先班別
-    #.append( list(  ) )      #非優先的班別
+    K_skill_not[SKset_t.index[ki]] = list(set(range(0,nK)).difference(set(tl.Tran_t2n(x) for x in SKset_t.iloc[ki].dropna().values)))  #各個技能的非優先班別
 
 #============================================================================#
 #Variables
@@ -468,13 +467,16 @@ def GENE(avaliable_sol, fix, nDAY, nEMPLOYEE, gen):
 #====================================================================================================#
 #=======================================================================================================#
 
-LIMIT_MATRIX = LIMIT_ORDER(5, LOWER,UPPER,PERCENT,DEMAND,E_POSITION,E_SENIOR,DAYset,SHIFTset, DATES, CONTAIN) #生成多組限制式matrix
+LIMIT_MATRIX = LIMIT_ORDER(LOWER,UPPER,PERCENT,DEMAND,E_POSITION,E_SENIOR,DAYset,SHIFTset, DATES, CONTAIN) #生成多組限制式matrix
+print(LIMIT_MATRIX)
 sequence = 0 #限制式順序
 char = 'a' #CSR沒用度順序
 
 #產生100個親代的迴圈
 for p in range(parent):
-    
+    break
+    print(p)
+    print(sequence)
     #擷取上個月的資料
     LMNIGHT_p = {}
     FRINIGHT_p = {}

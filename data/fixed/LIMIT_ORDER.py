@@ -59,7 +59,7 @@ def exchange(index1, index2, alist):
 #=============================================================================#
 # main function
 
-def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
+def LIMIT_ORDER(L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 	# print(L)
 	# print(POSI)
 	limits = []
@@ -88,11 +88,46 @@ def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 	limits.sort(key=takeNeck, reverse=False)
 
 	#change order
-	main = [limits]
+	main = []
 	nl = len(limits)
-	for dis in range(1, nl):							#dis = 要交換的兩項的距離(從1開始)
-		for i in range(nl-1):							#第一個要交換項的index
-			ii = i+dis
+	if nl < 4:                             #至少要4條限制式
+		print("error: not enough limits")
+	ll = range(1, nl)
+	for i in ll:
+		newlimits = []
+		newlimits.append(limits[i])
+		lla = list(set(ll).difference(i))           #第i個以外的限制式作排列組合
+		if not lla:                                 #只有一條限制式的情況
+			main.append(newlimits)
+			break							
+		for ia in lla:
+			newlimits = []
+			newlimits.append(limits[i])
+			newlimits.append(limits[ia])
+			llb = list(set(lla).difference(ia))     #第i,ia個以外的限制式作排列組合
+			if not llb:                             #只有兩條限制式的情況
+				main.append(newlimits)
+				break
+			for ib in llb:
+				newlimits = []
+				newlimits.append(limits[i])
+				newlimits.append(limits[ia])
+				newlimits.append(limits[ib])
+				llc = list(set(llb).difference(ib)) #第i,ia,ib個以外的限制式作排列組合
+				if not llc:                         #只有三條限制式的情況
+					main.append(newlimits)
+					break
+				for ic in llc:
+					newlimits.append(limits[ic])
+					lld = list(set(llc).difference(ic))
+					if not lld == False:            #超過四條限制式的情況
+						for left in lld:
+							newlimits.append(limits[left])
+						main.append(newlimits)
+						break
+					else:
+						main.append(newlimits)						
+			"""ii = i+dis
 			if ii >= nl:								#要換的超過尾端，則不換，跳出
 				break
 			elif len(main) >= N:						#現有的排序數量比要的還要多
@@ -100,7 +135,7 @@ def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 			else:
 				buff = limits							#buff存放交換過的序列
 				exchange(i, ii, buff)
-			main.append(buff)
+			main.append(buff)"""
 
 	#return
 	print('\nLIMIT_ORDER(): return',len(main),'kinds of order\n')

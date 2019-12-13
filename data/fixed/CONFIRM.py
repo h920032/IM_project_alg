@@ -77,7 +77,7 @@ def confirm(schedule, assign, S_NGIHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
                         break
                 night.append(night_flag)
             #連續晚班
-            for k in range(len(D_WEEK[j]):
+            for k in range(len(D_WEEK[j])):
                 if k != (len(D_WEEK[j]) - 1):
                     if night[k] == True & night[k+1] == True:
                         night_bool = False
@@ -100,7 +100,7 @@ def confirm(schedule, assign, S_NGIHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
                 break
  
         
-        if night_bool == False
+        if night_bool == False:
             break
 
 
@@ -123,7 +123,7 @@ def confirm(schedule, assign, S_NGIHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
         count = 0
         for j in e_in_require_position:
             for k in range(len(require_type)):
-                if schedule[j][day] = require_type[k]:
+                if schedule[j][day] == require_type[k]:
                     count+=1
                     break
 
@@ -231,7 +231,7 @@ def confirm(schedule, assign, S_NGIHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
             senior_bool = False
             senior_err = 'There is a lack of employee who has been in the career more than ' + str(PERCENT[i][3]) +  ' years on ' + str(day)
     
-    if senior_bool = False:
+    if senior_bool == False:
         return senior_err
     
 
