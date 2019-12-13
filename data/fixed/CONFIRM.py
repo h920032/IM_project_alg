@@ -32,10 +32,10 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
     
     #(2)滿足每位員工排指定特定班型
     #需要參數:班表(schedule) 指定排班(assign)
-    for i in range(len(assign)):  
-        as_index = assign[i][0]
-        as_day = assign[i][1]
-        as_worktype = assign[i][2]
+    for i in assign:  
+        as_index = i[0]
+        as_day = i[1]
+        as_worktype = i[2]
         if schedule[as_index][as_day] != as_worktype:
             as_bool = False
             as_err +=str(as_index)
@@ -60,6 +60,7 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
 
 
     for i in range(len(schedule)):
+        nightdaylimit[i] = int(nightdaylimit[i])
         #第j周
         for j in range(len(D_WEEK)):
             

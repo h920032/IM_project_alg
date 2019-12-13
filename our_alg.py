@@ -194,7 +194,7 @@ PERCENT = Ratio_t.values.tolist()	#PERCENT - 日子集合，班別集合，要�
 
 #============================================================================#
 #Sets
-EMPLOYEE = [tmp for tmp in range(nEMPLOYEE)]    #EMPLOYEE - 員工集合，I=1,…,nI 
+EMPLOYEE = [tmp for tmp in range(nEMPLOYEE)]    #EMPLOYEE - 員工集合，I=0,…,nI 
 DAY = [tmp for tmp in range(nDAY)]              #DAY - 日子集合，J=0,…,nJ-1
 TIME = [tmp for tmp in range(nT)]               #TIME - 工作時段集合，T=1,…,nT
 BREAK = [tmp for tmp in range(nR)]              #BREAK - 午休方式，R=1,…,nR
@@ -666,21 +666,27 @@ for p in range(parent):
 
 
     employee_name = E_NAME
+    employee_name2 = EMPLOYEE
     which_worktime = []
+    which_worktime2 = []
     for i in EMPLOYEE:
         tmp = []
+        tmp2 = []
         for j in DAY:
             for k in SHIFT:
                 if(work[i,j,k]==True):
                     tmp.append(K_type[k])
+                    tmp2.append(k)
                     break
             else:
                 print('CSR ',E_NAME[i],' 在',DATES[j],'號的排班發生錯誤。')
                 print('請嘗試讓程式運行更多時間，或是減少限制條件。\n')
         which_worktime.append(tmp)
+        which_worktime2.append(tmp2)
             
 
     df_x = pd.DataFrame(which_worktime, index = employee_name, columns = DATES)
+    df_x2 = which_worktime2
 
 
     #Dataframe_y
@@ -852,11 +858,11 @@ for p in range(parent):
     new_2.set_index("name",inplace=True)
     #new_2.to_csv(result_y, encoding="utf-8_sig")
     # print(new_2.T)
-    
+    print(type(ASSIGN))
     #=================================================================================================#
     #確認解是否可行
     #=================================================================================================#
-    confirm(df_x, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, E_SENIOR)
+    confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, E_SENIOR)
 
 
 
