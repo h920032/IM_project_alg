@@ -1,18 +1,18 @@
 #initial
 import numpy as np
 import pandas as pd
-import tool as tl
+import data.fixed.tool as tl
 import datetime, calendar
 year = 2020
 month = 1
 
-def score(df_x,fixed_dir = './data/fixed', parameters_dir = './data/parameters', per_month_dir = './data/per_month'):
-    A_t = pd.read_csv(parameters_dir + 'fix_class_time.csv', header = 0, index_col = 0)
+def score(df_x,fixed_dir = './data/fixed/', parameters_dir = './data/parameters/', per_month_dir = './data/per_month/'):
+    A_t = pd.read_csv(fixed_dir + 'fix_class_time.csv', header = 0, index_col = 0)
     DEMAND_t = pd.read_csv(per_month_dir+"need.csv", header = 0, index_col = 0).T
     EMPLOYEE_t = pd.read_csv(per_month_dir+"Employee.csv", header = 0)
     NM_t = EMPLOYEE_t['NM']
     NW_t = EMPLOYEE_t['NW']
-    E_NAME = list(EMPLOYEE_t['name_English'])   #E_NAME - 對照名字與員工index時使用
+    E_NAME = list(EMPLOYEE_t['Name_English'])   #E_NAME - 對照名字與員工index時使用
     E_SENIOR_t = EMPLOYEE_t['Senior']
     E_POSI_t = EMPLOYEE_t['Position']
     E_SKILL_t = EMPLOYEE_t[['skill-phone','skill-CD','skill-chat','skill-outbound']]

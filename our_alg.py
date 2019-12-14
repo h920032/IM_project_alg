@@ -757,7 +757,7 @@ for p in range(parent):
     #=================================================================================================#
     #確認解是否可行
     #=================================================================================================#
-    confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, E_SENIOR)
+    #confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, E_SENIOR)
 
 
 
