@@ -436,7 +436,7 @@ fix = [] #存可行解的哪些部分是可以動的
 
 #產生100個親代的迴圈
 for p in range(parent):
-    print(p)
+    print("parent = ", p)
     
     #動態需工人數
     CURRENT_DEMAND = [tmp for tmp in range(nDAY)]
@@ -841,7 +841,7 @@ for p in range(parent):
     #將結果放入INITIAL_POOL中
     #====================================================================================================#
     INITIAL_POOL.append(Pool(result, df_x, df_y, df_percent_day, df_percent_time, df_nightcount, df_resttime, new, new_2))
-    print(INITIAL_POOL[p].result)
+    print("result = ", INITIAL_POOL[p].result)
     for i in range(nEMPLOYEE):
         for j in range(nDAY):
             for k in range(nK):
@@ -867,7 +867,8 @@ for p in range(parent):
     breakCount_t = 0
     complement_t =  0
 
-
+    if p == 99:
+        print("INITIAL POOL completed")
     
     #====================================================================================================#
     #====================================================================================================#
@@ -875,10 +876,7 @@ for p in range(parent):
 avaliable_sol = []
 for i in range(parent):
     avaliable_sol.append(INITIAL_POOL[i].df_x)
-i_na = []
-for q in range(len(avaliable_sol)):
-    i_na.append(np.vectorize({v: k for k, v in K_type_dict.items()}.get)(avaliable_sol[q]))
-print(i_na)
+
 
 #=======================================================================================================#
 #====================================================================================================#
