@@ -52,14 +52,15 @@ def score(df_x,fixed_dir = './data/fixed/', parameters_dir = './data/parameters/
 
 
     K_type = ['O','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','CD','C2','C3','C4','OB']
-    K_type_dict = {1:'O',2:'A2',3:'A3',4:'A4',5:'A5',6:'MS',7:'AS',8:'P2',9:'P3',10:'P4',11:'P5',12:'N1',13:'M1',14:'W6',15:'CD',16:'C2',17:'C3',18:'C4',19:'OB'}
+    K_type_dict = {0:'',1:'O',2:'A2',3:'A3',4:'A4',5:'A5',6:'MS',7:'AS',8:'P2',9:'P3',10:'P4',11:'P5',12:'N1',13:'M1',14:'W6',15:'CD',16:'C2',17:'C3',18:'C4',19:'OB'}
     i_nb = np.vectorize({v: k for k, v in K_type_dict.items()}.get)(np.array(df_x))
 
     #計算人力情形
     people = np.zeros((nDAY,24))
     for i in range(0,nEMPLOYEE):
         for j in range(0,nDAY):
-            for k in range(0,24):
+            for k in range(24):
+                print(k)
                 people[j][k] = people[j][k] + A_t.values[i_nb[i][j]-1][k]
     output_people = (people - DEMAND).tolist()
     lack = 0
