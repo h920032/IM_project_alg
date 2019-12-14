@@ -414,8 +414,8 @@ def ABLE(this_i,this_j,this_k):
 #========================================================================#
 # GENE(): 切分並交配的函數 (星宇)
 #========================================================================#
-def GENE(avaliable_sol, fix, nDAY, nEMPLOYEE, gen):
-	return gen.gene_alg(avaliable_sol, fix, nDAY, nEMPLOYEE, gen)
+def GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month):
+	return gen.gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month)
 
 
 
@@ -872,7 +872,6 @@ for p in range(parent):
 
 avaliable_sol = []
 for i in range(parent):
-    print(i)
     avaliable_sol.append(INITIAL_POOL[i].df_x.values.tolist())
 
 
@@ -884,7 +883,7 @@ for i in range(parent):
 #=================================================================================================#
 #====================================================================================================#
 #=======================================================================================================#
-GENE(avaliable_sol, fix, nDAY, nEMPLOYEE, gen)
+GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month)
 
 
 
