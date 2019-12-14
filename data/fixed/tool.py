@@ -59,9 +59,9 @@ def SetDAYW(day, total_day, total_week):   #第一天上班是星期幾/幾天/�
             for j in range(5):
                 tmp.append(count)
                 count+=1
-                if count == total_day:
-                    ans.append(tmp)
-                    break
+                # if count == total_day:       2019/12/14 因為D_WEEK多一週 所以暫時先註解掉
+                #     ans.append(tmp)
+                #     break
         ans.append(tmp)
     return ans
 
