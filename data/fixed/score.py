@@ -26,10 +26,15 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     timelimit = pd.read_csv(parameters_dir+"time_limit.csv", header=0)
     #nightdaylimit = pd.read_csv(dir_name+"晚班天數限制.csv", header = 0).loc[0][0]
     
+    date = pd.read_csv(per_month_dir + 'Date.csv', header = None, index_col = 0)
+    #year = int(date.iloc[0,0])
+    #month = int(date.iloc[1,0])
+
     nEMPLOYEE = EMPLOYEE_t.shape[0]
     #nDAY = tl.get_nDAY(year,month)
     #nW = tl.get_nW(year,month)
     nK = 19
+    mDAY = int(calendar.monthrange(year,month)[1])
     DEMAND = DEMAND_t.values.tolist()
 
     P0 = 100
@@ -40,6 +45,12 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
 
     S_NIGHT = [11, 12, 13]
     S_BREAK = [[11,12],[1,7,14,15],[2,8,16,18],[3,9,17],[4,10]]
+    DAY = [tmp for tmp in range(nDAY)]              #DAY - 日子集合，J=0,…,nJ-1
+    DATES = [ int(x) for x in DEMAND_t.index ]    #所有的日期 - 對照用
+    month_start = tl.get_startD(year,month)         #本月第一天是禮拜幾 (Mon=0, Tue=1..)
+    D_WEEK = tl.SetDAYW(month_start+1,mDAY,nW, DAY, DATES)  	#D_WEEK - 第 w 週中所包含的日子集合
+    WEEK_of_DAY = tl.SetWEEKD(D_WEEK, nW) #WEEK_of_DAY - 日子j所屬的那一週
+
 
     #輸入班表
     """
@@ -51,8 +62,8 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
 
     K_type = ['O','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','CD','C2','C3','C4','OB']
     K_type_dict = {0:'',1:'O',2:'A2',3:'A3',4:'A4',5:'A5',6:'MS',7:'AS',8:'P2',9:'P3',10:'P4',11:'P5',12:'N1',13:'M1',14:'W6',15:'CD',16:'C2',17:'C3',18:'C4',19:'OB'}
-    #i_nb = np.vectorize({v: k for k, v in K_type_dict.items()}.get)(np.array(df_x))
-    i_nb = df_x
+    i_nb = np.vectorize({v: k for k, v in K_type_dict.items()}.get)(np.array(df_x))
+    #i_nb = df_x
     #計算人力情形
 
     people = np.zeros((nDAY,24))

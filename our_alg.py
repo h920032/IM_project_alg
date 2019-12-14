@@ -9,6 +9,7 @@ from data.fixed.CSR_order import CSR_ORDER
 from data.fixed.LIMIT_ORDER import LIMIT_ORDER
 from data.fixed.ARRANGEMENT import ARRANGEMENT
 from data.fixed.CONFIRM import confirm
+from data.fixed.score import score
 import datetime, calendar, sys
 """============================================================================#
 12/3
@@ -761,9 +762,9 @@ for p in range(parent):
     #確認解是否可行
     #=================================================================================================#
     #confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, E_SENIOR)
-
-
     
+
+    result = score(df_x,nDAY,nW,year=year,month=month)
     #====================================================================================================#
     #計算目標式
     #====================================================================================================#
@@ -822,7 +823,7 @@ for p in range(parent):
 
     complement_t = int(max(max(df_c.reshape(1,nEMPLOYEE*nK))))
 
-    result = P0 * lack_t + P1 * surplus_t + P2 * nightcount_t + P3 * breakCount_t + P4 * complement_t
+    #result2 = P0 * lack_t + P1 * surplus_t + P2 * nightcount_t + P3 * breakCount_t + P4 * complement_t
     
     """sumlack = 0
     for j in range(nDAY):
@@ -866,15 +867,18 @@ for p in range(parent):
     breakCount_t = 0
     complement_t =  0
 
+
     
     #====================================================================================================#
     #====================================================================================================#
 
 avaliable_sol = []
 for i in range(parent):
-    avaliable_sol.append(INITIAL_POOL[i].df_x.values.tolist())
-
-
+    avaliable_sol.append(INITIAL_POOL[i].df_x)
+i_na = []
+for q in range(len(avaliable_sol)):
+    i_na.append(np.vectorize({v: k for k, v in K_type_dict.items()}.get)(avaliable_sol[q]))
+print(i_na)
 
 #=======================================================================================================#
 #====================================================================================================#
