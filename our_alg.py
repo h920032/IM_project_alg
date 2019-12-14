@@ -153,6 +153,7 @@ nK = 19                             #班別種類數
 nT = 24                             #總時段數
 nR = 5                              #午休種類數
 nW = tl.get_nW(year,month)          #總週數
+mDAY = int(calendar.monthrange(year,month)[1])
 # nPOSI =  len(set(E_POSI_t))     #職稱數量 (=擁有特定職稱的總員工集合數
 # nSKILL = len(SKILL_NAME)     #nVA技能數量 (=擁有特定技能的總員工集合數
 
@@ -208,10 +209,10 @@ E_SENIOR = [tl.SetSENIOR(E_SENIOR_t,tmp) for tmp in SENIOR_bp]   #E_SENIOR - 達
 
 #-------日子集合-------#
 month_start = tl.get_startD(year,month)         #本月第一天是禮拜幾 (Mon=0, Tue=1..)
-D_WEEK = tl.SetDAYW(month_start+1,nDAY,nW)  	#D_WEEK - 第 w 週中所包含的日子集合
+D_WEEK = tl.SetDAYW(month_start+1,mDAY,nW, DAY, DATES)  	#D_WEEK - 第 w 週中所包含的日子集合
 DAYset = tl.SetDAY(month_start, nDAY)     		#DAYset - 通用日子集合 [all,Mon,Tue...]
 
-WEEK_of_DAY = tl.SetWEEKD(month_start+1,nDAY,nW) #WEEK_of_DAY - 日子j所屬的那一週
+WEEK_of_DAY = tl.SetWEEKD(D_WEEK, nW) #WEEK_of_DAY - 日子j所屬的那一週
 
 #-------班別集合-------#
 S_NIGHT = [11, 12, 13]                                          #S_NIGHT - 所有的晚班
@@ -259,7 +260,6 @@ for i in range(nEMPLOYEE):
 
 
 complement =  0  #complement - 擁有特定員工技能的員工集合va的員工排非特定班別數的最大值
-
 
 #============================================================================#
 
@@ -438,7 +438,11 @@ for p in range(parent):
     print(p)
     
     #動態需工人數
-    CURRENT_DEMAND = DEMAND
+    CURRENT_DEMAND = [tmp for tmp in range(nDAY)]
+    for j in DAY:
+        CURRENT_DEMAND[j] = []
+        for t in range(nT):
+            CURRENT_DEMAND[j].append(DEMAND[j][t])
     
     #指定班別
     for c in ASSIGN:
@@ -474,13 +478,13 @@ for p in range(parent):
             for i in CSR_LIST:
                 if BOUND <= 0:
                     break
-                for k in LIMIT[3]:  #抓出來會是list，是個班別集合
+                for k in LIMIT[3]:  
                     if BOUND <= 0:
                         break
                     elif ABLE(i, j, k) == True:
                         work[i, j, k] = True
                         for t in range(nT):
-                            if CONTAIN[k][t] == 1:            #報錯：k為list，不能當index  
+                            if CONTAIN[k][t] == 1:              
                                 CURRENT_DEMAND[j][t] -= 1
                         BOUND -= 1
                     else:
@@ -499,13 +503,12 @@ for p in range(parent):
         char = 'a'
     if sequence >= len(LIMIT_MATRIX):
         sequence = 0
-
+    
     #=================================================================================================#
     #安排空班別
     #=================================================================================================#
-    work, fix_temp = ARRANGEMENT(work, nEMPLOYEE, nDAY, nK)
+    work, fix_temp, CURRENT_DEMAND = ARRANGEMENT(work, nEMPLOYEE, nDAY, nK, CONTAIN, CURRENT_DEMAND, nT)
     fix.append(fix_temp)
-
 
 
     #=================================================================================================#
@@ -558,7 +561,7 @@ for p in range(parent):
     #Dataframe_x
     K_type = ['O','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','CD','C2','C3','C4','OB']
 
-
+    
     employee_name = E_NAME
     employee_name2 = EMPLOYEE
     which_worktime = []
@@ -677,7 +680,7 @@ for p in range(parent):
         output_id.append(str(EMPLOYEE_t.ID.values.tolist()[i]))
     for i in range(0,nEMPLOYEE):
         output_name.append(EMPLOYEE_t.Name_Chinese.values.tolist()[i])
-    mDAY = int(calendar.monthrange(year,month)[1])
+    #mDAY = int(calendar.monthrange(year,month)[1])
     date_list = []
     date_name = []
     for i in range(1,mDAY+1): #產生日期清單
@@ -730,7 +733,7 @@ for p in range(parent):
         except:
             print('\n程式已結束。')
 
-
+    
     people = np.zeros((nDAY,24))
     for i in range(0,nEMPLOYEE):
         for j in range(0,nDAY):
@@ -753,14 +756,14 @@ for p in range(parent):
     #new_2.to_csv(result_y, encoding="utf-8_sig")
     # print(new_2.T)
     
-    #print(D_WEEK)
+    
     #=================================================================================================#
     #確認解是否可行
     #=================================================================================================#
     #confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, E_SENIOR)
 
 
-
+    
     #====================================================================================================#
     #計算目標式
     #====================================================================================================#
@@ -772,15 +775,24 @@ for p in range(parent):
         for j in range(0,nDAY):
             for k in range(0,24):
                 people[j][k] = people[j][k] + A_t.values[i_nb[i][j]-1][k]
+               
     output_people = (people - DEMAND).tolist()
+    
     lack_t = 0
     for i in output_people:
         for j in i:
             if j < 0:
                 lack_t = -j + lack_t
 
-    surplus_t = surplus
-
+    surplus_t = 0
+    surplus_t2 = 0
+    for i in output_people:
+        for j in i:
+            if j > 0:
+                surplus_t2 = j
+                if surplus_t2 > surplus_t:
+                    surplus_t = surplus_t2
+    
     nightcount_t = []
     for i in i_nb:
         count = 0
@@ -790,19 +802,15 @@ for p in range(parent):
         nightcount_t.append(count)
     nightcount_t = max(nightcount_t)
 
-    date = datetime.datetime.strptime(str(year)+'-'+str(month)+'-'+str(1), "%Y-%m-%d")
-    weekday = date.weekday()
-    if weekday == 5 or weekday == 6:
-        weekday = 0
-
-    breakCount_t = np.ones((nEMPLOYEE,nW,5))
+    
+    breakCount_t = np.zeros((nEMPLOYEE,nW,5))
     for i in range(nEMPLOYEE):
         for j in range(nDAY):
-            w_d = int((j+weekday)/5)
-            if i_nb[i][j]!=1:
+            w_d = WEEK_of_DAY[j]
+            if i_nb[i][j]!=1 and i_nb[i][j]!=6 and i_nb[i][j]!=7 and i_nb[i][j]!=14:
                 for k in range(5):
-                    if A_t.values[i_nb[i][j]-1][k+5]==1:
-                        breakCount_t[i][w_d][k]=0
+                    if A_t.values[i_nb[i][j]-1][k+5] == 0 and A_t.values[i_nb[i][j]-1][k+6] == 0:
+                        breakCount_t[i][w_d][k] = 1
     breakCount_t = int(sum(sum(sum(breakCount_t))))
 
     df_a = EMPLOYEE_t.drop(['Name_English', 'Name_Chinese', 'ID', 'Senior', 'Position', 'NM','NW'],axis = 1).values
@@ -815,8 +823,19 @@ for p in range(parent):
     complement_t = int(max(max(df_c.reshape(1,nEMPLOYEE*nK))))
 
     result = P0 * lack_t + P1 * surplus_t + P2 * nightcount_t + P3 * breakCount_t + P4 * complement_t
-
-
+    
+    """sumlack = 0
+    for j in range(nDAY):
+        for t in range(nT):
+            sumlack += lack[j, t]
+    sumbreak = 0
+    for i in range(nEMPLOYEE):
+        for w in range(nW):
+            for r in range(nR):
+                sumbreak += breakCount[i, w, r]
+    rr = P0 * sumlack + P1 * surplus + P2 * nightCount + P3 * sumbreak + P4 * complement"""
+    #print((rr, result), (sumlack, lack_t), (surplus, surplus_t), (nightCount, nightcount_t), (sumbreak, breakCount_t), (complement, complement_t))
+    
     #====================================================================================================#
     #將結果放入INITIAL_POOL中
     #====================================================================================================#
@@ -847,7 +866,7 @@ for p in range(parent):
     breakCount_t = 0
     complement_t =  0
 
-
+    
     #====================================================================================================#
     #====================================================================================================#
 

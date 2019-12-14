@@ -69,10 +69,13 @@ def score(df_x,fixed_dir = './data/fixed/', parameters_dir = './data/parameters/
                 lack = -j + lack
 
     surplus = 0
+    surplus_t = 0
     for i in output_people:
         for j in i:
             if j > 0:
-                surplus = j + surplus
+                surplus_t = j
+                if surplus_t > surplus:
+                    surplus = surplus_t
 
     nightcount = []
     for i in i_nb:
@@ -88,14 +91,14 @@ def score(df_x,fixed_dir = './data/fixed/', parameters_dir = './data/parameters/
     if weekday == 5 or weekday == 6:
         weekday = 0
 
-    breakCount = np.ones((nEMPLOYEE,nW,5))
+    breakCount = np.zeros((nEMPLOYEE,nW,5))
     for i in range(nEMPLOYEE):
         for j in range(nDAY):
-            w_d = int((j+weekday)/5)
-            if i_nb[i][j]!=1:
+            w_d = WEEK_of_DAY[j]
+            if i_nb[i][j]!=1 and i_nb[i][j]!=6 and i_nb[i][j]!=7 and i_nb[i][j]!=14:
                 for k in range(5):
-                    if A_t.values[i_nb[i][j]-1][k+5]==1:
-                        breakCount[i][w_d][k]=0
+                    if A_t.values[i_nb[i][j]-1][k+5] == 0 and A_t.values[i_nb[i][j]-1][k+6] == 0:
+                        breakCount[i][w_d][k] = 1
     breakCount = int(sum(sum(sum(breakCount))))
 
     df_a = EMPLOYEE_t.drop(['Name_English', 'Name_Chinese', 'ID', 'Senior', 'Position', 'NM','NW'],axis = 1).values
