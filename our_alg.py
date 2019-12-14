@@ -853,7 +853,6 @@ for p in range(parent):
 
 avaliable_sol = []
 for i in range(parent):
-    print(i)
     avaliable_sol.append(INITIAL_POOL[i].df_x.values.tolist())
 
 
