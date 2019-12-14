@@ -9,7 +9,7 @@ K_type_dict = {1:'O',2:'A2',3:'A3',4:'A4',5:'A5',6:'MS',7:'AS',8:'P2',9:'P3',10:
 #def score(input):
 #    return random.randint(1,10000)
 
-def alg(score_liz, nDAY, nEMPLOYEE):
+def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month):
     sort = sorted(score_liz, key = lambda s: s[2],reverse = True)
     for i in range(len(score_liz)):
         for j in range(len(score_liz)):
@@ -37,24 +37,24 @@ def alg(score_liz, nDAY, nEMPLOYEE):
                 b_two_one_two = np.concatenate((one_col_left, two_col_right), axis=0) + two_not_avb
                 b_one_two_one = np.concatenate((two_col_left, one_col_right), axis=0) + one_not_avb
                 b_two_two_one = np.concatenate((two_col_left, one_col_right), axis=0) + two_not_avb
-                sort.append((a_one_one_two,score_liz[i][1],score(a_one_one_two.tolist())))
-                sort.append((a_two_one_two,score_liz[j][1],score(a_two_one_two.tolist())))
-                sort.append((a_one_two_one,score_liz[i][1],score(a_one_two_one.tolist())))
-                sort.append((a_two_two_one,score_liz[j][1],score(a_two_two_one.tolist())))
-                sort.append((b_one_one_two,score_liz[i][1],score(b_one_one_two.tolist())))
-                sort.append((b_two_one_two,score_liz[j][1],score(b_two_one_two.tolist())))
-                sort.append((b_one_two_one,score_liz[i][1],score(b_one_two_one.tolist())))
-                sort.append((b_two_two_one,score_liz[j][1],score(b_two_two_one.tolist())))
+                sort.append((a_one_one_two,score_liz[i][1],score(a_one_one_two.tolist(),nDAY,nW,year=year,month=month)))
+                sort.append((a_two_one_two,score_liz[j][1],score(a_two_one_two.tolist(),nDAY,nW,year=year,month=month)))
+                sort.append((a_one_two_one,score_liz[i][1],score(a_one_two_one.tolist(),nDAY,nW,year=year,month=month)))
+                sort.append((a_two_two_one,score_liz[j][1],score(a_two_two_one.tolist(),nDAY,nW,year=year,month=month)))
+                sort.append((b_one_one_two,score_liz[i][1],score(b_one_one_two.tolist(),nDAY,nW,year=year,month=month)))
+                sort.append((b_two_one_two,score_liz[j][1],score(b_two_one_two.tolist(),nDAY,nW,year=year,month=month)))
+                sort.append((b_one_two_one,score_liz[i][1],score(b_one_two_one.tolist(),nDAY,nW,year=year,month=month)))
+                sort.append((b_two_two_one,score_liz[j][1],score(b_two_two_one.tolist(),nDAY,nW,year=year,month=month)))
     sort = sorted(sort, key = lambda s: s[2],reverse = True)
     sort = sort[:100]
     return sort
 
-def gene_alg(avaliable_sol, fix, nDAY, nEMPLOYEE, gen): #avaliavle_sol 可行解列表 fix 不能移動的列表
+def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month): #avaliavle_sol 可行解列表 fix 不能移動的列表
     i_nb = np.vectorize({v: k for k, v in K_type_dict.items()}.get)(avaliable_sol)
     score_liz = []
     for i ,j in zip(i_nb,fix):
-        score_liz.append((i,j, score(i)))
+        score_liz.append((i,j, score(i,nDAY,nW,year=year,month=month)))
     for i in range(gen):
-        score_liz = alg(score_liz, nDAY, nEMPLOYEE)
+        score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month)
     result = np.vectorize(K_type_dict.get)(score_liz[0][0])
     return result
