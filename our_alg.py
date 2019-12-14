@@ -761,81 +761,16 @@ for p in range(parent):
     #=================================================================================================#
     #確認解是否可行
     #=================================================================================================#
-    #confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, E_SENIOR)
-    
+    message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, E_SENIOR)
+    print(message)
+    if message != 'All constraints are met.':
+        break
 
-    result = score(df_x,nDAY,nW,year=year,month=month)
+    
     #====================================================================================================#
     #計算目標式
     #====================================================================================================#
-    i_nb = np.vectorize({v: k for k, v in K_type_dict.items()}.get)(np.array(df_x))
-
-    #計算人力情形
-    people = np.zeros((nDAY,24))
-    for i in range(0,nEMPLOYEE):
-        for j in range(0,nDAY):
-            for k in range(0,24):
-                people[j][k] = people[j][k] + A_t.values[i_nb[i][j]-1][k]
-               
-    output_people = (people - DEMAND).tolist()
-    
-    lack_t = 0
-    for i in output_people:
-        for j in i:
-            if j < 0:
-                lack_t = -j + lack_t
-
-    surplus_t = 0
-    surplus_t2 = 0
-    for i in output_people:
-        for j in i:
-            if j > 0:
-                surplus_t2 = j
-                if surplus_t2 > surplus_t:
-                    surplus_t = surplus_t2
-    
-    nightcount_t = []
-    for i in i_nb:
-        count = 0
-        for j in i:
-            if j == 12 or j == 13 or j == 14:
-                count = count + 1
-        nightcount_t.append(count)
-    nightcount_t = max(nightcount_t)
-
-    
-    breakCount_t = np.zeros((nEMPLOYEE,nW,5))
-    for i in range(nEMPLOYEE):
-        for j in range(nDAY):
-            w_d = WEEK_of_DAY[j]
-            if i_nb[i][j]!=1 and i_nb[i][j]!=6 and i_nb[i][j]!=7 and i_nb[i][j]!=14:
-                for k in range(5):
-                    if A_t.values[i_nb[i][j]-1][k+5] == 0 and A_t.values[i_nb[i][j]-1][k+6] == 0:
-                        breakCount_t[i][w_d][k] = 1
-    breakCount_t = int(sum(sum(sum(breakCount_t))))
-
-    df_a = EMPLOYEE_t.drop(['Name_English', 'Name_Chinese', 'ID', 'Senior', 'Position', 'NM','NW'],axis = 1).values
-    df_c = np.zeros((nEMPLOYEE,nK))
-    for i in range(nEMPLOYEE):
-        if sum(df_a[i]) > 0:
-            for j in range(nDAY):
-                df_c[i][i_nb[i][j]-1]=df_c[i][i_nb[i][j]-1]+1
-
-    complement_t = int(max(max(df_c.reshape(1,nEMPLOYEE*nK))))
-
-    #result2 = P0 * lack_t + P1 * surplus_t + P2 * nightcount_t + P3 * breakCount_t + P4 * complement_t
-    
-    """sumlack = 0
-    for j in range(nDAY):
-        for t in range(nT):
-            sumlack += lack[j, t]
-    sumbreak = 0
-    for i in range(nEMPLOYEE):
-        for w in range(nW):
-            for r in range(nR):
-                sumbreak += breakCount[i, w, r]
-    rr = P0 * sumlack + P1 * surplus + P2 * nightCount + P3 * sumbreak + P4 * complement"""
-    #print((rr, result), (sumlack, lack_t), (surplus, surplus_t), (nightCount, nightcount_t), (sumbreak, breakCount_t), (complement, complement_t))
+    result = score(df_x,nDAY,nW,year=year,month=month)
     
     #====================================================================================================#
     #將結果放入INITIAL_POOL中
@@ -861,13 +796,8 @@ for p in range(parent):
     
     complement =  0
 
-    lack_t = 0
-    surplus_t = 0
-    nightCount_t = []
-    breakCount_t = 0
-    complement_t =  0
 
-    if p == 99:
+    if p == parent-1:
         print("INITIAL POOL completed")
     
     #====================================================================================================#

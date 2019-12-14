@@ -95,7 +95,7 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
                 night_bool = False
                 night_err += str(i)
                 night_err += 'th employee'
-                night_err += 'has been assigned too many night class at '
+                night_err += ' has been assigned too many night class at '
                 night_err += str(j)
                 night_err += 'th week'
                 break
