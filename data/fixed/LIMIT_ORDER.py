@@ -143,7 +143,7 @@ def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 				buff = limits							#buff存放交換過的序列
 				exchange(i, ii, buff)
 			main.append(buff)"""
-
+	
 	#return
 	if len(main)>N:
 		main = main[0:N]
