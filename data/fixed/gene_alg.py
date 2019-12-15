@@ -12,9 +12,10 @@ K_type_dict = {0:'O',1:'A2',2:'A3',3:'A4',4:'A5',5:'MS',6:'AS',7:'P2',8:'P3',9:'
 def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month):
     sort = sorted(score_liz, key = lambda s: s[2],reverse = True)
     for i in range(len(score_liz)):
+        print('\n\n   alg() #### i =',i,'#### range =',len(score_liz))
         for j in range(len(score_liz)):
             if i != j:
-                print('基因演算法： i =',i,', j =',j)
+                print(j, end=' ')
                 union = np.logical_or(score_liz[i][1], score_liz[j][1])
                 one_not_avb = union * score_liz[i][0]
                 one_avb = score_liz[i][0] - one_not_avb
@@ -62,7 +63,10 @@ def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month): #avaliavle
     score_liz = []
     for i ,j in zip(i_nb,fix):
         score_liz.append((i,j, score(i,nDAY,nW,year=year,month=month)))
-    for i in range(gen):
-        score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month)
+    # for i in range(gen):    #重複親代數量那麼多次
+    #     score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month)
+    score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month)
+    #上面是為求跑得完而做的修改
+    print('\n\n基因演算法最佳解：',score(result,nDAY,nW,year,month))
     result = np.vectorize(K_type_dict.get)(score_liz[0][0])
     return result
