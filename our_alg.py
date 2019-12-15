@@ -454,8 +454,8 @@ def ABLE(this_i,this_j,this_k):
 #========================================================================#
 # GENE(): 切分並交配的函數 (星宇)
 #========================================================================#
-def GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month):
-	return gen.gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month)
+def GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month):
+	return gen.gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month)
 
 
 
@@ -917,7 +917,7 @@ print('len of avaliable_sol =',len(avaliable_sol))
 #=================================================================================================#
 #====================================================================================================#
 #=======================================================================================================#
-GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month)
+print(GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, 2,year,month))
 
 
 
