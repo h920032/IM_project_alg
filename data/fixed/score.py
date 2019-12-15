@@ -4,10 +4,10 @@ import pandas as pd
 import data.fixed.tool as tl
 import datetime, calendar
 
-def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = './data/parameters/', per_month_dir = './data/per_month/'):
+def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = './data/parameters/', per_month_dir = './data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
     A_t = pd.read_csv(fixed_dir + 'fix_class_time.csv', header = 0, index_col = 0)
-    DEMAND_t = pd.read_csv(per_month_dir+"need.csv", header = 0, index_col = 0).T
-    EMPLOYEE_t = pd.read_csv(per_month_dir+"Employee.csv", header = 0)
+    DEMAND_t = pd.read_csv(per_month_dir+"Need"+NeedTest+".csv", header = 0, index_col = 0).T
+    EMPLOYEE_t = pd.read_csv(per_month_dir+"Employee"+EmployeeTest+".csv", header = 0)
     NM_t = EMPLOYEE_t['NM']
     NW_t = EMPLOYEE_t['NW']
     E_NAME = list(EMPLOYEE_t['Name_English'])   #E_NAME - 對照名字與員工index時使用
@@ -18,7 +18,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     P_t = pd.read_csv(parameters_dir + 'weight_p1-4.csv', header = None, index_col = 0)
     Kset_t = pd.read_csv(fixed_dir + 'fix_classes.csv', header = None, index_col = 0)
     SKset_t = pd.read_csv(parameters_dir + 'skills_classes.csv', header = None, index_col = 0)
-    M_t = pd.read_csv(per_month_dir+"Assign.csv", header = None, skiprows=[0])
+    M_t = pd.read_csv(per_month_dir+'Assign'+AssignTest+'.csv', header = None, skiprows=[0])
     L_t = pd.read_csv(parameters_dir+"lower_limit.csv", header = 0, engine='python')
     U_t = pd.read_csv(parameters_dir+"upper_limit.csv", header = None, skiprows=[0])
     Ratio_t = pd.read_csv(parameters_dir+"senior_limit.csv",header = None, skiprows=[0])
@@ -75,7 +75,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
         for j in range(nDAY):
             for k in range(24):
                 #print(i,j,k)
-                people[j][k] = people[j][k] + A_t.values[i_nb[i][j]-1][k]
+                people[j][k] = people[j][k] + A_t.values[i_nb[i][j]-1][k]   #TypeError: unsupported operand type(s) for -: 'NoneType' and 'int'
 
 
     output_people = (people - DEMAND).tolist()

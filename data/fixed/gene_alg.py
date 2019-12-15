@@ -9,12 +9,13 @@ K_type_dict = {0:'O',1:'A2',2:'A3',3:'A4',4:'A5',5:'MS',6:'AS',7:'P2',8:'P3',9:'
 #def score(input):
 #    return random.randint(1,10000)
 
-def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month):
+def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
     sort = sorted(score_liz, key = lambda s: s[2],reverse = True)
     for i in range(len(score_liz)):
+        print('\n\n   alg() #### i =',i,'#### range =',len(score_liz))
         for j in range(len(score_liz)):
             if i != j:
-                print('基因演算法： i =',i,', j =',j)
+                print(j, end=' ')
                 union = np.logical_or(score_liz[i][1], score_liz[j][1])
                 one_not_avb = union * score_liz[i][0]
                 one_avb = score_liz[i][0] - one_not_avb
@@ -42,19 +43,19 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month):
                 b_two_one_two = np.concatenate((one_col_left, two_col_right), axis=0) + two_not_avb
                 b_one_two_one = np.concatenate((two_col_left, one_col_right), axis=0) + one_not_avb
                 b_two_two_one = np.concatenate((two_col_left, one_col_right), axis=0) + two_not_avb
-                sort.append((a_one_one_two,score_liz[i][1],score(a_one_one_two.tolist(),nDAY,nW,year=year,month=month)))#!!??
-                sort.append((a_two_one_two,score_liz[j][1],score(a_two_one_two.tolist(),nDAY,nW,year=year,month=month)))
-                sort.append((a_one_two_one,score_liz[i][1],score(a_one_two_one.tolist(),nDAY,nW,year=year,month=month)))
-                sort.append((a_two_two_one,score_liz[j][1],score(a_two_two_one.tolist(),nDAY,nW,year=year,month=month)))
-                sort.append((b_one_one_two,score_liz[i][1],score(b_one_one_two.tolist(),nDAY,nW,year=year,month=month)))
-                sort.append((b_two_one_two,score_liz[j][1],score(b_two_one_two.tolist(),nDAY,nW,year=year,month=month)))
-                sort.append((b_one_two_one,score_liz[i][1],score(b_one_two_one.tolist(),nDAY,nW,year=year,month=month)))
-                sort.append((b_two_two_one,score_liz[j][1],score(b_two_two_one.tolist(),nDAY,nW,year=year,month=month)))
+                sort.append((a_one_one_two,score_liz[i][1],score(a_one_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+                sort.append((a_two_one_two,score_liz[j][1],score(a_two_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+                sort.append((a_one_two_one,score_liz[i][1],score(a_one_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+                sort.append((a_two_two_one,score_liz[j][1],score(a_two_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+                sort.append((b_one_one_two,score_liz[i][1],score(b_one_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+                sort.append((b_two_one_two,score_liz[j][1],score(b_two_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+                sort.append((b_one_two_one,score_liz[i][1],score(b_one_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+                sort.append((b_two_two_one,score_liz[j][1],score(b_two_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     sort = sorted(sort, key = lambda s: s[2],reverse = True)
     sort = sort[:100]
     return sort
 
-def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month): #avaliavle_sol 可行解列表 fix 不能移動的列表
+def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''): #avaliavle_sol 可行解列表 fix 不能移動的列表
     i_nb = []
     
     for p in range(len(avaliable_sol)):
@@ -63,8 +64,11 @@ def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month): #avaliavle
         
     score_liz = []
     for i ,j in zip(i_nb,fix):
-        score_liz.append((i,j, score(i,nDAY,nW,year=year,month=month)))
-    for i in range(gen):
-        score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month)
+        score_liz.append((i,j, score(i,nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+    # for i in range(gen):    #重複親代數量那麼多次
+    #     score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month)
+    score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
+    #上面是為求跑得完而做的修改
     result = np.vectorize(K_type_dict.get)(score_liz[0][0])
+    print('\n\n基因演算法最佳解：',score_liz[0][2])
     return result
