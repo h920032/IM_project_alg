@@ -378,25 +378,28 @@ def ABLE(this_i,this_j,this_k):
     #正在排晚班才進去判斷
     if(arrangenightshift == True):
         #no continuous night shift:
-        #非第一天或最後一天
-        if(this_j!=0):
+        
+        if(this_j!=0 and this_j!=nDAY-1): #非第一天或最後一天
             for tmp in S_NIGHT:
                 if(work[this_i,this_j-1,tmp] == 1):
                     ans = False
                     return ans
-                elif (this_j!=nDAY-1):
-                    if (work[this_i,this_j+1,tmp] == 1):
-                        ans = False
-                        return ans
-        
-        #第一天
-        else:
+                if(work[this_i,this_j+1,tmp] == 1):
+                    ans = False
+                    return ans
+        elif (this_j==nDAY-1):           #最後一天
+            for tmp in S_NIGHT:
+                if(work[this_i,this_j-1,tmp] == 1):
+                    ans = False
+                    return ans
+        else:                             #第一天
             if(FRINIGHT[this_i] == 1):
                 ans = False
                 return ans
-            elif(work[this_i,this_j+1,tmp] == 1):
-                ans = False
-                return ans
+            for tmp in S_NIGHT:
+                if(work[this_i,this_j+1,tmp] == 1):
+                    ans = False
+                    return ans
         #no too many night shift a week:
         whichweek = WEEK_of_DAY[this_j]
         #非第一週
