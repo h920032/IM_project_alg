@@ -23,12 +23,15 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month):
                 sp_col = random.randint(0,nEMPLOYEE-1)
                 one_col_left = one_avb[:sp_col]
                 one_col_right = one_avb[sp_col:]
-                one_row_up = one_avb[:,:sp_row]     #!!??
-                one_row_down = one_avb[:,sp_row:]
+                # one_row_up = one_avb[:,:sp_row]
+                # one_row_down = one_avb[:,sp_row:]
+                one_row_up = one_avb.T[:sp_row].T
+                one_row_down = one_avb.T[sp_row:].T
+                print('check point 1')
                 two_col_left = two_avb[:sp_col]
                 two_col_right = two_avb[sp_col:]
-                two_row_up = two_avb[:,:sp_row]
-                two_row_down = two_avb[:,sp_row:]
+                two_row_up = two_avb.T[:sp_row].T
+                two_row_down = two_avb.T[sp_row:].T
                 a_one_one_two = np.concatenate((one_row_up, two_row_down), axis=1) + one_not_avb
                 a_two_one_two = np.concatenate((one_row_up, two_row_down), axis=1) + two_not_avb
                 a_one_two_one = np.concatenate((two_row_up, one_row_down), axis=1) + one_not_avb
@@ -37,7 +40,7 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month):
                 b_two_one_two = np.concatenate((one_col_left, two_col_right), axis=0) + two_not_avb
                 b_one_two_one = np.concatenate((two_col_left, one_col_right), axis=0) + one_not_avb
                 b_two_two_one = np.concatenate((two_col_left, one_col_right), axis=0) + two_not_avb
-                sort.append((a_one_one_two,score_liz[i][1],score(a_one_one_two.tolist(),nDAY,nW,year=year,month=month)))
+                sort.append((a_one_one_two,score_liz[i][1],score(a_one_one_two.tolist(),nDAY,nW,year=year,month=month)))#!!??
                 sort.append((a_two_one_two,score_liz[j][1],score(a_two_one_two.tolist(),nDAY,nW,year=year,month=month)))
                 sort.append((a_one_two_one,score_liz[i][1],score(a_one_two_one.tolist(),nDAY,nW,year=year,month=month)))
                 sort.append((a_two_two_one,score_liz[j][1],score(a_two_two_one.tolist(),nDAY,nW,year=year,month=month)))
