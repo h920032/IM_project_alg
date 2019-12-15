@@ -17,13 +17,13 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month):
                 union = np.logical_or(score_liz[i][1], score_liz[j][1])
                 one_not_avb = union * score_liz[i][0]
                 #debug
-                print('score_liz[i][0] =',score_liz[i][0])
-                print('one_not_avb =',one_not_avb)
-                #上面這兩個印出來都是大表格!?
+                # print('score_liz[i][0] =',score_liz[i][0],'(',type(score_liz[i][0]),')')
+                # print('one_not_avb =',one_not_avb,'(',type(one_not_avb),')')
+                #上面這兩個印出來都是大表格，type=DateFrame
                 one_avb = score_liz[i][0] - one_not_avb    #!!!TypeError: unsupported operand type(s) for -: 'str' and 'str'
                 two_not_avb = union * score_liz[j][0]
                 two_avb = score_liz[j][0] - two_not_avb
-                sp_row = random.randint(0,nDAY-1)
+                sp_row = random.randint(0,nDAY-1)       #!!??
                 sp_col = random.randint(0,nEMPLOYEE-1)
                 one_col_left = one_avb[:sp_col]
                 one_col_right = one_avb[sp_col:]
@@ -57,7 +57,7 @@ def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month): #avaliavle
     i_nb = []
     for p in range(len(avaliable_sol)):
         #i_nb.append(np.vectorize({v: k for k, v in K_type_dict.items()}.get)(np.array(avaliable_sol[p])).tolist())
-        i_nb.append(avaliable_sol[p]) 
+        i_nb.append(avaliable_sol[p])
     score_liz = []
     for i ,j in zip(i_nb,fix):
         score_liz.append((i,j, score(i,nDAY,nW,year=year,month=month)))

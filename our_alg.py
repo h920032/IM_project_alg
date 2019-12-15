@@ -331,6 +331,10 @@ class Pool():
         self.df_result_x = df_result_x
         #df_result_y: 冗員與缺工人數
         self.df_result_y = df_result_y
+    def print(self):
+        print(self.result)
+    def printTable(self):
+        print(self.df_result_x)
 	
 
 
@@ -341,7 +345,7 @@ year = 2019
 month = 4
 
 # 產生親代的迴圈數
-parent = 100	# int
+parent = 10	# int
 
 # 生成Initial pool的100個親代
 INITIAL_POOL = []
@@ -900,7 +904,10 @@ avaliable_sol = []
 for i in range(parent):
     avaliable_sol.append(INITIAL_POOL[i].df_x1)      #IndexError: list index out of range
 
-
+print('len of INITIAL_POOL =',len(INITIAL_POOL))
+for item in INITIAL_POOL:
+    item.print()
+print('len of avaliable_sol =',len(avaliable_sol))
 #=======================================================================================================#
 #====================================================================================================#
 #=================================================================================================#
