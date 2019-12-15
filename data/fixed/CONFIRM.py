@@ -94,7 +94,7 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
             if night_count > nightdaylimit_int and night_err=='':
                 night_bool = False
                 night_err += str(i)
-                night_err += 'th employee'
+                night_err += 'th employee '
                 night_err += ' has been assigned too many night class at '
                 night_err += str(j)
                 night_err += 'th week'
@@ -215,12 +215,12 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
         ratio = PERCENT[n][2]
         people_in_class = 0
         skilled_people_in_class = 0
-        print('There are',len(schedule),'CSR in schedule.')    #schedule的結構是 schedule[i][j] = 班別名稱
+        #print('There are',len(schedule),'CSR in schedule.')    #schedule的結構是 schedule[i][j] = 班別名稱
         for j in require_day:
             for i in E_SENIOR[n]:       #E_SENIOR[n]是一組員工集合(i)，不是班別集合(k)        
                 
                 for r in range(len(require_type)):
-                    print('In confirm: i =',i,', j =',j,', r =',r)    #嘗試糾錯
+                    #print('In confirm: i =',i,', j =',j,', r =',r)    #嘗試糾錯
                     if schedule[i][j] == require_type[r]:   #報錯：list index out of range
                         skilled_people_in_class += 1
                         break

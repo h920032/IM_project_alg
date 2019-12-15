@@ -301,11 +301,11 @@ BOUND: 人數下限
 # class
 #========================================================================#
 class Pool():
-    def __init__(self, result, df_x, df_y, df_percent_day, df_percent_time, df_nightcount, df_resttime, df_result_x, df_result_y):
+    def __init__(self, result, df_x1, df_y, df_percent_day, df_percent_time, df_nightcount, df_resttime, df_result_x, df_result_y):
         #result: 目標式結果
         self.result = result
-        #df_x : 員工班表
-        self.df_x = df_x
+        #df_x1 : 員工班表(整數班別)
+        self.df_x1 = df_x1
         #df_y: 缺工人數表
         self.df_y =  df_y
         #df_percent_day: 每天缺工百分比表
@@ -635,8 +635,9 @@ for p in range(parent):
         which_worktime2.append(tmp2)
             
 
-    df_x = pd.DataFrame(which_worktime, index = employee_name, columns = DATES)
-    df_x2 = which_worktime2
+    df_x = pd.DataFrame(which_worktime, index = employee_name, columns = DATES)   #字串班表
+    df_x1 = pd.DataFrame(which_worktime2, index = employee_name, columns = DATES) #整數班表
+    df_x2 = which_worktime2                                                       #confirm用
 
 
     #Dataframe_y
@@ -809,25 +810,39 @@ for p in range(parent):
     #new_2.to_csv(result_y, encoding="utf-8_sig")
     # print(new_2.T)
     
-    #print(LOWER)
+    
     #=================================================================================================#
     #確認解是否可行
     #=================================================================================================#
     message = 'All constraints are met.'
-    message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR)
+    #message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR)
     print(message)    
     #CONFIRM.py, line 222,報錯： if schedule[k][j] == require_type[k]  => IndexError: list index out of range
     
     #====================================================================================================#
     #計算目標式
     #====================================================================================================#
-    result = score(df_x,nDAY,nW,year=year,month=month)
+    result = score(df_x1,nDAY,nW,year=year,month=month)
     
+    """sumlack = 0
+    for j in range(nDAY):
+        for t in range(nT):
+            sumlack += lack[j, t]
+    
+    sumbreak = 0
+    for i in EMPLOYEE:
+        for w in WEEK:
+             for r in BREAK:
+                if breakCount[i,w,r] == True:
+                    sumbreak += 1
+    
+    result2 = P0 * sumlack + P1 * surplus + P2 * nightCount + P3 * sumbreak + P4 * complement"""
     #====================================================================================================#
     #將結果放入INITIAL_POOL中
     #====================================================================================================#
-    INITIAL_POOL.append(Pool(result, df_x, df_y, df_percent_day, df_percent_time, df_nightcount, df_resttime, new, new_2))
+    INITIAL_POOL.append(Pool(result, df_x1, df_y, df_percent_day, df_percent_time, df_nightcount, df_resttime, new, new_2))
     print("result = ", INITIAL_POOL[p].result)
+    #print("result2 = ", result2)
     for i in range(nEMPLOYEE):
         for j in range(nDAY):
             for k in range(nK):
@@ -850,16 +865,17 @@ for p in range(parent):
     if message != 'All constraints are met.':
         print(df_x)
         break
-
+    
     if p == parent-1:
         print("INITIAL POOL completed")
+    
     
     #====================================================================================================#
     #====================================================================================================#
 
 avaliable_sol = []
 for i in range(parent):
-    avaliable_sol.append(INITIAL_POOL[i].df_x)      #IndexError: list index out of range
+    avaliable_sol.append(INITIAL_POOL[i].df_x1)      #IndexError: list index out of range
 
 
 #=======================================================================================================#

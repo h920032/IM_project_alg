@@ -19,7 +19,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     Kset_t = pd.read_csv(fixed_dir + 'fix_classes.csv', header = None, index_col = 0)
     SKset_t = pd.read_csv(parameters_dir + 'skills_classes.csv', header = None, index_col = 0)
     M_t = pd.read_csv(per_month_dir+"Assign.csv", header = None, skiprows=[0])
-    #L_t = pd.read_csv(parameters_dir+"lower_limit.csv", header = None, skiprows=[0])
+    L_t = pd.read_csv(parameters_dir+"lower_limit.csv", header = 0, engine='python')
     U_t = pd.read_csv(parameters_dir+"upper_limit.csv", header = None, skiprows=[0])
     Ratio_t = pd.read_csv(parameters_dir+"senior_limit.csv",header = None, skiprows=[0])
     SENIOR_bp = Ratio_t[3]
@@ -62,7 +62,8 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
 
     K_type = ['O','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','CD','C2','C3','C4','OB']
     K_type_dict = {0:'',1:'O',2:'A2',3:'A3',4:'A4',5:'A5',6:'MS',7:'AS',8:'P2',9:'P3',10:'P4',11:'P5',12:'N1',13:'M1',14:'W6',15:'CD',16:'C2',17:'C3',18:'C4',19:'OB'}
-    i_nb = np.vectorize({v: k for k, v in K_type_dict.items()}.get)(np.array(df_x))
+    K_type_int = {0:'',1:0,2:1,3:2,4:3,5:4,6:5,7:6,8:7,9:8,10:9,11:10,12:11,13:12,14:13,15:14,16:15,17:16,18:17,19:18}
+    i_nb = np.vectorize({v: k for k, v in K_type_int.items()}.get)(np.array(df_x))
     #i_nb = df_x
     #計算人力情形
 
