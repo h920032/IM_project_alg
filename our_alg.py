@@ -3,6 +3,7 @@
 import re
 import numpy as np
 import pandas as pd
+import random as rd
 import data.fixed.tool as tl
 import data.fixed.gene_alg as gen
 from data.fixed.CSR_order import CSR_ORDER
@@ -98,7 +99,7 @@ NW_t = EMPLOYEE_t['NW']
 #=============================================================================#
 P_t = pd.read_csv(dir_name + 'parameters/weight_p1-4.csv', header = None, index_col = 0, engine='python') #權重
 SKset_t = pd.read_csv(dir_name + 'parameters/skills_classes.csv', header = None, index_col = 0, engine='python')   #class set for skills
-L_t = tl.readFile(dir_name + "parameters/lower_limit.csv")                          #指定日期、班別、職位，人數下限
+L_t = pd.read_csv(dir_name + "parameters/lower_limit.csv", header = 0, engine='python')          #指定日期、班別、職位，人數下限
 U_t = tl.readFile(dir_name + "parameters/upper_limit.csv")                          #指定星期幾、班別，人數上限
 Ratio_t = tl.readFile(dir_name + "parameters/senior_limit.csv")                     #指定年資、星期幾、班別，要占多少比例以上
 try:    # 下面的try/except都是為了因應條件全空時
@@ -355,16 +356,23 @@ def ABLE(this_i,this_j,this_k):
     #正在排晚班才進去判斷
     if(arrangenightshift == True):
         #no continuous night shift:
-        #非第一天
+        #非第一天或最後一天
         if(this_j!=0):
             for tmp in S_NIGHT:
                 if(work[this_i,this_j-1,tmp] == 1):
                     ans = False
                     return ans
+                elif (this_j!=nDAY-1):
+                    if (work[this_i,this_j+1,tmp] == 1):
+                        ans = False
+                        return ans
         
         #第一天
         else:
             if(FRINIGHT[this_i] == 1):
+                ans = False
+                return ans
+            elif(work[this_i,this_j+1,tmp] == 1):
                 ans = False
                 return ans
         #no too many night shift a week:
@@ -508,7 +516,40 @@ for p in range(parent):
     #=================================================================================================#
     #安排空班別
     #=================================================================================================#
-    work, fix_temp, CURRENT_DEMAND = ARRANGEMENT(work, nEMPLOYEE, nDAY, nK, CONTAIN, CURRENT_DEMAND, nT)
+    fix_temp = []
+    for i in range(nEMPLOYEE):
+        employee = []
+        for j in range(nDAY):
+            is_arrange = False
+            for k in range(nK):
+                if work[i,j,k] == True:
+                    is_arrange = True
+                    employee.append(1)
+            if is_arrange == False:
+                rand = rd.randint(1,nK)
+                for r in range(nK):
+                    if ABLE(i,j,rand-1) == True:
+                        work[i,j,rand-1] = True
+                        for t in range(nT):
+                            if CONTAIN[rand-1][t] == 1:              
+                                CURRENT_DEMAND[j][t] -= 1
+                        employee.append(0)
+                        is_arrange = True
+                        break
+                    else:
+                       rand = rd.randint(1,nK)
+                if is_arrange == False:
+                    for r in range(nK):
+                        if ABLE(i,j,r) == True:
+                            work[i,j,r] = True
+                            for t in range(nT):
+                                if CONTAIN[r][t] == 1:              
+                                    CURRENT_DEMAND[j][t] -= 1
+                            employee.append(0)
+                            is_arrange = True
+                            break
+        fix_temp.append(employee)
+    #work, fix_temp, CURRENT_DEMAND = ARRANGEMENT(work, nEMPLOYEE, nDAY, nK, CONTAIN, CURRENT_DEMAND, nT)
     fix.append(fix_temp)
 
 
@@ -757,14 +798,14 @@ for p in range(parent):
     #new_2.to_csv(result_y, encoding="utf-8_sig")
     # print(new_2.T)
     
-    
+    #print(LOWER)
     #=================================================================================================#
     #確認解是否可行
     #=================================================================================================#
-    message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, E_SENIOR)
+    message = 'All constraints are met.'
+    #message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR)
     print(message)
-    if message != 'All constraints are met.':
-        break
+    
 
     
     #====================================================================================================#
@@ -795,7 +836,10 @@ for p in range(parent):
                 breakCount[i, w, r] = False
     
     complement =  0
-
+    
+    if message != 'All constraints are met.':
+        print(df_x)
+        break
 
     if p == parent-1:
         print("INITIAL POOL completed")

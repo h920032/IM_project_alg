@@ -19,7 +19,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     Kset_t = pd.read_csv(fixed_dir + 'fix_classes.csv', header = None, index_col = 0)
     SKset_t = pd.read_csv(parameters_dir + 'skills_classes.csv', header = None, index_col = 0)
     M_t = pd.read_csv(per_month_dir+"Assign.csv", header = None, skiprows=[0])
-    L_t = pd.read_csv(parameters_dir+"lower_limit.csv", header = None, skiprows=[0])
+    #L_t = pd.read_csv(parameters_dir+"lower_limit.csv", header = None, skiprows=[0])
     U_t = pd.read_csv(parameters_dir+"upper_limit.csv", header = None, skiprows=[0])
     Ratio_t = pd.read_csv(parameters_dir+"senior_limit.csv",header = None, skiprows=[0])
     SENIOR_bp = Ratio_t[3]

@@ -24,7 +24,7 @@ necessary constraints:
 
 #schedule為班表二維list
 
-def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, weekdaylist, E_SENIOR):
+def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, weekdaylist, PERCENT, E_SENIOR):
     
 
     as_bool = True
@@ -54,7 +54,7 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
     #=========================================================================================================================================================
     #(3)每位員工每週只能排指定天數的晚班，且不能連續
     #需要參數:班表(schedule) 晚班集合(S_NIGHT)  第 w 週中所包含的日子集合(D_WEEK)) 每位員工每周能排的晚班次數(nightdaylimit) 
-    ### main function 裡 D_WEEK有錯!!!!!!!! 尚未修正!!!!!!!!!!
+    
     night_bool = True
     night_err =''
     
