@@ -831,7 +831,7 @@ for p in range(parent):
     #確認解是否可行
     #=================================================================================================#
     message = 'All constraints are met.'
-    #message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR)
+    message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR)
     print(message)    
     
     #====================================================================================================#
