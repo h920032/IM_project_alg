@@ -918,8 +918,9 @@ print('len of avaliable_sol =',len(avaliable_sol),'\n\n')
 #====================================================================================================#
 #=======================================================================================================#
 tstart_gen = time.time()
-GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month)
+gene_result = GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month)
 print('基因演算法共耗時',time.time()-tstart_gent,'秒')
+print(pd.DataFrame(gene_result))
 
 
 
