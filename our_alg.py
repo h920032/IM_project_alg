@@ -343,9 +343,6 @@ class Pool():
 #========================================================================#
 # Global Variables
 #========================================================================#
-#year = 2019
-#month = 4
-
 # 產生親代的迴圈數
 parent = 10	# int
 
@@ -479,7 +476,7 @@ tStart = time.time()
 success = 0
 #產生100個親代的迴圈
 for p in range(parent):
-    print("\nparent = ", p)
+    
     
     #動態需工人數
     CURRENT_DEMAND = [tmp for tmp in range(nDAY)]
@@ -841,7 +838,7 @@ for p in range(parent):
     #=================================================================================================#
     message = 'All constraints are met.'
     message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR)
-    print(message)    
+        
     
     #====================================================================================================#
     #計算目標式
@@ -865,7 +862,8 @@ for p in range(parent):
     #將結果放入INITIAL_POOL中
     #====================================================================================================#
     INITIAL_POOL.append(Pool(result, df_x1, df_y, df_percent_day, df_percent_time, df_nightcount, df_resttime, new, new_2))
-    print("result = ", INITIAL_POOL[p].result)
+    print('\n生成INITIAL POOL： parent =',p,', result =', INITIAL_POOL[p].result)
+    print(message)
     #print("result2 = ", result2)
     for i in range(nEMPLOYEE):
         for j in range(nDAY):
@@ -903,8 +901,10 @@ print('\n產生',parent,'個結果於 initail pool (',success,'個合理解) ，
 
 
 avaliable_sol = []
+
 for i in range(parent):
-    avaliable_sol.append(INITIAL_POOL[i].df_x1.values.tolist())      #IndexError: list index out of range
+    avaliable_sol.append(INITIAL_POOL[i].df_x1.values.tolist())
+
 
 print('len of INITIAL_POOL =',len(INITIAL_POOL))
 for item in INITIAL_POOL:
