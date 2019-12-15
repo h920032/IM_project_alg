@@ -16,7 +16,11 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month):
             if i != j:
                 union = np.logical_or(score_liz[i][1], score_liz[j][1])
                 one_not_avb = union * score_liz[i][0]
-                one_avb = score_liz[i][0] - one_not_avb
+                #debug
+                print('score_liz[i][0] =',score_liz[i][0])
+                print('one_not_avb =',one_not_avb)
+                #上面這兩個印出來都是大表格!?
+                one_avb = score_liz[i][0] - one_not_avb    #!!!TypeError: unsupported operand type(s) for -: 'str' and 'str'
                 two_not_avb = union * score_liz[j][0]
                 two_avb = score_liz[j][0] - two_not_avb
                 sp_row = random.randint(0,nDAY-1)

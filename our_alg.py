@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import re
+import re, time
 import numpy as np
 import pandas as pd
 import random as rd
@@ -34,11 +34,12 @@ import datetime, calendar, sys
 #====================================================================================================#
 #=======================================================================================================#
 
-#測試檔案檔名 - 沒有要測試時請全部留空白
+#測試檔案檔名 - 沒有要測試時請將TestPath留空白
 TestPath = ""
-EmployeeTest = ""
-AssignTest = ""
-NeedTest = ""
+# TestPath = "D:/Ting/桌面/test/1216_testing/"
+EmployeeTest = "_40人_標準"
+AssignTest = "_40人各休一_標準"
+NeedTest = "_標準"
 
 #=======================================================================================================#
 #====================================================================================================#
@@ -52,11 +53,17 @@ try:
     f = open('path.txt', "r")
     dir_name = f.read().replace('\n', '')
 except:
-    f = './data/'   #預設資料路徑：./data/
+    dir_name = './data/'   #預設資料路徑：./data/
 
-#測試用
-# if TestPath != "":
-#     dir_name = TestPath
+# 測試用
+if TestPath != "":
+    dir_name = TestPath
+    parameters_dir = TestPath
+else:
+    dir_name = './data/'
+    EmployeeTest = ""
+    AssignTest = ""
+    NeedTest = ""
 
 #=============================================================================#
 #每月更改的資料
@@ -67,17 +74,20 @@ year = int(date.iloc[0,0])
 month = int(date.iloc[1,0])
 
 #指定排班
-# M_t = tl.readFile(dir_name + 'per_month/Assign'+AssignTest+'.csv')
-M_t = tl.readFile(dir_name + 'per_month/Assign.csv')
+print(dir_name + 'per_month/Assign'+AssignTest+'.csv')
+M_t = tl.readFile(dir_name + 'per_month/Assign'+AssignTest+'.csv')
+# M_t = tl.readFile(dir_name + 'per_month/Assign.csv')
 M_t[0] = [ str(x) for x in M_t[0] ]           #強制將ID設為string
 #進線需求預估
-# DEMAND_t = pd.read_csv(dir_name+"per_month/Need"+NeedTest+".csv", header=0, index_col=0, engine='python').T
-DEMAND_t = pd.read_csv(dir_name+"per_month/Need.csv", header=0, index_col=0, engine='python').T
+print(dir_name+"per_month/Need"+NeedTest+".csv")
+DEMAND_t = pd.read_csv(dir_name+"per_month/Need"+NeedTest+".csv", header=0, index_col=0, engine='python').T
+# DEMAND_t = pd.read_csv(dir_name+"per_month/Need.csv", header=0, index_col=0, engine='python').T
 DATES = [ int(x) for x in DEMAND_t.index ]    #所有的日期 - 對照用
 
 #employees data
-# EMPLOYEE_t = pd.read_csv(dir_name+"per_month/Employee"+EmployeeTest+".csv", header = 0) 
-EMPLOYEE_t = pd.read_csv(dir_name+"per_month/Employee.csv", header = 0) 
+print(dir_name+"per_month/Employee"+EmployeeTest+".csv")
+EMPLOYEE_t = pd.read_csv(dir_name+"per_month/Employee"+EmployeeTest+".csv", header = 0) 
+# EMPLOYEE_t = pd.read_csv(dir_name+"per_month/Employee.csv", header = 0) 
 E_NAME = list(EMPLOYEE_t['Name_English'])       #E_NAME - 對照名字與員工index時使用
 E_ID = [ str(x) for x in EMPLOYEE_t['ID'] ]     #E_ID - 對照ID與員工index時使用
 E_SENIOR_t = EMPLOYEE_t['Senior']
@@ -85,6 +95,7 @@ E_POSI_t = EMPLOYEE_t['Position']
 E_SKILL_t = EMPLOYEE_t[ list(filter(lambda x: re.match('skill-',x), EMPLOYEE_t.columns)) ]  #抓出員工技能表
 
 
+print('len(employee) =',len(EMPLOYEE_t))
 #=============================================================================#
 ####NM 及 NW 從人壽提供之上個月的班表裡面計算
 if month>1:
@@ -453,9 +464,13 @@ sequence = 0 #限制式順序
 char = 'a' #CSR沒用度順序
 fix = [] #存可行解的哪些部分是可以動的
 
+#迴圈計時
+tStart = time.time()
+#成功數計算
+success = 0
 #產生100個親代的迴圈
 for p in range(parent):
-    print("parent = ", p)                           #!!!印出 parent=0
+    print("\nparent = ", p)
     
     #動態需工人數
     CURRENT_DEMAND = [tmp for tmp in range(nDAY)]
@@ -725,7 +740,7 @@ for p in range(parent):
     """
 
     #============================================================================#
-    #輸出班表
+    #班表
     #============================================================================#
     output_name = []
     output_id = []
@@ -774,7 +789,7 @@ for p in range(parent):
     #print(new)
 
     #============================================================================#
-    #輸出冗員與缺工人數表
+    #冗員與缺工人數表
     #============================================================================#
     K_type_dict = {0:'',1:'O',2:'A2',3:'A3',4:'A4',5:'A5',6:'MS',7:'AS',8:'P2',9:'P3',10:'P4',11:'P5',12:'N1',13:'M1',14:'W6',15:'CD',16:'C2',17:'C3',18:'C4',19:'OB'}
     try:
@@ -807,7 +822,8 @@ for p in range(parent):
     new_2['name']=T_type
     new_2.set_index("name",inplace=True)
     #new_2.to_csv(result_y, encoding="utf-8_sig")
-    # print(new_2.T)
+    #print(new)
+
     
     #print(LOWER)
     #=================================================================================================#
@@ -816,7 +832,6 @@ for p in range(parent):
     message = 'All constraints are met.'
     message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR)
     print(message)    
-    #CONFIRM.py, line 222,報錯： if schedule[k][j] == require_type[k]  => IndexError: list index out of range
     
     #====================================================================================================#
     #計算目標式
@@ -848,18 +863,23 @@ for p in range(parent):
     complement =  0
     
     if message != 'All constraints are met.':
-        print(df_x)
-        break
+        print('Some constraints fails.')
+        # print(df_x)
+        # break
+    else:
+        success += 1
 
     if p == parent-1:
-        print("INITIAL POOL completed")
+        print("\nINITIAL POOL completed")
     
     #====================================================================================================#
     #====================================================================================================#
+print('\n產生',parent,'個結果 (',success,'個合理解) 共花費', (time.time()-tStart) ,'秒\n\n')
+
 
 avaliable_sol = []
 for i in range(parent):
-    avaliable_sol.append(INITIAL_POOL[i].df_x)      #IndexError: list index out of range
+    avaliable_sol.append(INITIAL_POOL[i].df_x)
 
 
 #=======================================================================================================#
