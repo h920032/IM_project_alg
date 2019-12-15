@@ -234,7 +234,7 @@ E_SENIOR = [tl.SetSENIOR(E_SENIOR_t,tmp) for tmp in SENIOR_bp]   #E_SENIOR - 達
 #-------日子集合-------#
 month_start = tl.get_startD(year,month)         #本月第一天是禮拜幾 (Mon=0, Tue=1..)
 D_WEEK = tl.SetDAYW(month_start+1,mDAY,nW, DAY, DATES)  	#D_WEEK - 第 w 週中所包含的日子集合
-DAYset = tl.SetDAY(month_start, nDAY)     		#DAYset - 通用日子集合 [all,Mon,Tue...]
+DAYset = tl.SetDAY(month_start, nDAY, DATES)     		#DAYset - 通用日子集合 [all,Mon,Tue...]
 
 WEEK_of_DAY = tl.SetWEEKD(D_WEEK, nW) #WEEK_of_DAY - 日子j所屬的那一週
 
