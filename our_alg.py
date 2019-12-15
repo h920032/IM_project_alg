@@ -904,7 +904,7 @@ print('\n產生',parent,'個結果 (',success,'個合理解) 共花費', (time.t
 
 avaliable_sol = []
 for i in range(parent):
-    avaliable_sol.append(INITIAL_POOL[i].df_x1)      #IndexError: list index out of range
+    avaliable_sol.append(INITIAL_POOL[i].df_x1.values.tolist())      #IndexError: list index out of range
 
 print('len of INITIAL_POOL =',len(INITIAL_POOL))
 for item in INITIAL_POOL:
