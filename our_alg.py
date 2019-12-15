@@ -39,7 +39,7 @@ tstart_0 = time.time()  #計時用
 
 #測試檔案檔名 - 沒有要測試時請將TestPath留空白
 # TestPath = ""
-TestPath = "D:/Ting/桌面/test/1216_testing/"
+TestPath = ""
 EmployeeTest = "_60人"
 AssignTest = "_60人各休一"
 NeedTest = "_標準"
@@ -907,10 +907,10 @@ for i in range(parent):
     avaliable_sol.append(INITIAL_POOL[i].df_x1.values.tolist())
 
 
-print('len of INITIAL_POOL =',len(INITIAL_POOL))
+"""print('len of INITIAL_POOL =',len(INITIAL_POOL))
 for item in INITIAL_POOL:
     item.print()
-print('len of avaliable_sol =',len(avaliable_sol),'\n\n')
+print('len of avaliable_sol =',len(avaliable_sol),'\n\n')"""
 #=======================================================================================================#
 #====================================================================================================#
 #=================================================================================================#
