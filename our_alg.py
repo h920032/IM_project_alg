@@ -38,10 +38,10 @@ import datetime, calendar, sys
 tstart_0 = time.time()  #計時用
 
 #測試檔案檔名 - 沒有要測試時請將TestPath留空白
-TestPath = ""
-# TestPath = "D:/Ting/桌面/test/1216_testing/"
-EmployeeTest = "_40人_標準"
-AssignTest = "_40人各休一_標準"
+# TestPath = ""
+TestPath = "D:/Ting/桌面/test/1216_testing/"
+EmployeeTest = "_60人"
+AssignTest = "_60人各休一"
 NeedTest = "_標準"
 
 #=======================================================================================================#
@@ -348,7 +348,7 @@ class Pool():
 #month = 4
 
 # 產生親代的迴圈數
-parent = 3	# int
+parent = 10	# int
 
 # 生成Initial pool的100個親代
 INITIAL_POOL = []
@@ -455,8 +455,8 @@ def ABLE(this_i,this_j,this_k):
 #========================================================================#
 # GENE(): 切分並交配的函數 (星宇)
 #========================================================================#
-def GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month):
-	return gen.gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month)
+def GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
+	return gen.gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
 
 
 
@@ -847,7 +847,7 @@ for p in range(parent):
     #====================================================================================================#
     #計算目標式
     #====================================================================================================#
-    result = score(df_x1,nDAY,nW,year=year,month=month)
+    result = score(df_x1,nDAY,nW,year=year,month=month,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
     
     """sumlack = 0
     for j in range(nDAY):
@@ -920,7 +920,7 @@ print('len of avaliable_sol =',len(avaliable_sol),'\n\n')
 #=======================================================================================================#
 tstart_gen = time.time()
 print('\n基因演算法開始')
-gene_result = GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month)
+gene_result = GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
 
 print('基因演算法共耗時',time.time()-tstart_gen,'秒\n')
 print(pd.DataFrame(gene_result))
