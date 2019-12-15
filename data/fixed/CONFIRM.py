@@ -207,28 +207,30 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
     senior_bool = True
     senior_err =''
     
-    for i in range(len(PERCENT)):
-        day = PERCENT[i][0]
+    for n in range(len(PERCENT)):
+        day = PERCENT[n][0]
         require_day = weekdaylist[day]
-        class_type = PERCENT[i][1]
+        class_type = PERCENT[n][1]
         require_type = SHIFTset[class_type]
-        ratio = PERCENT[i][2]
+        ratio = PERCENT[n][2]
         people_in_class = 0
         skilled_people_in_class = 0
+        print('There are',len(schedule),'CSR in schedule.')    #schedule的結構是 schedule[i][j] = 班別名稱
         for j in require_day:
-            for k in E_SENIOR[i]:
+            for i in E_SENIOR[n]:       #E_SENIOR[n]是一組員工集合(i)，不是班別集合(k)        
                 
                 for r in range(len(require_type)):
-                    if schedule[k][j] == require_type[k]:
+                    print('In confirm: i =',i,', j =',j,', r =',r)    #嘗試糾錯
+                    if schedule[i][j] == require_type[r]:   #報錯：list index out of range
                         skilled_people_in_class += 1
                         break
-            for k in range(len(schedule)):
+            for i in range(len(schedule)):
                 for r in range(len(require_type)):
-                    if schedule[k][j] == require_type[k]:
+                    if schedule[i][j] == require_type[r]:
                         people_in_class += 1
                         break
         
-        if skilled_people_in_class/people_in_class < ratio:
+        if skilled_people_in_class/people_in_class < ratio:     #若年資足夠者少於指定比例，顯示錯誤
             senior_bool = False
             senior_err = 'There is a lack of employee who has been in the career more than ' + str(PERCENT[i][3]) +  ' years on ' + str(day)
     
