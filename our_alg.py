@@ -660,7 +660,7 @@ for p in range(parent):
     df_x = pd.DataFrame(which_worktime, index = employee_name, columns = DATES)   #字串班表
     df_x1 = pd.DataFrame(which_worktime2, index = employee_name, columns = DATES) #整數班表
     df_x2 = which_worktime2                                                       #confirm用
-
+    
 
     #Dataframe_y
     T_type = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30'
