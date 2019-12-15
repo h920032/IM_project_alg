@@ -34,7 +34,11 @@ import datetime, calendar, sys
 #====================================================================================================#
 #=======================================================================================================#
 
-
+#測試檔案檔名 - 沒有要測試時請全部留空白
+TestPath = ""
+EmployeeTest = ""
+AssignTest = ""
+NeedTest = ""
 
 #=======================================================================================================#
 #====================================================================================================#
@@ -50,6 +54,10 @@ try:
 except:
     f = './data/'   #預設資料路徑：./data/
 
+#測試用
+# if TestPath != "":
+#     dir_name = TestPath
+
 #=============================================================================#
 #每月更改的資料
 #=============================================================================#
@@ -59,13 +67,16 @@ year = int(date.iloc[0,0])
 month = int(date.iloc[1,0])
 
 #指定排班
+# M_t = tl.readFile(dir_name + 'per_month/Assign'+AssignTest+'.csv')
 M_t = tl.readFile(dir_name + 'per_month/Assign.csv')
 M_t[0] = [ str(x) for x in M_t[0] ]           #強制將ID設為string
 #進線需求預估
-DEMAND_t = pd.read_csv(dir_name+"per_month/Need.csv", header = 0, index_col = 0, engine='python').T
+# DEMAND_t = pd.read_csv(dir_name+"per_month/Need"+NeedTest+".csv", header=0, index_col=0, engine='python').T
+DEMAND_t = pd.read_csv(dir_name+"per_month/Need.csv", header=0, index_col=0, engine='python').T
 DATES = [ int(x) for x in DEMAND_t.index ]    #所有的日期 - 對照用
 
 #employees data
+# EMPLOYEE_t = pd.read_csv(dir_name+"per_month/Employee"+EmployeeTest+".csv", header = 0) 
 EMPLOYEE_t = pd.read_csv(dir_name+"per_month/Employee.csv", header = 0) 
 E_NAME = list(EMPLOYEE_t['Name_English'])       #E_NAME - 對照名字與員工index時使用
 E_ID = [ str(x) for x in EMPLOYEE_t['ID'] ]     #E_ID - 對照ID與員工index時使用
@@ -79,7 +90,7 @@ E_SKILL_t = EMPLOYEE_t[ list(filter(lambda x: re.match('skill-',x), EMPLOYEE_t.c
 if month>1:
     lastmonth = pd.read_csv(dir_name + 'per_month/Schedule_'+str(year)+'_'+str(month-1)+'.csv', engine='python')
 else:
-    lastmonth = pd.read_csv(dir_name + 'per_month/Schedule_'+str(year-1)+'_1.csv', engine='python')
+    lastmonth = pd.read_csv(dir_name + 'per_month/Schedule_'+str(year-1)+'_12.csv', engine='python')
 lastday_column = len(lastmonth.columns) 
 lastday_row = lastmonth.shape[0]
 lastday_ofmonth = lastmonth.iloc[0,(lastday_column-1)]
@@ -436,7 +447,7 @@ def GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month):
 #====================================================================================================#
 #=======================================================================================================#
 
-LIMIT_MATRIX = LIMIT_ORDER(LOWER,UPPER,PERCENT,DEMAND,E_POSITION,E_SENIOR,DAYset,SHIFTset, DATES, CONTAIN) #生成多組限制式matrix
+LIMIT_MATRIX = LIMIT_ORDER(25,LOWER,UPPER,PERCENT,DEMAND,E_POSITION,E_SENIOR,DAYset,SHIFTset, DATES, CONTAIN) #生成多組限制式matrix
 #print(LIMIT_MATRIX)
 sequence = 0 #限制式順序
 char = 'a' #CSR沒用度順序
@@ -444,7 +455,7 @@ fix = [] #存可行解的哪些部分是可以動的
 
 #產生100個親代的迴圈
 for p in range(parent):
-    print("parent = ", p)
+    print("parent = ", p)                           #!!!印出 parent=0
     
     #動態需工人數
     CURRENT_DEMAND = [tmp for tmp in range(nDAY)]
@@ -485,12 +496,12 @@ for p in range(parent):
         for j in LIMIT[2]:
             BOUND = LIMIT[4]
             for i in CSR_LIST:
-                if BOUND <= 0:
+                if BOUND <= 0:  #若限制式參數(n)不合理，忽略之
                     break
                 for k in LIMIT[3]:  
                     if BOUND <= 0:
                         break
-                    elif ABLE(i, j, k) == True:
+                    elif ABLE(i, j, k) == True: #若此人可以排此班，就排
                         work[i, j, k] = True
                         for t in range(nT):
                             if CONTAIN[k][t] == 1:              
@@ -804,9 +815,8 @@ for p in range(parent):
     #=================================================================================================#
     message = 'All constraints are met.'
     message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR)
-    print(message)
-    
-
+    print(message)    
+    #CONFIRM.py, line 222,報錯： if schedule[k][j] == require_type[k]  => IndexError: list index out of range
     
     #====================================================================================================#
     #計算目標式
@@ -849,7 +859,7 @@ for p in range(parent):
 
 avaliable_sol = []
 for i in range(parent):
-    avaliable_sol.append(INITIAL_POOL[i].df_x)
+    avaliable_sol.append(INITIAL_POOL[i].df_x)      #IndexError: list index out of range
 
 
 #=======================================================================================================#

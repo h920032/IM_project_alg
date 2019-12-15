@@ -59,7 +59,7 @@ def exchange(index1, index2, alist):
 #=============================================================================#
 # main function
 
-def LIMIT_ORDER(L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
+def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 	# print(L)
 	# print(POSI)
 	limits = []
@@ -70,11 +70,11 @@ def LIMIT_ORDER(L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 		neck = float( n - avg )						#剩餘可動人手 = 上限人數 - 平均需求人數 (很可能是負數)
 		limits.append([ 'upper', POSI['任意'], DAY[i[0]], K[i[1]], n, neck])
 
-	#lower limit: j, k_set, i(position), n
-	# for i in L:
-	# 	n = int(i[3])
-	# 	neck = float( len(POSI[i[2]]) - n )
-	# 	limits.append([ 'lower', POSI[i[2]], [int(i[0])], K[i[1]], n, neck])
+	# lower limit: j, k_set, i(position), n
+	for i in L:
+		n = int(i[3])
+		neck = float( len(POSI[i[2]]) - n )
+		limits.append([ 'lower', POSI[i[2]], [int(i[0])], K[i[1]], n, neck])
 
 	#senior limit: j_set, k_set, n, i(senior) 
 	for ii in range(len(S)):	#because we need to get SENIOR which is without index
@@ -145,49 +145,8 @@ def LIMIT_ORDER(L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 			main.append(buff)"""
 
 	#return
-	print('\nLIMIT_ORDER(): return',len(main),'kinds of order\n')
+	if len(main)>N:
+		main = main[0:N]
+	print('\nLIMIT_ORDER(): return', len(main) ,'kinds of order\n')
 	return main
 
-
-
-"""
-1234
-#dis=1
-2134
-1324
-1243
-#dis=2
-3124
-1432
-#dis=3
-4231
-
-#other
-1234_
-1243_
-1324_
-1342
-1423
-1432_
-
-2134_
-2143
-2314
-2341
-2413
-2431
-
-3124_
-3142
-3214
-3241
-3412
-3421
-
-4123
-4132
-4213
-4231_
-4312
-4321
-"""
