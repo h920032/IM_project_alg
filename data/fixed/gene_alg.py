@@ -16,7 +16,11 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month):
             if i != j:
                 union = np.logical_or(score_liz[i][1], score_liz[j][1])
                 one_not_avb = union * score_liz[i][0]
-                one_avb = score_liz[i][0] - one_not_avb
+                #debug
+                print('score_liz[i][0] =',score_liz[i][0])
+                print('one_not_avb =',one_not_avb)
+                #上面這兩個印出來都是大表格!?
+                one_avb = score_liz[i][0] - one_not_avb    #!!!TypeError: unsupported operand type(s) for -: 'str' and 'str'
                 two_not_avb = union * score_liz[j][0]
                 two_avb = score_liz[j][0] - two_not_avb
                 sp_row = random.randint(0,nDAY-1)
@@ -52,6 +56,7 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month):
 def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month): #avaliavle_sol 可行解列表 fix 不能移動的列表
     i_nb = []
     for p in range(len(avaliable_sol)):
+        #i_nb.append(np.vectorize({v: k for k, v in K_type_dict.items()}.get)(np.array(avaliable_sol[p])).tolist())
         i_nb.append(avaliable_sol[p]) 
     score_liz = []
     for i ,j in zip(i_nb,fix):
