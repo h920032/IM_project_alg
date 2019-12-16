@@ -39,7 +39,7 @@ tstart_0 = time.time()  #計時用
 
 #測試檔案檔名 - 沒有要測試時請將TestPath留空白
 # TestPath = ""
-TestPath = ""
+TestPath = "D:/Ting/桌面/test/1216_testing/"
 EmployeeTest = "_60人"
 AssignTest = "_60人各休一"
 NeedTest = "_標準"
@@ -923,7 +923,20 @@ print('\n基因演算法開始')
 gene_result = GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
 
 print('基因演算法共耗時',time.time()-tstart_gen,'秒\n')
-print(pd.DataFrame(gene_result))
+schedule = pd.DataFrame(gene_result)
+print(schedule)
+schedule.to_csv(EmployeeTest[1:]+'_Schedul_2019_4.csv', encoding="utf-8_sig")
+
+
+#=======================================================================================================#
+#====================================================================================================#
+#=================================================================================================#
+#       輸出
+#=================================================================================================#
+#====================================================================================================#
+#=======================================================================================================#
+
+
 
 
 
