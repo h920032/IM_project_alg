@@ -24,7 +24,7 @@ necessary constraints:
 
 #schedule為班表二維list
 
-def confirm(schedule, employee, assign, lower_limit, upper_limit, senior_limit):
+def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, weekdaylist, PERCENT, E_SENIOR):
     
 
     as_bool = True
@@ -32,10 +32,10 @@ def confirm(schedule, employee, assign, lower_limit, upper_limit, senior_limit):
     
     #(2)滿足每位員工排指定特定班型
     #需要參數:班表(schedule) 指定排班(assign)
-    for i in range(len(assign)):  
-        as_index = assign[i][0]
-        as_day = assign[i][1]
-        as_worktype = assign[i][2]
+    for i in assign:  
+        as_index = i[0]
+        as_day = i[1]
+        as_worktype = i[2]
         if schedule[as_index][as_day] != as_worktype:
             as_bool = False
             as_err +=str(as_index)
@@ -54,12 +54,13 @@ def confirm(schedule, employee, assign, lower_limit, upper_limit, senior_limit):
     #=========================================================================================================================================================
     #(3)每位員工每週只能排指定天數的晚班，且不能連續
     #需要參數:班表(schedule) 晚班集合(S_NIGHT)  第 w 週中所包含的日子集合(D_WEEK)) 每位員工每周能排的晚班次數(nightdaylimit) 
-    ### main function 裡 D_WEEK有錯!!!!!!!! 尚未修正!!!!!!!!!!
+    
     night_bool = True
     night_err =''
-
+    
 
     for i in range(len(schedule)):
+        nightdaylimit_int = int(nightdaylimit[i])
         #第j周
         for j in range(len(D_WEEK)):
             
@@ -77,7 +78,7 @@ def confirm(schedule, employee, assign, lower_limit, upper_limit, senior_limit):
                         break
                 night.append(night_flag)
             #連續晚班
-            for k in range(len(D_WEEK[j]):
+            for k in range(len(D_WEEK[j])):
                 if k != (len(D_WEEK[j]) - 1):
                     if night[k] == True & night[k+1] == True:
                         night_bool = False
@@ -90,17 +91,17 @@ def confirm(schedule, employee, assign, lower_limit, upper_limit, senior_limit):
             
             
             #晚班次數超過上限
-            if night_count > nightdaylimit[i] & night_err=='':
+            if night_count > nightdaylimit_int and night_err=='':
                 night_bool = False
                 night_err += str(i)
-                night_err += 'th employee'
-                night_err += 'has been assigned too many night class at '
+                night_err += 'th employee '
+                night_err += ' has been assigned too many night class at '
                 night_err += str(j)
                 night_err += 'th week'
                 break
  
         
-        if night_bool == False
+        if night_bool == False:
             break
 
 
@@ -123,7 +124,7 @@ def confirm(schedule, employee, assign, lower_limit, upper_limit, senior_limit):
         count = 0
         for j in e_in_require_position:
             for k in range(len(require_type)):
-                if schedule[j][day] = require_type[k]:
+                if schedule[j][day] == require_type[k]:
                     count+=1
                     break
 
@@ -206,32 +207,32 @@ def confirm(schedule, employee, assign, lower_limit, upper_limit, senior_limit):
     senior_bool = True
     senior_err =''
     
-    for i in range(len(PERCENT)):
-        day = PERCENT[i][0]
+    for n in range(len(PERCENT)):
+        day = PERCENT[n][0]
         require_day = weekdaylist[day]
-        class_type = PERCENT[i][1]
+        class_type = PERCENT[n][1]
         require_type = SHIFTset[class_type]
-        ratio = PERCENT[i][2]
+        ratio = PERCENT[n][2]
         people_in_class = 0
         skilled_people_in_class = 0
         for j in require_day:
-            for k in E_SENIOR[i]:
+            for i in E_SENIOR[n]:       #E_SENIOR[n]是一組員工集合(i)，不是班別集合(k)        
                 
                 for r in range(len(require_type)):
-                    if schedule[k][j] == require_type[k]:
+                      if schedule[i][j] == require_type[r]:   #報錯：list index out of range
                         skilled_people_in_class += 1
                         break
-            for k in range(len(schedule)):
+            for i in range(len(schedule)):
                 for r in range(len(require_type)):
-                    if schedule[k][j] == require_type[k]:
+                    if schedule[i][j] == require_type[r]:
                         people_in_class += 1
                         break
         
-        if skilled_people_in_class/people_in_class < ratio:
+        if skilled_people_in_class/people_in_class < ratio:     #若年資足夠者少於指定比例，顯示錯誤
             senior_bool = False
-            senior_err = 'There is a lack of employee who has been in the career more than ' + str(PERCENT[i][3]) +  ' years on ' + str(day)
+            senior_err = 'There is a lack of employee who has been in the career more than ' + str(PERCENT[n][3]) +  ' years on ' + str(day)
     
-    if senior_bool = False:
+    if senior_bool == False:
         return senior_err
     
 

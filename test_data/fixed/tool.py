@@ -14,7 +14,7 @@ K_type = ['O','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','
 # 下面的try/except是為了因應條件全空時
 def readFile(dir, header_=None, skiprows_=[0], index_col_=None):
     try:
-        t = pd.read_csv(dir, header = header_, skiprows=skiprows_, index_col=index_col_, engine='python')
+        t = pd.read_csv(dir, header = header_, skiprows=skiprows_, index_col=index_col_, encoding='utf8', engine='python')
     except:
         t = pd.DataFrame()
     return t
@@ -46,39 +46,35 @@ def get_startD(year,month):
 ==========================================="""
 #JW 第w周包含的日子集合
 #JW 無國定假日的話
-def SetDAYW(day, total_day, total_week):   #第一天上班是星期幾/幾天/幾週
+def SetDAYW(day, total_day, total_week, DAY, DATE):   #第一天上班是星期幾/幾天/幾週/工作天集合/日期集合
     ans = []
-    count  = 0
+    count  = 1
     for i in range(total_week):
         tmp = []
         if(i == 0):
-            for j in range(6-day):
-                tmp.append(count)
+            for j in range(8-day):
+                for k in DAY:
+                    if count == DATE[k]:   #該天有上班
+                        tmp.append(k)
+                        break
                 count+=1
         else:
-            for j in range(5):
-                tmp.append(count)
+            for j in range(7):
+                for k in DAY:
+                    if count == DATE[k]:   #該天有上班
+                        tmp.append(k)
+                        break
                 count+=1
-                if count == total_day:
-                    ans.append(tmp)
+                if count == total_day + 1:
                     break
         ans.append(tmp)
     return ans
 
-def SetWEEKD(day, total_day, total_week):   #第一天上班是星期幾/幾天/幾週
+def SetWEEKD(D_WEEK, total_week):  
     ans = []
-    count  = 0
     for i in range(total_week):
-        if(i == 0):
-            for j in range(6-day):
-                ans.append(i)
-                count+=1
-        else:
-            for j in range(5):
-                ans.append(i)
-                count+=1
-                if count == total_day:
-                    break
+        for j in D_WEEK[i]:
+            ans.append(i)
     return ans
 
 #JW_fri 第w周的星期五與下周一的集合
@@ -93,14 +89,14 @@ def SetDAYW_fri(JWset, total_week):   #JW日子集合/幾週
     return ans
 
 #Jset 通用日子集合
-def SetDAY(day, total_day):   #第一天上班是星期幾/幾天
+def SetDAY(day, total_day, DATE):   #第一天上班是星期幾/幾天
     set = {'all':list(range(total_day))}
     set['Mon']=[]; set['Tue']=[]; set['Wed']=[]
     set['Tru']=[]; set['Fri']=[]
     # 所有周一，所有週二，所有週三...
     w = ['Mon','Tue','Wed','Tru','Fri']
     for i in range(total_day):
-        set[ w[(i+day)%5] ].append(i)
+        set[ w[(DATE[i]-1)%7] ].append(i)
     return set
 
 

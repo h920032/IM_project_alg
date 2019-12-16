@@ -70,11 +70,11 @@ def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 		neck = float( n - avg )						#剩餘可動人手 = 上限人數 - 平均需求人數 (很可能是負數)
 		limits.append([ 'upper', POSI['任意'], DAY[i[0]], K[i[1]], n, neck])
 
-	#lower limit: j, k_set, i(position), n
-	# for i in L:
-	# 	n = int(i[3])
-	# 	neck = float( len(POSI[i[2]]) - n )
-	# 	limits.append([ 'lower', POSI[i[2]], [int(i[0])], K[i[1]], n, neck])
+	# lower limit: j, k_set, i(position), n
+	for i in L:
+		n = int(i[3])
+		neck = float( len(POSI[i[2]]) - n )
+		limits.append([ 'lower', POSI[i[2]], [int(i[0])], K[i[1]], n, neck])
 
 	#senior limit: j_set, k_set, n, i(senior) 
 	for ii in range(len(S)):	#because we need to get SENIOR which is without index
@@ -86,13 +86,55 @@ def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 
 	#sort
 	limits.sort(key=takeNeck, reverse=False)
-
+	
 	#change order
-	main = [limits]
+	main = []
 	nl = len(limits)
-	for dis in range(1, nl):							#dis = 要交換的兩項的距離(從1開始)
-		for i in range(nl-1):							#第一個要交換項的index
-			ii = i+dis
+	
+	if nl < 4:                             #至少要4條限制式
+		print("error: not enough limits")
+	
+	ll = list(range(nl))
+	
+	for i in ll:
+		dif = {i}
+		newlimits = []
+		newlimits.append(limits[i])
+		lla = list(set(ll).difference(dif))           #第i個以外的限制式作排列組合
+		if not lla:                                 #只有一條限制式的情況
+			main.append(newlimits)
+			break							
+		for ia in lla:
+			dif = {ia}
+			newlimits = []
+			newlimits.append(limits[i])
+			newlimits.append(limits[ia])
+			llb = list(set(lla).difference(dif))     #第i,ia個以外的限制式作排列組合
+			if not llb:                             #只有兩條限制式的情況
+				main.append(newlimits)
+				break
+			for ib in llb:
+				dif = {ib}
+				newlimits = []
+				newlimits.append(limits[i])
+				newlimits.append(limits[ia])
+				newlimits.append(limits[ib])
+				llc = list(set(llb).difference(dif)) #第i,ia,ib個以外的限制式作排列組合
+				if not llc:                         #只有三條限制式的情況
+					main.append(newlimits)
+					break
+				for ic in llc:
+					dif = {ic}
+					newlimits.append(limits[ic])
+					lld = list(set(llc).difference(dif))
+					if not lld == False:            #超過四條限制式的情況
+						for left in lld:
+							newlimits.append(limits[left])
+						main.append(newlimits)
+						break
+					else:
+						main.append(newlimits)						
+			"""ii = i+dis
 			if ii >= nl:								#要換的超過尾端，則不換，跳出
 				break
 			elif len(main) >= N:						#現有的排序數量比要的還要多
@@ -100,52 +142,11 @@ def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 			else:
 				buff = limits							#buff存放交換過的序列
 				exchange(i, ii, buff)
-			main.append(buff)
-
+			main.append(buff)"""
+	
 	#return
-	print('\nLIMIT_ORDER(): return',len(main),'kinds of order\n')
+	if len(main)>N:
+		main = main[0:N]
+	print('\nLIMIT_ORDER(): return', len(main) ,'kinds of order\n')
 	return main
 
-
-
-"""
-1234
-#dis=1
-2134
-1324
-1243
-#dis=2
-3124
-1432
-#dis=3
-4231
-
-#other
-1234_
-1243_
-1324_
-1342
-1423
-1432_
-
-2134_
-2143
-2314
-2341
-2413
-2431
-
-3124_
-3142
-3214
-3241
-3412
-3421
-
-4123
-4132
-4213
-4231_
-4312
-4321
-"""

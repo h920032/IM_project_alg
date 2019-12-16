@@ -39,7 +39,7 @@ tstart_0 = time.time()  #計時用
 
 #測試檔案檔名 - 沒有要測試時請將TestPath留空白
 # TestPath = ""
-TestPath = ""
+TestPath = "./test_data/"
 EmployeeTest = "_40人"
 AssignTest = "_40人各休一"
 NeedTest = "_標準"
@@ -52,10 +52,11 @@ NeedTest = "_標準"
 #====================================================================================================#
 #=======================================================================================================#
 #讀檔路徑import data
-try:
-    f = open('path.txt', "r")
-    dir_name = f.read().replace('\n', '')
-except:
+
+f = open('path.txt', "r")
+dir_name = f.read().replace('\n', '')
+
+if dir_name == "":
     dir_name = './data/'   #預設資料路徑：./data/
 
 # 測試用
@@ -63,11 +64,10 @@ if TestPath != "":
     dir_name = TestPath
     parameters_dir = TestPath
 else:
-    dir_name = './data/'
     EmployeeTest = ""
     AssignTest = ""
     NeedTest = ""
-
+print(dir_name)
 #=============================================================================#
 #每月更改的資料
 #=============================================================================#
@@ -89,7 +89,7 @@ DATES = [ int(x) for x in DEMAND_t.index ]    #所有的日期 - 對照用
 
 #employees data
 print(dir_name+"per_month/Employee"+EmployeeTest+".csv")
-EMPLOYEE_t = pd.read_csv(dir_name+"per_month/Employee"+EmployeeTest+".csv", header = 0) 
+EMPLOYEE_t = pd.read_csv(dir_name+"per_month/Employee"+EmployeeTest+".csv", header = 0, engine='python') 
 # EMPLOYEE_t = pd.read_csv(dir_name+"per_month/Employee.csv", header = 0) 
 E_NAME = list(EMPLOYEE_t['Name_English'])       #E_NAME - 對照名字與員工index時使用
 E_ID = [ str(x) for x in EMPLOYEE_t['ID'] ]     #E_ID - 對照ID與員工index時使用
@@ -887,8 +887,6 @@ for p in range(parent):
     
     if message != 'All constraints are met.':
         print('Some constraints fails.')
-        # print(df_x)
-        # break
     else:
         success += 1
 
@@ -922,11 +920,6 @@ tstart_gen = time.time()
 print('\n基因演算法開始')
 gene_result = GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
 
-print('基因演算法共耗時',time.time()-tstart_gen,'秒\n')
-schedule = pd.DataFrame(gene_result)
-print(schedule)
-schedule.to_csv(EmployeeTest[1:]+'_Schedul_2019_4.csv', encoding="utf-8_sig")
-
 
 #=======================================================================================================#
 #====================================================================================================#
@@ -935,9 +928,10 @@ schedule.to_csv(EmployeeTest[1:]+'_Schedul_2019_4.csv', encoding="utf-8_sig")
 #=================================================================================================#
 #====================================================================================================#
 #=======================================================================================================#
-
-
-
+print('基因演算法共耗時',time.time()-tstart_gen,'秒\n')
+schedule = pd.DataFrame(gene_result)
+print(schedule)
+schedule.to_csv(EmployeeTest[1:]+'_Schedul_2019_4.csv', encoding="utf-8_sig")
 
 
 
