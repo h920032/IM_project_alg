@@ -51,7 +51,8 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir='./data/per_month
                 sort.append((b_two_one_two,score_liz[j][1],score(b_two_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
                 sort.append((b_one_two_one,score_liz[i][1],score(b_one_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
                 sort.append((b_two_two_one,score_liz[j][1],score(b_two_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
-    sort = sorted(sort, key = lambda s: s[2],reverse = True)
+    # sort = sorted(sort, key = lambda s: s[2],reverse = True)
+    sort = sorted(sort, key = lambda s: s[2])
     sort = sort[:100]
     return sort
 

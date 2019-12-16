@@ -38,8 +38,8 @@ import datetime, calendar, sys
 tstart_0 = time.time()  #計時用
 
 #測試檔案檔名 - 沒有要測試時請將TestPath留空白
-# TestPath = ""
-TestPath = "D:/Ting/桌面/test/1216_testing/"
+TestPath = ""
+# TestPath = "D:/Ting/桌面/test/1216_testing/"
 EmployeeTest = "_60人"
 AssignTest = "_60人各休一"
 NeedTest = "_標準"
