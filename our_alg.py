@@ -39,7 +39,7 @@ tstart_0 = time.time()  #計時用
 
 #測試檔案檔名 - 沒有要測試時請將TestPath留空白
 # TestPath = ""
-TestPath = "./test_data/"
+TestPath = ""
 EmployeeTest = "_40人"
 AssignTest = "_40人各休一"
 NeedTest = "_標準"
@@ -517,20 +517,35 @@ for p in range(parent):
         CSR_LIST = CSR_ORDER(char, LIMIT[0], LIMIT[1], EMPLOYEE_t) #員工沒用度排序
         for j in LIMIT[2]:
             BOUND = LIMIT[4]
-            for i in CSR_LIST:
-                if BOUND <= 0:  #若限制式參數(n)不合理，忽略之
-                    break
-                for k in LIMIT[3]:  
-                    if BOUND <= 0:
+            if LIMIT[0] != 'ratio':
+                for i in CSR_LIST:
+                    if BOUND <= 0:  #若限制式參數(n)不合理，忽略之
                         break
-                    elif ABLE(i, j, k) == True: #若此人可以排此班，就排
-                        work[i, j, k] = True
-                        for t in range(nT):
-                            if CONTAIN[k][t] == 1:              
-                                CURRENT_DEMAND[j][t] -= 1
-                        BOUND -= 1
-                    else:
-                        continue
+                    for k in LIMIT[3]:  
+                        if BOUND <= 0:
+                            break
+                        elif ABLE(i, j, k) == True: #若此人可以排此班，就排
+                            work[i, j, k] = True
+                            for t in range(nT):
+                                if CONTAIN[k][t] == 1:              
+                                    CURRENT_DEMAND[j][t] -= 1
+                            BOUND -= 1
+                        else:
+                            continue
+            else:
+                for k in LIMIT[3]:
+                    BOUND = LIMIT[4]
+                    for i in CSR_LIST:  
+                        if BOUND <= 0:
+                            break
+                        elif ABLE(i, j, k) == True: #若此人可以排此班，就排
+                            work[i, j, k] = True
+                            for t in range(nT):
+                                if CONTAIN[k][t] == 1:              
+                                    CURRENT_DEMAND[j][t] -= 1
+                            BOUND -= 1
+                        else:
+                            continue
     #sequence += 1
     if char == 'a':
         char = 'b'

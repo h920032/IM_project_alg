@@ -80,8 +80,9 @@ def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 	for ii in range(len(S)):	#because we need to get SENIOR which is without index
 		i = S[ii]
 		n = float(i[2])
+		bound = n*avgNeed(i[0], i[1], DAY,K,K_TIME,Need)
 		#計算瓶頸程度：總可用人數 - 需求人數(n*平均需求人數)
-		neck = len(SENIOR[ii]) - n*avgNeed(i[0], i[1], DAY,K,K_TIME,Need)	#瓶頸程度=剩餘可動人手
+		neck = len(SENIOR[ii]) - bound	#瓶頸程度=剩餘可動人手
 		limits.append([ 'ratio', SENIOR[ii], DAY[i[0]], K[i[1]], n, neck])
 
 	#sort

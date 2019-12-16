@@ -216,14 +216,12 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
         people_in_class = 0
         skilled_people_in_class = 0
         for j in require_day:
-            for i in E_SENIOR[n]:       #E_SENIOR[n]是一組員工集合(i)，不是班別集合(k)        
-                
-                for r in range(len(require_type)):
-                      if schedule[i][j] == require_type[r]:   #報錯：list index out of range
+            for r in range(len(require_type)):
+                for i in E_SENIOR[n]:       #E_SENIOR[n]是一組員工集合(i)，不是班別集合(k)        
+                    if schedule[i][j] == require_type[r]:   #報錯：list index out of range
                         skilled_people_in_class += 1
                         break
-            for i in range(len(schedule)):
-                for r in range(len(require_type)):
+                for i in range(len(schedule)):
                     if schedule[i][j] == require_type[r]:
                         people_in_class += 1
                         break
@@ -231,7 +229,7 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
         if skilled_people_in_class/people_in_class < ratio:     #若年資足夠者少於指定比例，顯示錯誤
             senior_bool = False
             senior_err = 'There is a lack of employee who has been in the career more than ' + str(PERCENT[n][3]) +  ' years on ' + str(day)
-            print(skilled_people_in_class, people_in_class)
+        
     
     if senior_bool == False:
         return senior_err
