@@ -39,7 +39,7 @@ tstart_0 = time.time()  #計時用
 
 #測試檔案檔名 - 沒有要測試時請將TestPath留空白
 # TestPath = ""
-TestPath = "./test_data/"
+TestPath = ""
 EmployeeTest = "_40人"
 AssignTest = "_40人各休一"
 NeedTest = "_標準"
