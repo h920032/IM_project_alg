@@ -231,6 +231,7 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
         if skilled_people_in_class/people_in_class < ratio:     #若年資足夠者少於指定比例，顯示錯誤
             senior_bool = False
             senior_err = 'There is a lack of employee who has been in the career more than ' + str(PERCENT[n][3]) +  ' years on ' + str(day)
+            print(skilled_people_in_class, people_in_class)
     
     if senior_bool == False:
         return senior_err
