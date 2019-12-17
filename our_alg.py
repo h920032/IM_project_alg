@@ -181,8 +181,8 @@ Shift_name = Kset_t.iloc[0].tolist()
 #-------number-------#
 nEMPLOYEE = EMPLOYEE_t.shape[0]     #總員工人數
 nDAY = len(DEMAND_t.index)          #總日數
-nK = A_t.shape[0]                 #班別種類數
-nT = 24                 #總時段數
+nK = A_t.shape[0]                   #班別種類數
+nT = 24                             #總時段數
 nR = 5                              #午休種類數
 nW = tl.get_nW(year,month)          #總週數
 mDAY = int(calendar.monthrange(year,month)[1])
