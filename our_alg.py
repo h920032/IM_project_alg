@@ -437,10 +437,10 @@ def ABLE(this_i,this_j,this_k):
     for item in UPPER:
         if(this_j in DAYset[item[0]] and this_k in SHIFTset[item[1]]):
             tmpcount = 0
-            for people in EMPLOYEE:
+            for whichday in DAYset[item[0]]:
                 for tmp in  SHIFTset[item[1]]:
-                    if(work[people,this_j,tmp]==1):
-                        if(people == this_i and tmp == this_k):
+                    if(work[this_i,whichday,tmp]==1):
+                        if(whichday == this_j and tmp == this_k):
                             tmpcount+=0
                         else:
                             tmpcount+=1
