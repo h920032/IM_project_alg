@@ -143,7 +143,7 @@ nightdaylimit = EMPLOYEE_t['night_perWeek']
 #=============================================================================#
 Kset_t = pd.read_csv(dir_name + 'fixed/fix_classes.csv', header = None, index_col = 0) #class set
 A_t = pd.read_csv(dir_name + 'fixed/fix_class_time.csv', header = 0, index_col = 0)
-
+B_t = pd.read_csv(dir_name + 'fixed/fix_class_time.csv', header = 0, index_col = 0).T
 
 
 
@@ -176,8 +176,8 @@ A_t = pd.read_csv(dir_name + 'fixed/fix_class_time.csv', header = 0, index_col =
 #-------number-------#
 nEMPLOYEE = EMPLOYEE_t.shape[0]     #總員工人數
 nDAY = len(DEMAND_t.index)          #總日數
-nK = 19                             #班別種類數
-nT = 24                             #總時段數
+nK = len(A_t.index)                 #班別種類數
+nT = len(B_t.index)                 #總時段數
 nR = 5                              #午休種類數
 nW = tl.get_nW(year,month)          #總週數
 mDAY = int(calendar.monthrange(year,month)[1])
@@ -249,19 +249,7 @@ S_BREAK = [[11,12],[1,7,14,15],[2,8,16,18],[3,9,17],[4,10]]     #Kr - 午休方�
 SHIFTset= {}                                                    #SHIFTset - 通用的班別集合，S=1,…,nS
 for ki in range(len(Kset_t)):
     SHIFTset[Kset_t.index[ki]] = [ tl.Tran_t2n(x) for x in Kset_t.iloc[ki].dropna().values ]
-"""
-SKILL_NAME = []                                             #SKILL_NAME - 技能的種類
-for ki in range(len(SKset_t)):
-    SKILL_NAME.append(SKset_t.index[ki])
 
-K_skill = {}                                                #K_skill - 各技能的特定班別
-for ki in range(len(SKset_t)):
-    K_skill[SKset_t.index[ki]] = [ tl.Tran_t2n(x) for x in SKset_t.iloc[ki].dropna().values ]       #各個技能的特定班別
-
-K_skill_not = {}                                                #K_skill_not - 各技能的特定班別的補集
-for ki in range(len(SKset_t)):
-    K_skill_not[SKset_t.index[ki]] = list(set(range(0,nK)).difference(set(tl.Tran_t2n(x) for x in SKset_t.iloc[ki].dropna().values)))  #各個技能的非特定班別
-"""
 #============================================================================#
 #Variables
 
@@ -500,18 +488,7 @@ for p in range(parent):
             for t in range(nT):
                 if CONTAIN[c[2]][t] == 1:
                     CURRENT_DEMAND[c[1]][t] -= 1
-    """
-    #每天一位特定技能CSR排一個特定班別
-    for j in DAY:
-        for skill in SKILL_NAME:
-            for k in K_skill[skill]: 
-                for i in E_SKILL[skill]:       
-                    if ABLE(i, j, k) == True:
-                        work[i, j, k] = True
-                        break
-                    else: 
-                        continue
-    """
+    
     #瓶頸排班
     LIMIT_LIST = LIMIT_MATRIX[sequence] #一組限制式排序
     LIMIT = [] #一條限制式
@@ -653,18 +630,6 @@ for p in range(parent):
                         if work[i, j, k] == True:
                             breakCount[i,w,r] = True
     
-    """
-    for ii in E_SKILL:      #type(E_SKILL)=dict，要兩步驟取出裡面每項的list
-        i_set = E_SKILL[ii]
-        if len(i_set) <= 0: continue        #沒有人持有此技能時，略過
-        k_set = K_skill_not[ii]
-        if len(k_set) >= nK: continue   #技能沒有設定優先班別時，略過
-        for i in i_set:
-            for j in DAY:
-                for k in k_set:
-                    if work[i, j, k] == True:
-                        complement += 1
-    """
     #=================================================================================================#
     # 輸出
     #=================================================================================================#
@@ -770,10 +735,7 @@ for i in range(parent):
     avaliable_sol.append(INITIAL_POOL[i].df_x1.values.tolist())
 
 
-"""print('len of INITIAL_POOL =',len(INITIAL_POOL))
-for item in INITIAL_POOL:
-    item.print()
-print('len of avaliable_sol =',len(avaliable_sol),'\n\n')"""
+
 #=======================================================================================================#
 #====================================================================================================#
 #=================================================================================================#
