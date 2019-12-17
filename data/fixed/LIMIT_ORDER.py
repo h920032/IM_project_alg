@@ -18,7 +18,7 @@ output：
 	i_set,		#employee
 	j_set,		#date
 	k_set,		#work class
-	n 			#umber
+	n 			#number of people needed
 ]	
 ============================================================================#"""
 
@@ -42,7 +42,7 @@ def avgNeed(dates,classes, DAY,K,K_TIME,Need):
 
 def takeNeck(alist):
 	try:
-		return alist[5]
+		return alist[-1]
 	except:
 		print('找不到項目 ',end='')
 		print(alist,end='')
@@ -60,35 +60,44 @@ def exchange(index1, index2, alist):
 # main function
 
 def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
-	# print(L)
-	# print(POSI)
-	limits = []
-	#upper limit: (all), j_set, k_set, n
+	limits = []	#裝第一組（完全照順序排序）的list
+
+	"""===========================================
+	資料前處理
+	==========================================="""
+	# #upper limit: (all), j_set, k_set, n
 	# for i in U:
 	# 	n = int(i[2])
 	# 	avg = avgNeed(i[0],i[1], DAY,K,K_TIME,Need)
 	# 	neck = float( n - avg )						#剩餘可動人手 = 上限人數 - 平均需求人數 (很可能是負數)
-	# 	limits.append([ 'upper', POSI['任意'], DAY[i[0]], K[i[1]], n, neck])
+	# 	limits.append([ 'upper', POSI['任意'], DAY[i[0]], K[i[1]], avg, neck])	#[-2]表示需要多少人
 
 	# lower limit: j, k_set, i(position), n
 	for i in L:
 		n = int(i[3])
 		neck = float( len(POSI[i[2]]) - n )
-		limits.append([ 'lower', POSI[i[2]], [int(i[0])], K[i[1]], n, neck])
+		limits.append([ 'lower', POSI[i[2]], [int(i[0])], K[i[1]], n, neck])	#[-2]表示需要多少人
 
 	#senior limit: j_set, k_set, n, i(senior) 
-	for ii in range(len(S)):	#because we need to get SENIOR which is without index
+	for ii in range(len(S)):	#get SENIOR without index
 		i = S[ii]
 		n = float(i[2])
 		bound = n*avgNeed(i[0], i[1], DAY,K,K_TIME,Need)
 		#計算瓶頸程度：總可用人數 - 需求人數(n*平均需求人數)
 		neck = len(SENIOR[ii]) - bound	#瓶頸程度=剩餘可動人手
-		limits.append([ 'ratio', SENIOR[ii], DAY[i[0]], K[i[1]], n, neck])
+		limits.append([ 'ratio', SENIOR[ii], DAY[i[0]], K[i[1]], bound, neck])	#[-2]表示需要多少人
 
-	#sort
+
+	"""===========================================
+	sort
+	==========================================="""
 	limits.sort(key=takeNeck, reverse=False)
 	
-	#change order
+
+	"""===========================================
+	change order
+	==========================================="""
+	############### change order #####################
 	main = []
 	nl = len(limits)
 	
@@ -144,11 +153,12 @@ def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 				buff = limits							#buff存放交換過的序列
 				exchange(i, ii, buff)
 			main.append(buff)"""
-	
-	#return
-	for item in main:
-		item[-2] = item[-1]
+	############## end change order ###############3
 
+
+	"""===========================================
+	return
+	==========================================="""
 	if len(main)>N:
 		main = main[0:N]
 	print('\nLIMIT_ORDER(): return', len(main) ,'kinds of order\n')
