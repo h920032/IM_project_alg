@@ -345,7 +345,7 @@ class Pool():
 # Global Variables
 #========================================================================#
 # 產生親代的迴圈數
-parent = 100	# int
+parent = 10	# int
 
 # 生成Initial pool的100個親代
 INITIAL_POOL = []
@@ -878,8 +878,7 @@ for p in range(parent):
     #將結果放入INITIAL_POOL中
     #====================================================================================================#
     INITIAL_POOL.append(Pool(result, df_x1, df_y, df_percent_day, df_percent_time, df_nightcount, df_resttime, new, new_2))
-    print('\n生成INITIAL POOL： parent =',p,', result =', INITIAL_POOL[p].result)
-    print(message)
+    
     #print("result2 = ", result2)
     for i in range(nEMPLOYEE):
         for j in range(nDAY):
@@ -901,14 +900,17 @@ for p in range(parent):
     complement =  0
     
     if message != 'All constraints are met.':
-        print('Some constraints fails.')
+        INITIAL_POOL[p].result = INITIAL_POOL[p].result * -1000000
     else:
         success += 1
 
+    print('\n生成INITIAL POOL： parent =',p,', result =', INITIAL_POOL[p].result)
+    print(message)
+    if message != 'All constraints are met.':
+        print('Some constraints fails.')
+
     if p == parent-1:
         print("\nINITIAL POOL completed")
-    
-    
     #====================================================================================================#
     #====================================================================================================#
 print('\n產生',parent,'個結果於 initail pool (',success,'個合理解) ，共花費', (time.time()-tStart) ,'秒\n\n')
