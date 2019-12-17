@@ -6,12 +6,12 @@ import pandas as pd
 import random as rd
 import data.fixed.tool as tl
 
-#import data.fixed.gene_alg as gen
-#from data.fixed.CSR_order import CSR_ORDER
-#from data.fixed.LIMIT_ORDER import LIMIT_ORDER
+import data.fixed.gene_alg as gen
+from data.fixed.CSR_order import CSR_ORDER
+from data.fixed.LIMIT_ORDER import LIMIT_ORDER
 #from data.fixed.ARRANGEMENT import ARRANGEMENT
-#from data.fixed.CONFIRM import confirm
-#from data.fixed.score import score
+from data.fixed.CONFIRM import confirm
+from data.fixed.score import score
 import datetime, calendar, sys
 """============================================================================#
 12/3
@@ -149,7 +149,7 @@ nightdaylimit = EMPLOYEE_t['night_perWeek']
 #=============================================================================#
 Kset_t = pd.read_csv(dir_name + 'fixed/fix_classes.csv', header = None, index_col = 0) #class set
 A_t = pd.read_csv(dir_name + 'fixed/fix_class_time.csv', header = 0, index_col = 0)
-Posi = pd.read_csv(dir_name + 'fixed/position.csv', header = None).iloc[0].tolist()
+Posi = pd.read_csv(dir_name + 'fixed/position.csv', header = None, engine='python').iloc[0].tolist()
 Shift_name = Kset_t.iloc[0].tolist()
 
 #=======================================================================================================#
@@ -520,7 +520,7 @@ def GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month,per_month_dir
 #====================================================================================================#
 #=======================================================================================================#
 
-LIMIT_MATRIX = LIMIT_ORDER(25,LOWER,SKILL,PERCENT,DEMAND,E_POSITION,E_SENIOR,E_SKILL,DAYset,SHIFTset, CONTAIN) #生成多組限制式matrix
+LIMIT_MATRIX = LIMIT_ORDER(25,LOWER,NOTPHONE_CLASS,NOTPHONE_CLASS_special,PERCENT,DEMAND,E_POSITION,E_SENIOR,E_SKILL,DAYset,VACnextdayset,NOT_VACnextdayset,SHIFTset,CONTAIN) #生成多組限制式matrix
 #print(LIMIT_MATRIX)
 sequence = 0 #限制式順序
 char = 'a' #CSR沒用度順序

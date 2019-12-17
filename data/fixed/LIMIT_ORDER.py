@@ -59,7 +59,7 @@ def exchange(index1, index2, alist):
 #=============================================================================#
 # main function
 
-def LIMIT_ORDER(N, L, SK, S, Need, POSI, SENIOR, SKILL, DAY, K, K_TIME):
+def LIMIT_ORDER(N, L, SK, SK_S, S, Need, POSI, SENIOR, SKILL, DAY, VAC, nVAC, K, K_TIME):
 	limits = []	#裝第一組（完全照順序排序）的list
 
 	"""===========================================

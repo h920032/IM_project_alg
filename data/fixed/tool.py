@@ -140,15 +140,18 @@ def SetSKILL(matrix):
     return ans
 
 #POSI 每個職位的員工組合
-def SetPOSI(alist):
+def SetPOSI(alist, order):
     n = len(alist)
     s = {'任意':list(range(n))}  #預設職位：任意(包含所有人)
     #登錄所有職位
-    for p in set(alist):
+    for i,p in enumerate(order):
         s[p] = []
-    #一個個把人加入他/她的職位所屬的群組
-    for i in range(n):
-        s[ alist[i] ].append(i)
+        poslist = []
+        for j in range(i, len(order)):
+            poslist.append(order[j])
+        for i in range(n):
+            if alist[i] in poslist:
+                s[p].append(i)
     return s
 
 #SENIOR 超過特定年資的員工組合
