@@ -900,13 +900,14 @@ for p in range(parent):
     complement =  0
     
     if message != 'All constraints are met.':
-        print('Some constraints fails.')
         INITIAL_POOL[p].result = INITIAL_POOL[p].result * -1000000
     else:
         success += 1
 
     print('\n生成INITIAL POOL： parent =',p,', result =', INITIAL_POOL[p].result)
     print(message)
+    if message != 'All constraints are met.':
+        print('Some constraints fails.')
 
     if p == parent-1:
         print("\nINITIAL POOL completed")
