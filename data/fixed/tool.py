@@ -89,30 +89,40 @@ def SetDAYW_fri(JWset, total_week):   #JW日子集合/幾週
     return ans
 
 #Jset 通用日子集合
-def SetDAY(day, total_day, DATE, total_week, D_WEEK):   #第一天上班是星期幾/幾天/日期
-    setd = {'all':list(range(total_day))}
-    setd['Mon']=[]; setd['Tue']=[]; setd['Wed']=[]
-    setd['Thr']=[]; setd['Fri']=[]
+def SetDAY(day, total_day, DATE):   #第一天上班是星期幾/幾天
+    set = {'all':list(range(total_day))}
+    set['Mon']=[]; set['Tue']=[]; set['Wed']=[]
+    set['Thu']=[]; set['Fri']=[]
     # 所有周一，所有週二，所有週三...
-    w = ['Mon','Tue','Wed','Thr','Fri']
+    w = ['Mon','Tue','Wed','Thu','Fri']
     for i in range(total_day):
-        setd[ w[(DATE[i]-1)%7] ].append(i)
-    setd['DayAfterHoliday']=[]
-    DAH = []
-    if day == 0:
-        for w in range(total_week):
-            setd['DayAfterHoliday'].append(D_WEEK[w][0])
-            DAH.append(D_WEEK[w][0])
-    else:
-        for w in range(1,total_week):
-            setd['DayAfterHoliday'].append(D_WEEK[w][0])
-            DAH.append(D_WEEK[w][0])
-    setd['notDayAfterHoliday'] = []
-    nDAH = []
-    nDAH.extend(list(set(range(total_day)).difference(set(DAH)))) 
-    setd['notDayAfterHoliday'].extend(nDAH)
-    return setd
+        set[ w[(DATE[i]-1)%7] ].append(i)
+    return set
 
+
+#VACnextdayset 假日後或週一的集合
+def SetVACnext(month_start, nDAY, DATES):
+    ans = []
+    ans2 = []
+    #第一天不是1 / 第一天是1
+    if DATES[0]!=1:
+        ans.append(0)
+    elif (month_start == 0 and DATES[0]==1):
+        ans.append(0)
+    else:
+        ans2.append(0)
+    
+    
+    for i,day in enumerate(DATES):
+        if i==0:
+            continue
+        else:
+            #我的前一天不是我的數字-1(代表前一天放假)
+            if(day-1!=DATES[i-1]):
+                ans.append(i)
+            else:
+                ans2.append(i)
+    return ans, ans2
 
 """===========================================
 	Set Const Functions
