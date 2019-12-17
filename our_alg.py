@@ -268,7 +268,8 @@ VACnextdayset, NOT_VACnextdayset = tl.SetVACnext(month_start, nDAY, DATES) #VACn
 SHIFTset= {}                                                    #SHIFTset - 通用的班別集合，S=1,…,nS
 for ki in range(len(Kset_t)):
     SHIFTset[Kset_t.index[ki]] = [ tl.Tran_t2n(x, Shift_name) for x in Kset_t.iloc[ki].dropna().values ]
-
+for ki in range(len(Shift_name)):
+    SHIFTset[Shift_name[ki]] =ki
 S_NIGHT = SHIFTset['night']                                     #S_NIGHT - 所有的晚班
 S_BREAK = [[11,12],[1,7,14,15],[2,8,16,18],[3,9,17],[4,10]]     #Kr - 午休方式為 r 的班別 
 
@@ -438,29 +439,67 @@ def ABLE(this_i,this_j,this_k):
             if(tmpcount>=item[2]):
                 ans = False
                 return ans
+
+
+
     
     #排特殊技能班別的上限
-    for item in SKILL:
-        if(this_j in DAYset[item[0]] and this_k in SHIFTset[item[1]]):
-            if(this_i in E_SKILL[item[2]]) == False:                   #非技能員工
+    
+    #有每月總數上限
+    for item in Upper_shift:
+        if(this_k == SHIFTset[item[0]]):
+            tmpcount = 0
+            for whichday in DAY:
+                if(work[this_i,whichday,this_k]==1):
+                    if(whichday == this_j):
+                        tmpcount+=0
+                    else:
+                        tmpcount+=1
+            if(tmpcount>=item[1]):
                 ans = False
                 return ans
-            if item[0]!='DayAfterHoliday':
-                for csr in E_SKILL[item[2]]:                           #上限1天1人
-                    if work[csr,this_j,this_k]==1:
-                        ans = False
-                        return ans
-            else:
+    
+    #特殊技能排班
+    for item in NOTPHONE_CLASS:
+        if(this_k == SHIFTset[item[0]]):
+            if(this_i in E_SKILL[item[2]]):
                 tmpcount = 0
-                for csr in E_SKILL[item[2]]:                           #上限假期後1天2人
-                    if work[csr,this_j,this_k]==1:
-                        if(csr == this_i):
+                for people in EMPLOYEE:
+                    if(work[people,this_j,this_k]==1):
+                        if(people == this_i):
                             tmpcount+=0
                         else:
                             tmpcount+=1
-                if(tmpcount>=item[3]):
+                if(tmpcount>=item[1]):
                     ans = False
                     return ans
+            else:   #無此技能
+                ans = False
+                return ans
+
+    #特殊技能排班（有假日後要多人的限制）
+    for item in NOTPHONE_CLASS_special:
+        if(this_k == SHIFTset[item[0]]):
+            if(this_i in E_SKILL[item[2]]):
+                tmpcount = 0
+                for people in EMPLOYEE:
+                    if(work[people,this_j,this_k]==1):
+                        if(people == this_i):
+                            tmpcount+=0
+                        else:
+                            tmpcount+=1
+                            
+                if(this_j in VACnextdayset):
+                    if(tmpcount>=item[3]):
+                        ans = False
+                        return ans                  
+                else:
+                    if(tmpcount>=item[1]):
+                        ans = False
+                        return ans
+            else:   #無此技能
+                ans = False
+                return ans            
                
     
     return ans                 
