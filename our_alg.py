@@ -345,7 +345,7 @@ class Pool():
 # Global Variables
 #========================================================================#
 # 產生親代的迴圈數
-parent = 10	# int
+parent = 100	# int
 
 # 生成Initial pool的100個親代
 INITIAL_POOL = []
