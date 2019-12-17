@@ -64,11 +64,11 @@ def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 	# print(POSI)
 	limits = []
 	#upper limit: (all), j_set, k_set, n
-	for i in U:
-		n = int(i[2])
-		avg = avgNeed(i[0],i[1], DAY,K,K_TIME,Need)
-		neck = float( n - avg )						#剩餘可動人手 = 上限人數 - 平均需求人數 (很可能是負數)
-		limits.append([ 'upper', POSI['任意'], DAY[i[0]], K[i[1]], n, neck])
+	# for i in U:
+	# 	n = int(i[2])
+	# 	avg = avgNeed(i[0],i[1], DAY,K,K_TIME,Need)
+	# 	neck = float( n - avg )						#剩餘可動人手 = 上限人數 - 平均需求人數 (很可能是負數)
+	# 	limits.append([ 'upper', POSI['任意'], DAY[i[0]], K[i[1]], n, neck])
 
 	# lower limit: j, k_set, i(position), n
 	for i in L:
