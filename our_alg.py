@@ -123,7 +123,7 @@ NW_t = EMPLOYEE_t['NW']
 #半固定參數
 #=============================================================================#
 P_t = pd.read_csv(dir_name + 'parameters/weight_p1-4.csv', header = None, index_col = 0, engine='python') #權重
-SKset_t = pd.read_csv(dir_name + 'parameters/skills_classes.csv', header = None, index_col = 0, engine='python')   #class set for skills
+SK_t = pd.read_csv(dir_name + 'parameters/skills_limits.csv', header = 0, engine='python')   #class set for skills
 L_t = pd.read_csv(dir_name + "parameters/lower_limit.csv", header = 0, engine='python')          #指定日期、班別、職位，人數下限
 U_t = tl.readFile(dir_name + "parameters/upper_limit.csv")                          #指定星期幾、班別，人數上限
 Ratio_t = tl.readFile(dir_name + "parameters/senior_limit.csv")                     #指定年資、星期幾、班別，要占多少比例以上
@@ -219,7 +219,7 @@ for i in range(len(LOWER)):
     LOWER[i][0] = d
 UPPER = U_t.values.tolist()		   	#UPPER - 員工i，日子集合js，班別集合ks，排班次數上限
 PERCENT = Ratio_t.values.tolist()	#PERCENT - 日子集合，班別集合，要求占比，年資分界線
-
+SKILL = SK_t.values.tolist()       	#SKILL - 日期j，班別集合ks，技能sk，上班人數下限
 #============================================================================#
 #Sets
 EMPLOYEE = [tmp for tmp in range(nEMPLOYEE)]    #EMPLOYEE - 員工集合，I=0,…,nI 
@@ -249,19 +249,19 @@ S_BREAK = [[11,12],[1,7,14,15],[2,8,16,18],[3,9,17],[4,10]]     #Kr - 午休方�
 SHIFTset= {}                                                    #SHIFTset - 通用的班別集合，S=1,…,nS
 for ki in range(len(Kset_t)):
     SHIFTset[Kset_t.index[ki]] = [ tl.Tran_t2n(x) for x in Kset_t.iloc[ki].dropna().values ]
-
+"""
 SKILL_NAME = []                                             #SKILL_NAME - 技能的種類
 for ki in range(len(SKset_t)):
     SKILL_NAME.append(SKset_t.index[ki])
 
-K_skill = {}                                                #K_skill - 各技能的優先班別
+K_skill = {}                                                #K_skill - 各技能的特定班別
 for ki in range(len(SKset_t)):
-    K_skill[SKset_t.index[ki]] = [ tl.Tran_t2n(x) for x in SKset_t.iloc[ki].dropna().values ]       #各個技能的優先班別
+    K_skill[SKset_t.index[ki]] = [ tl.Tran_t2n(x) for x in SKset_t.iloc[ki].dropna().values ]       #各個技能的特定班別
 
-K_skill_not = {}                                                #K_skill_not - 各技能的優先班別的補集
+K_skill_not = {}                                                #K_skill_not - 各技能的特定班別的補集
 for ki in range(len(SKset_t)):
-    K_skill_not[SKset_t.index[ki]] = list(set(range(0,nK)).difference(set(tl.Tran_t2n(x) for x in SKset_t.iloc[ki].dropna().values)))  #各個技能的非優先班別
-
+    K_skill_not[SKset_t.index[ki]] = list(set(range(0,nK)).difference(set(tl.Tran_t2n(x) for x in SKset_t.iloc[ki].dropna().values)))  #各個技能的非特定班別
+"""
 #============================================================================#
 #Variables
 
@@ -315,29 +315,11 @@ BOUND: 人數下限
 # class
 #========================================================================#
 class Pool():
-    def __init__(self, result, df_x1, df_y, df_percent_day, df_percent_time, df_nightcount, df_resttime, df_result_x, df_result_y):
+    def __init__(self, result, df_x1):
         #result: 目標式結果
         self.result = result
         #df_x1 : 員工班表(整數班別)
         self.df_x1 = df_x1
-        #df_y: 缺工人數表
-        self.df_y =  df_y
-        #df_percent_day: 每天缺工百分比表
-        self.df_percent_day = df_percent_day 
-        #df_percent_time: 每個時段缺工百分比表
-        self.df_percent_time = df_percent_time
-        #df_nightcount: 員工本月晚班次數
-        self.df_nightcount = df_nightcount
-        #df_resttime: 員工休息時間表
-        self.df_resttime = df_resttime
-        #df_result_x: 排班結果
-        self.df_result_x = df_result_x
-        #df_result_y: 冗員與缺工人數
-        self.df_result_y = df_result_y
-    def print(self):
-        print(self.result)
-    def printTable(self):
-        print(self.df_result_x)
 	
 
 
@@ -447,6 +429,13 @@ def ABLE(this_i,this_j,this_k):
             if(tmpcount>=item[2]):
                 ans = False
                 return ans
+    """
+    #排特殊技能班別的上限
+    for j in DAY:
+        for skill in SKILL_NAME:
+            for k in K_skill[skill]: 
+                for i in E_SKILL[skill]:   
+    """
     return ans                 
                     
 #========================================================================#
@@ -493,7 +482,7 @@ for p in range(parent):
             for t in range(nT):
                 if CONTAIN[c[2]][t] == 1:
                     CURRENT_DEMAND[c[1]][t] -= 1
-    
+    """
     #每天一位特定技能CSR排一個特定班別
     for j in DAY:
         for skill in SKILL_NAME:
@@ -501,12 +490,10 @@ for p in range(parent):
                 for i in E_SKILL[skill]:       
                     if ABLE(i, j, k) == True:
                         work[i, j, k] = True
-                        for t in range(nT):
-                            if CONTAIN[k][t] == 1:            
-                                CURRENT_DEMAND[j][t] -= 1
+                        break
                     else: 
                         continue
-    
+    """
     #瓶頸排班
     LIMIT_LIST = LIMIT_MATRIX[sequence] #一組限制式排序
     LIMIT = [] #一條限制式
@@ -633,7 +620,7 @@ for p in range(parent):
                         if work[i, j, k] == True:
                             breakCount[i,w,r] = True
     
-    
+    """
     for ii in E_SKILL:      #type(E_SKILL)=dict，要兩步驟取出裡面每項的list
         i_set = E_SKILL[ii]
         if len(i_set) <= 0: continue        #沒有人持有此技能時，略過
@@ -644,7 +631,7 @@ for p in range(parent):
                 for k in k_set:
                     if work[i, j, k] == True:
                         complement += 1
-    
+    """
     #=================================================================================================#
     # 輸出
     #=================================================================================================#
@@ -677,178 +664,6 @@ for p in range(parent):
     df_x2 = which_worktime2                                                       #confirm用
     
 
-    #Dataframe_y
-    T_type = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30'
-            ,'15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30']
-
-    lesspeople_count = []
-    for j in DAY:
-        tmp = []
-        for t in TIME:
-            tmp.append(int(lack[j,t]))
-        lesspeople_count.append(tmp)
-
-
-    df_y = pd.DataFrame(lesspeople_count, index = DATES, columns = T_type) #which_day , columns = T_type)
-
-    #計算總和
-    df_y['SUM_per_day'] = df_y.sum(axis=1)
-    df_y.loc['SUM_per_time'] = df_y.sum()
-
-    #計算需求
-    demand_day = DEMAND_t.sum(axis=1).values
-    demand_time = DEMAND_t.sum().values
-    #計算缺工比例
-    less_percent_day = (df_y['SUM_per_day'].drop(['SUM_per_time']).values)/demand_day
-    less_percent_time = (df_y.loc['SUM_per_time'].drop(['SUM_per_day']).values)/demand_time
-    df_percent_day = pd.DataFrame(less_percent_day, index = DATES, columns = ["Percentage"]) #which_day , columns = ["Percentage"])
-    df_percent_time = pd.DataFrame(less_percent_time, index = T_type , columns = ["Percentage"])
-
-
-    #h1h2
-    #print("\n所有天每個時段人數與需求人數的差距中的最大值 = "+str(int(surplus))+"\n")
-
-
-
-    #晚班次數dataframe
-    night_work_total = []
-    for i in EMPLOYEE:
-        count = 0
-        for j in DAY:
-            for k in range(11,14):
-                if(work[i,j,k]==True):
-                    count+=1
-        night_work_total.append(count)
-
-
-    df_nightcount = pd.DataFrame(night_work_total, index = employee_name, columns = ['NW_count'])
-    #print("\n員工中每人排晚班總次數的最大值 = "+str(int(nightCount))+"\n")
-
-
-
-        
-    #休息時間 Dataframe_z
-    R_type = ['11:30','12:00','12:30','13:00','13:30']     
-    which_week = [tmp+1 for tmp in WEEK] 
-    which_resttime = []     
-    for i in EMPLOYEE:
-        tmp = []
-        for w in WEEK:
-            tmp2 = []
-            for r in BREAK:
-                if(breakCount[i,w,r]==True):
-                    tmp2.append(R_type[r])
-            tmp.append(tmp2)
-        which_resttime.append(tmp)
-
-
-    df_resttime = pd.DataFrame(which_resttime, index=employee_name, columns=which_week)
-
-
-    #print("Final MIP gap value: %f" % m.MIPGap)
-    #print("\n目標值 = "+str(m.objVal) + "\n")
-
-
-    """#============================================================================#
-    #輸出其他資訊
-    #============================================================================#
-    with pd.ExcelWriter(result) as writer:
-        df_x.to_excel(writer, sheet_name="員工排班表")
-        df_nightcount.to_excel(writer, sheet_name="員工本月晚班次數")
-        df_percent_time.to_excel(writer, sheet_name="每個時段缺工百分比表")
-        df_percent_day.to_excel(writer, sheet_name="每天缺工百分比表")
-        df_nightcount.to_excel(writer, sheet_name="員工本月晚班次數")
-        df_y.to_excel(writer, sheet_name="缺工人數表")
-        df_resttime.to_excel(writer, sheet_name="員工每週有哪幾種休息時間")
-    """
-
-    #============================================================================#
-    #班表
-    #============================================================================#
-    output_name = []
-    output_id = []
-    for i in range(0,nEMPLOYEE):
-        output_id.append(str(EMPLOYEE_t.ID.values.tolist()[i]))
-    for i in range(0,nEMPLOYEE):
-        output_name.append(EMPLOYEE_t.Name_Chinese.values.tolist()[i])
-    #mDAY = int(calendar.monthrange(year,month)[1])
-    date_list = []
-    date_name = []
-    for i in range(1,mDAY+1): #產生日期清單
-        weekday=""
-        date = datetime.datetime.strptime(str(year)+'-'+str(month)+'-'+str(i), "%Y-%m-%d")
-        date_list.append(date)
-        if date.weekday()==5:
-            weekday="六"
-        elif date.weekday()==6:
-            weekday="日"
-        elif date.weekday()==0:
-            weekday="一"
-        elif date.weekday()==1:
-            weekday="二"
-        elif date.weekday()==2:
-            weekday="三"
-        elif date.weekday()==3:
-            weekday="四"
-        else:
-            weekday="五"
-        date_name.append(date.strftime("%Y-%m-%d")+' ('+weekday+')')
-
-    new = pd.DataFrame()
-    new['name'] = output_name
-    NO_WORK=[]
-    for i in range(0,nEMPLOYEE): #假日全部填X
-        NO_WORK.append("X")
-
-    for i in range(0,mDAY):
-        if (i+1) not in DATES:
-            new[date_name[i]] = NO_WORK
-        else:
-            new[date_name[i]] = df_x[i+1].values.tolist()
-    #print('check point 2\n')
-    new['id']=output_id
-    new.set_index("id",inplace=True)
-    #new.to_csv(result_x, encoding="utf-8_sig")
-    #print(new)
-
-    #============================================================================#
-    #冗員與缺工人數表
-    #============================================================================#
-    K_type_dict = {0:'',1:'O',2:'A2',3:'A3',4:'A4',5:'A5',6:'MS',7:'AS',8:'P2',9:'P3',10:'P4',11:'P5',12:'N1',13:'M1',14:'W6',15:'CD',16:'C2',17:'C3',18:'C4',19:'OB'}
-    try:
-        x_nb = np.vectorize({v: k for k, v in K_type_dict.items()}.get)(np.array(which_worktime))
-    except:
-        print('無法輸出缺工冗員表：排班班表不完整，請嘗試讓程式運行更多時間。')
-        try:
-            sys.exit(0)     #出錯的情況下，讓程式退出
-        except:
-            print('\n程式已結束。')
-
-    
-    people = np.zeros((nDAY,24))
-    for i in range(0,nEMPLOYEE):
-        for j in range(0,nDAY):
-            for k in range(0,24):
-                people[j][k] = people[j][k] + A_t.values[x_nb[i][j]-1][k]
-    output_people = (people - DEMAND).tolist()
-    NO_PEOPLE=[]
-    new_2=pd.DataFrame()
-    for i in range(0,24):
-        NO_PEOPLE.append('X')
-    j = 0
-    for i in range(0,mDAY):
-        if (i+1) not in DATES:
-            new_2[date_name[i]]=NO_PEOPLE
-        else:
-            new_2[date_name[i]]=output_people[j]
-            j = j + 1
-    new_2['name']=T_type
-    new_2.set_index("name",inplace=True)
-    #new_2.to_csv(result_y, encoding="utf-8_sig")
-    #print(new)
-
-    
-    
     #=================================================================================================#
     #確認解是否可行
     #=================================================================================================#
@@ -877,7 +692,7 @@ for p in range(parent):
     #====================================================================================================#
     #將結果放入INITIAL_POOL中
     #====================================================================================================#
-    INITIAL_POOL.append(Pool(result, df_x1, df_y, df_percent_day, df_percent_time, df_nightcount, df_resttime, new, new_2))
+    INITIAL_POOL.append(Pool(result, df_x1))
     
     #print("result2 = ", result2)
     for i in range(nEMPLOYEE):
@@ -900,7 +715,7 @@ for p in range(parent):
     complement =  0
     
     if message != 'All constraints are met.':
-        INITIAL_POOL[p].result = INITIAL_POOL[p].result * -1000000
+        INITIAL_POOL[p].result = INITIAL_POOL[p].result * 1000000
     else:
         success += 1
 

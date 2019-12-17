@@ -17,7 +17,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     SKILL_NAME = list(E_SKILL_t.columns)
     P_t = pd.read_csv(parameters_dir + 'weight_p1-4.csv', header = None, index_col = 0)
     Kset_t = pd.read_csv(fixed_dir + 'fix_classes.csv', header = None, index_col = 0)
-    SKset_t = pd.read_csv(parameters_dir + 'skills_classes.csv', header = None, index_col = 0)
+    SK = pd.read_csv(parameters_dir + 'skills_limits.csv', header = 0, engine = 'python')
     M_t = pd.read_csv(per_month_dir+'Assign'+AssignTest+'.csv', header = None, skiprows=[0], engine = 'python')
     L_t = pd.read_csv(parameters_dir+"lower_limit.csv", header = 0, engine='python')
     U_t = pd.read_csv(parameters_dir+"upper_limit.csv", header = None, skiprows=[0])
