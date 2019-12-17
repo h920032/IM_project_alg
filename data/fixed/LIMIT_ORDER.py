@@ -146,6 +146,9 @@ def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 			main.append(buff)"""
 	
 	#return
+	for item in main:
+		item[-2] = item[-1]
+
 	if len(main)>N:
 		main = main[0:N]
 	print('\nLIMIT_ORDER(): return', len(main) ,'kinds of order\n')
