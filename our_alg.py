@@ -494,7 +494,7 @@ for p in range(parent):
                 if CONTAIN[c[2]][t] == 1:
                     CURRENT_DEMAND[c[1]][t] -= 1
     
-    #特定技能CSR排優先班別
+    #每天一位特定技能CSR排一個特定班別
     for j in DAY:
         for skill in SKILL_NAME:
             for k in K_skill[skill]: 
