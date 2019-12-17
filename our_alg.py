@@ -237,7 +237,7 @@ E_SENIOR = [tl.SetSENIOR(E_SENIOR_t,tmp) for tmp in SENIOR_bp]   #E_SENIOR - 達
 #-------日子集合-------#
 month_start = tl.get_startD(year,month)         #本月第一天是禮拜幾 (Mon=0, Tue=1..)
 D_WEEK = tl.SetDAYW(month_start+1,mDAY,nW, DAY, DATES)  	#D_WEEK - 第 w 週中所包含的日子集合
-DAYset = tl.SetDAY(month_start, nDAY, DATES)     		#DAYset - 通用日子集合 [all,Mon,Tue...]
+DAYset = tl.SetDAY(month_start, nDAY, DATES, nW, D_WEEK)     		#DAYset - 通用日子集合 [all,Mon,Tue...]
 
 WEEK_of_DAY = tl.SetWEEKD(D_WEEK, nW) #WEEK_of_DAY - 日子j所屬的那一週
 
@@ -341,7 +341,7 @@ def ABLE(this_i,this_j,this_k):
     
     #only one work a day
     for k in SHIFT:
-        if( work[this_i,this_j,k] == 1 and k!=this_k):    #!!!報錯：KeyError: ('phone', 0, 0)
+        if( work[this_i,this_j,k] == 1):    
             ans = False
             return ans
     #被指定的排班及當天被排除的排班
@@ -429,13 +429,31 @@ def ABLE(this_i,this_j,this_k):
             if(tmpcount>=item[2]):
                 ans = False
                 return ans
-    """
+    
     #排特殊技能班別的上限
-    for j in DAY:
-        for skill in SKILL_NAME:
-            for k in K_skill[skill]: 
-                for i in E_SKILL[skill]:   
-    """
+    for item in SKILL:
+        if(this_j in DAYset[item[0]] and this_k in SHIFTset[item[1]]):
+            if(this_i in E_SKILL[item[2]]) == False:                   #非技能員工
+                ans = False
+                return ans
+            if item[0]!='DayAfterHoliday':
+                for csr in E_SKILL[item[2]]:                           #上限1天1人
+                    if work[csr,this_j,this_k]==1:
+                        ans = False
+                        return ans
+            else:
+                tmpcount = 0
+                for csr in E_SKILL[item[2]]:                           #上限假期後1天2人
+                    if work[csr,this_j,this_k]==1:
+                        if(csr == this_i):
+                            tmpcount+=0
+                        else:
+                            tmpcount+=1
+                if(tmpcount>=item[3]):
+                    ans = False
+                    return ans
+               
+    
     return ans                 
                     
 #========================================================================#
@@ -454,7 +472,7 @@ def GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month,per_month_dir
 #====================================================================================================#
 #=======================================================================================================#
 
-LIMIT_MATRIX = LIMIT_ORDER(25,LOWER,UPPER,PERCENT,DEMAND,E_POSITION,E_SENIOR,DAYset,SHIFTset, DATES, CONTAIN) #生成多組限制式matrix
+LIMIT_MATRIX = LIMIT_ORDER(25,LOWER,SKILL,PERCENT,DEMAND,E_POSITION,E_SENIOR,E_SKILL,DAYset,SHIFTset, CONTAIN) #生成多組限制式matrix
 #print(LIMIT_MATRIX)
 sequence = 0 #限制式順序
 char = 'a' #CSR沒用度順序
@@ -503,8 +521,8 @@ for p in range(parent):
         LIMIT = LIMIT_LIST[l]
         CSR_LIST = CSR_ORDER(char, LIMIT[0], LIMIT[1], EMPLOYEE_t) #員工沒用度排序
         for j in LIMIT[2]:
-            BOUND = LIMIT[4]
-            if LIMIT[0] != 'ratio':
+            if LIMIT[0] == 'lower' :
+                BOUND = LIMIT[4]
                 for i in CSR_LIST:
                     if BOUND <= 0:  #若限制式參數(n)不合理，忽略之
                         break
@@ -519,7 +537,7 @@ for p in range(parent):
                             BOUND -= 1
                         else:
                             continue
-            else:
+            elif LIMIT[0] == 'ratio':
                 for k in LIMIT[3]:
                     BOUND = LIMIT[4]
                     for i in CSR_LIST:  
@@ -530,6 +548,21 @@ for p in range(parent):
                             for t in range(nT):
                                 if CONTAIN[k][t] == 1:              
                                     CURRENT_DEMAND[j][t] -= 1
+                            BOUND -= 1
+                        else:
+                            continue
+            elif LIMIT[0] == 'skill':
+                for k in LIMIT[3]:
+                    BOUND = LIMIT[4]
+                    for i in CSR_LIST:
+                        if BOUND <= 0:
+                            break
+                        elif ABLE(i, j, k) == True: #若此人可以排此班，就排
+                            work[i, j, k] = True
+                            if LIMIT[3] == [12]:
+                                for t in range(nT):
+                                    if CONTAIN[k][t] == 1:              
+                                        CURRENT_DEMAND[j][t] -= 1
                             BOUND -= 1
                         else:
                             continue
@@ -688,7 +721,7 @@ for p in range(parent):
                 if breakCount[i,w,r] == True:
                     sumbreak += 1
     
-    result2 = P0 * sumlack + P1 * surplus + P2 * nightCount + P3 * sumbreak + P4 * complement"""
+    result2 = P0 * sumlack + P1 * surplus + P2 * nightCount + P3 * sumbreak"""
     #====================================================================================================#
     #將結果放入INITIAL_POOL中
     #====================================================================================================#

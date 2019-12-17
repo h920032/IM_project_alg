@@ -59,7 +59,7 @@ def exchange(index1, index2, alist):
 #=============================================================================#
 # main function
 
-def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
+def LIMIT_ORDER(N, L, SK, S, Need, POSI, SENIOR, SKILL, DAY, K, K_TIME):
 	limits = []	#裝第一組（完全照順序排序）的list
 
 	"""===========================================
@@ -86,8 +86,13 @@ def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 		#計算瓶頸程度：總可用人數 - 需求人數(n*平均需求人數)
 		neck = len(SENIOR[ii]) - bound	#瓶頸程度=剩餘可動人手
 		limits.append([ 'ratio', SENIOR[ii], DAY[i[0]], K[i[1]], bound, neck])	#[-2]表示需要多少人
-
-
+	
+	# skill limit: j, k_set, i(skill), n
+	for i in SK:
+		n = int(i[3])
+		neck = float( len(SKILL[i[2]]) - n )
+		limits.append([ 'skill', SKILL[i[2]], DAY[i[0]], K[i[1]], n, neck])	#[-2]表示需要多少人
+	
 	"""===========================================
 	sort
 	==========================================="""
@@ -144,15 +149,7 @@ def LIMIT_ORDER(N, L, U, S, Need, POSI, SENIOR, DAY, K, DATES, K_TIME):
 						break
 					else:
 						main.append(newlimits)						
-			"""ii = i+dis
-			if ii >= nl:								#要換的超過尾端，則不換，跳出
-				break
-			elif len(main) >= N:						#現有的排序數量比要的還要多
-				break
-			else:
-				buff = limits							#buff存放交換過的序列
-				exchange(i, ii, buff)
-			main.append(buff)"""
+			
 	############## end change order ###############3
 
 

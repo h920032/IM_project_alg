@@ -117,7 +117,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
                     if A_t.values[i_nb[i][j]-1][k+5] == 0 and A_t.values[i_nb[i][j]-1][k+6] == 0:
                         breakCount[i][w_d][k] = 1
     breakCount = int(sum(sum(sum(breakCount))))
-
+    """
     df_a = EMPLOYEE_t.drop(['Name_English', 'Name_Chinese', 'ID', 'Senior', 'Position', 'NM','NW'],axis = 1).values
     df_c = np.zeros((nEMPLOYEE,nK))
     for i in range(nEMPLOYEE):
@@ -126,6 +126,6 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
                 df_c[i][i_nb[i][j]-1]=df_c[i][i_nb[i][j]-1]+1
 
     complement = int(max(max(df_c.reshape(1,nEMPLOYEE*nK))))
-
-    result = P0 * lack + P1 * surplus + P2 * nightcount + P3 * breakCount + P4 * complement
+    """
+    result = P0 * lack + P1 * surplus + P2 * nightcount + P3 * breakCount #+ P4 * complement
     return result
