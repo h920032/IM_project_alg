@@ -242,13 +242,14 @@ DAYset = tl.SetDAY(month_start, nDAY, DATES, nW, D_WEEK)     		#DAYset - 通用�
 WEEK_of_DAY = tl.SetWEEKD(D_WEEK, nW) #WEEK_of_DAY - 日子j所屬的那一週
 
 #-------班別集合-------#
-S_NIGHT = [11, 12, 13]                                          #S_NIGHT - 所有的晚班
-nS_NIGHT = 3
-S_BREAK = [[11,12],[1,7,14,15],[2,8,16,18],[3,9,17],[4,10]]     #Kr - 午休方式為 r 的班別 
-
 SHIFTset= {}                                                    #SHIFTset - 通用的班別集合，S=1,…,nS
 for ki in range(len(Kset_t)):
     SHIFTset[Kset_t.index[ki]] = [ tl.Tran_t2n(x) for x in Kset_t.iloc[ki].dropna().values ]
+
+S_NIGHT = SHIFTset['night']                                     #S_NIGHT - 所有的晚班
+nS_NIGHT = len(S_NIGHT)
+S_BREAK = [[11,12],[1,7,14,15],[2,8,16,18],[3,9,17],[4,10]]     #Kr - 午休方式為 r 的班別 
+
 
 #============================================================================#
 #Variables
@@ -258,7 +259,7 @@ for i in range(nEMPLOYEE):
     for j in range(nDAY):
         for k in range(nK):
             work[i, j, k] = False  
-           
+"""           
 lack = {}  #y_jt - 代表第j天中時段t的缺工人數
 for j in range(nDAY):
     for t in range(nT):
@@ -272,9 +273,7 @@ for i in range(nEMPLOYEE):
     for w in range(nW):
         for r in range(nR):
             breakCount[i, w, r] = False
-
-
-complement =  0  #complement - 擁有特定員工技能的員工集合va的員工排非特定班別數的最大值
+"""
 
 #============================================================================#
 
@@ -484,7 +483,7 @@ for p in range(parent):
     #指定班別
     for c in ASSIGN:
         work[c[0],c[1],c[2]] = True
-        if c[2] != 0: #非指定休假
+        if c[2] in SHIFTset['demand']: #非其他班別
             for t in range(nT):
                 if CONTAIN[c[2]][t] == 1:
                     CURRENT_DEMAND[c[1]][t] -= 1
@@ -571,7 +570,7 @@ for p in range(parent):
                     is_arrange = True
                     employee.append(1)
             if is_arrange == False:
-                rand = rd.randint(1,nK)
+                rand = rd.randint(2,nK)
                 for r in range(nK):
                     if ABLE(i,j,rand-1) == True:
                         work[i,j,rand-1] = True
@@ -582,7 +581,7 @@ for p in range(parent):
                         is_arrange = True
                         break
                     else:
-                       rand = rd.randint(1,nK)
+                       rand = rd.randint(2,nK)
                 if is_arrange == False:
                     for r in range(nK):
                         if ABLE(i,j,r) == True:
@@ -597,7 +596,7 @@ for p in range(parent):
     #work, fix_temp, CURRENT_DEMAND = ARRANGEMENT(work, nEMPLOYEE, nDAY, nK, CONTAIN, CURRENT_DEMAND, nT)
     fix.append(fix_temp)
 
-
+    """
     #=================================================================================================#
     #計算變數
     #=================================================================================================#
@@ -629,7 +628,7 @@ for p in range(parent):
                     for k in S_BREAK[r]:
                         if work[i, j, k] == True:
                             breakCount[i,w,r] = True
-    
+    """
     #=================================================================================================#
     # 輸出
     #=================================================================================================#
@@ -673,8 +672,8 @@ for p in range(parent):
     #計算目標式
     #====================================================================================================#
     result = score(df_x1,nDAY,nW,year=year,month=month,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
-    
-    """sumlack = 0
+    """
+    sumlack = 0
     for j in range(nDAY):
         for t in range(nT):
             sumlack += lack[j, t]
@@ -686,18 +685,20 @@ for p in range(parent):
                 if breakCount[i,w,r] == True:
                     sumbreak += 1
     
-    result2 = P0 * sumlack + P1 * surplus + P2 * nightCount + P3 * sumbreak"""
+    result2 = P0 * sumlack + P1 * surplus + P2 * nightCount + P3 * sumbreak
+    print(result2, sumlack, surplus, nightCount, sumbreak)
+    """
     #====================================================================================================#
     #將結果放入INITIAL_POOL中
     #====================================================================================================#
     INITIAL_POOL.append(Pool(result, df_x1))
     
-    #print("result2 = ", result2)
     for i in range(nEMPLOYEE):
         for j in range(nDAY):
             for k in range(nK):
                 work[i, j, k] = False
-    
+    """
+    #print("result2 = ", result2)
     for j in range(nDAY):
         for t in range(nT):
             lack[j, t] = 0
@@ -709,8 +710,7 @@ for p in range(parent):
         for w in range(nW):
             for r in range(nR):
                 breakCount[i, w, r] = False
-    
-    complement =  0
+    """
     
     if message != 'All constraints are met.':
         INITIAL_POOL[p].result = INITIAL_POOL[p].result * 1000000

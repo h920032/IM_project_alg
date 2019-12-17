@@ -6,6 +6,7 @@ import datetime, calendar
 
 def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = './data/parameters/', per_month_dir = './data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
     A_t = pd.read_csv(fixed_dir + 'fix_class_time.csv', header = 0, index_col = 0)
+    B_t = pd.read_csv(fixed_dir + 'fix_class_time.csv', header = 0, index_col = 0).T
     DEMAND_t = pd.read_csv(per_month_dir+"Need"+NeedTest+".csv", header = 0, index_col = 0, engine = 'python').T
     EMPLOYEE_t = pd.read_csv(per_month_dir+"Employee"+EmployeeTest+".csv", header = 0, engine = 'python')
     NM_t = EMPLOYEE_t['NM']
@@ -33,7 +34,8 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     nEMPLOYEE = EMPLOYEE_t.shape[0]
     #nDAY = tl.get_nDAY(year,month)
     #nW = tl.get_nW(year,month)
-    nK = 19
+    nK = len(A_t.index)
+    nT = len(B_t.index)
     mDAY = int(calendar.monthrange(year,month)[1])
     DEMAND = DEMAND_t.values.tolist()
 
@@ -43,7 +45,18 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     P3 = P_t[1]['P3']
     P4 = P_t[1]['P4']
 
-    S_NIGHT = [11, 12, 13]
+    SHIFTset= {}                                                    #SHIFTset - 通用的班別集合，S=1,…,nS
+    for ki in range(len(Kset_t)):
+        SHIFTset[Kset_t.index[ki]] = [ tl.Tran_t2n(x) for x in Kset_t.iloc[ki].dropna().values ]
+
+    S_NIGHT = SHIFTset['night']                                     #S_NIGHT - 所有的晚班
+    for i in range(len(S_NIGHT)):
+        S_NIGHT[i] += 1
+    
+    S_DEMAND = SHIFTset['demand']
+    for i in range(len(S_DEMAND)):
+        S_DEMAND[i] += 1
+    
     S_BREAK = [[11,12],[1,7,14,15],[2,8,16,18],[3,9,17],[4,10]]
     DAY = [tmp for tmp in range(nDAY)]              #DAY - 日子集合，J=0,…,nJ-1
     DATES = [ int(x) for x in DEMAND_t.index ]    #所有的日期 - 對照用
@@ -73,9 +86,10 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     #print(nDAY)
     for i in range(nEMPLOYEE):
         for j in range(nDAY):
-            for k in range(24):
+            for k in range(nT):
                 #print(i,j,k)
-                people[j][k] = people[j][k] + A_t.values[i_nb[i][j]-1][k]   #TypeError: unsupported operand type(s) for -: 'NoneType' and 'int'
+                if i_nb[i][j] in S_DEMAND:
+                    people[j][k] = people[j][k] + A_t.values[i_nb[i][j]-1][k]   #TypeError: unsupported operand type(s) for -: 'NoneType' and 'int'
 
 
     output_people = (people - DEMAND).tolist()
@@ -98,15 +112,10 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     for i in i_nb:
         count = 0
         for j in i:
-            if j == 12 or j == 13 or j == 14:
+            if j in S_NIGHT:
                 count = count + 1
         nightcount.append(count)
     nightcount = max(nightcount)
-
-    date = datetime.datetime.strptime(str(year)+'-'+str(month)+'-'+str(1), "%Y-%m-%d")
-    weekday = date.weekday()
-    if weekday == 5 or weekday == 6:
-        weekday = 0
 
     breakCount = np.zeros((nEMPLOYEE,nW,5))
     for i in range(nEMPLOYEE):
@@ -117,15 +126,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
                     if A_t.values[i_nb[i][j]-1][k+5] == 0 and A_t.values[i_nb[i][j]-1][k+6] == 0:
                         breakCount[i][w_d][k] = 1
     breakCount = int(sum(sum(sum(breakCount))))
-    """
-    df_a = EMPLOYEE_t.drop(['Name_English', 'Name_Chinese', 'ID', 'Senior', 'Position', 'NM','NW'],axis = 1).values
-    df_c = np.zeros((nEMPLOYEE,nK))
-    for i in range(nEMPLOYEE):
-        if sum(df_a[i]) > 0:
-            for j in range(nDAY):
-                df_c[i][i_nb[i][j]-1]=df_c[i][i_nb[i][j]-1]+1
-
-    complement = int(max(max(df_c.reshape(1,nEMPLOYEE*nK))))
-    """
-    result = P0 * lack + P1 * surplus + P2 * nightcount + P3 * breakCount #+ P4 * complement
+    
+    result = P0 * lack + P1 * surplus + P2 * nightcount + P3 * breakCount 
+    #print(result, lack, surplus, nightcount, breakCount)
     return result
