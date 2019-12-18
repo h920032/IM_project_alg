@@ -61,13 +61,16 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir='./data/per_month
                 a_two_one_two = np.concatenate((one_row_up, two_row_down), axis=1) + two_not_avb
                 a_one_two_one = np.concatenate((two_row_up, one_row_down), axis=1) + one_not_avb
                 a_two_two_one = np.concatenate((two_row_up, one_row_down), axis=1) + two_not_avb
-
+                a_org_one_two = np.concatenate((one_org_row_up, two_org_row_down), axis=1)
+                a_org_two_one = np.concatenate((two_org_row_up, one_org_row_down), axis=1)
 
                 #左右黏合
                 b_one_one_two = np.concatenate((one_col_left, two_col_right), axis=0) + one_not_avb
                 b_two_one_two = np.concatenate((one_col_left, two_col_right), axis=0) + two_not_avb
                 b_one_two_one = np.concatenate((two_col_left, one_col_right), axis=0) + one_not_avb
                 b_two_two_one = np.concatenate((two_col_left, one_col_right), axis=0) + two_not_avb
+                b_org_one_two = np.concatenate((one_org_col_left, two_org_col_right), axis=0)
+                b_org_two_one = np.concatenate((two_org_col_left, one_org_col_right), axis=0)
 
 
                 sort.append((a_one_one_two,score_liz[i][1],score(a_one_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
