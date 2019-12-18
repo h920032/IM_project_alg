@@ -21,7 +21,7 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightd
     new = np.copy(sort[:int(len(score_liz)/3)]) #取出前1/3
     num_list = list(range(len(new)))
     random.shuffle(num_list)
-    print(num_list[0],num_list[1], end=' ')
+    #print(num_list[0],num_list[1], end=' ')
 
     union = np.logical_or(new[num_list[0]][1], new[num_list[1]][1])
     one_not_avb = union * new[num_list[0]][0]
@@ -43,7 +43,7 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightd
     one_org_col_left = one_org[:sp_col]
     one_org_col_right = one_org[sp_col:]
     one_org_row_up = one_org.T[:sp_row].T
-    one_org_row_down = one_org.T[:sp_row].T
+    one_org_row_down = one_org.T[sp_row:].T
 
     #第二組：的切分
     two_col_left = two_avb[:sp_col]
@@ -53,7 +53,7 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightd
     two_org_col_left = two_org[:sp_col]
     two_org_col_right = two_org[sp_col:]
     two_org_row_up = two_org.T[:sp_row].T
-    two_org_row_down = two_org.T[:sp_row].T
+    two_org_row_down = two_org.T[sp_row:].T
     
     #將對應的一、二組片段重新組合
     #上下黏合
@@ -98,7 +98,9 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightd
         b_org_one_two[random.randint(0,b_org_one_two.shape[0]-1)][random.randint(0,b_org_one_two.shape[1]-1)] = random.randint(0,18)
     if random.randint(0,19) == 0:
         b_org_two_one[random.randint(0,b_org_two_one.shape[0]-1)][random.randint(0,b_org_two_one.shape[1]-1)] = random.randint(0,18)
-
+    print(a_two_one_two)
+    print(a_org_one_two)
+    
     #判斷是否符合
     if confirm(np.vectorize(K_type_dict.get)(a_one_one_two), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
         sort.append((a_one_one_two,new[num_list[0]][1],score(a_one_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
@@ -139,6 +141,7 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightd
     # sort = sorted(sort, key = lambda s: s[2],reverse = True)
     sort = sorted(sort, key = lambda s: s[2])
     sort = sort[:len(score_liz)]
+    print(len(sort))
     return sort
 
 def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''): #avaliavle_sol 可行解列表 fix 不能移動的列表
