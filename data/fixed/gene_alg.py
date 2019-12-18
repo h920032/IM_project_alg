@@ -11,9 +11,10 @@ K_type_dict = {0:'O',1:'A2',2:'A3',3:'A4',4:'A5',5:'MS',6:'AS',7:'P2',8:'P3',9:'
 
 def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
     sort = sorted(score_liz, key = lambda s: s[2],reverse = True)
-    for i in range(len(score_liz)):
+    sort = sort[:int(len(score_liz)/3)]
+    for i in range(len(sort)):
         print('\n\n   alg() #### i =',i,'#### range =',len(score_liz))
-        for j in range(len(score_liz)):
+        for j in range(len(sort)):
             if i != j:
                 print(j, end=' ')
                 union = np.logical_or(score_liz[i][1], score_liz[j][1])
@@ -53,7 +54,7 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir='./data/per_month
                 sort.append((b_two_two_one,score_liz[j][1],score(b_two_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     # sort = sorted(sort, key = lambda s: s[2],reverse = True)
     sort = sorted(sort, key = lambda s: s[2])
-    sort = sort[:100]
+    sort = sort[:len(score_liz)]
     return sort
 
 def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''): #avaliavle_sol 可行解列表 fix 不能移動的列表
