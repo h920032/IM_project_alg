@@ -126,7 +126,6 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
             for k in range(len(require_type)):
                 if schedule[j][day] == require_type[k]:
                     count+=1
-                    break
 
             if count >= l_limit:
                 break
@@ -164,7 +163,7 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
                 for r in range(len(require_type)):
                     if schedule[j][k] == require_type[r]:
                         count+=1
-                        break
+
                 if count > u_limit:
                     u_limit_bool = False
                     break
@@ -202,7 +201,6 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
                 for j in e_in_require_skill:
                     if schedule[j][k] == require_type[r]:
                         count+=1
-                        break
 
             if count == sk_limit:
                 continue
@@ -255,7 +253,6 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
                 for j in e_in_require_skill:
                     if schedule[j][k] == require_type[r]:
                         count+=1
-                        break
 
             if count == sk_limit1:
                 continue
@@ -292,8 +289,7 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
                 for j in e_in_require_skill:
                     if schedule[j][k] == require_type[r]:
                         count+=1
-                        break
-
+            
             if count == sk_limit2:
                 continue
             elif count < sk_limit2:
@@ -348,11 +344,11 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
                 for i in E_SENIOR[n]:       #E_SENIOR[n]是一組員工集合(i)，不是班別集合(k)        
                     if schedule[i][j] == require_type[r]:   #報錯：list index out of range
                         skilled_people_in_class += 1
-                        break
+
                 for i in range(len(schedule)):
                     if schedule[i][j] == require_type[r]:
                         people_in_class += 1
-                        break
+                        
         
         if skilled_people_in_class/people_in_class < ratio:     #若年資足夠者少於指定比例，顯示錯誤
             senior_bool = False
@@ -383,7 +379,7 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
                 for r in range(len(require_type)):
                     if schedule[j][k] == require_type[r]:
                         count+=1
-                        break
+            
                 if count > us_limit:
                     us_limit_bool = False
                     break

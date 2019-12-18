@@ -748,7 +748,7 @@ for p in range(parent):
     df_x1 = pd.DataFrame(which_worktime2, index = employee_name, columns = DATES) #整數班表
     df_x2 = which_worktime2                                                       #confirm用
     
-    print(df_x)
+    #print(df_x)
     #=================================================================================================#
     #確認解是否可行
     #=================================================================================================#

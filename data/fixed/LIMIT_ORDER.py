@@ -82,7 +82,7 @@ def LIMIT_ORDER(N, L, SK, SK_S, S, Need, POSI, SENIOR, SKILL, DAY, VAC, nVAC, K,
 	for ii in range(len(S)):	#get SENIOR without index
 		i = S[ii]
 		n = float(i[2])
-		bound = n*avgNeed(i[0], i[1], DAY,K,K_TIME,Need)
+		bound = (n*avgNeed(i[0], i[1], DAY,K,K_TIME,Need))/len(K[i[1]])
 		#計算瓶頸程度：總可用人數 - 需求人數(n*平均需求人數)
 		neck = len(SENIOR[ii]) - bound	#瓶頸程度=剩餘可動人手
 		limits.append([ 'ratio', SENIOR[ii], DAY[i[0]], K[i[1]], bound, neck])	
