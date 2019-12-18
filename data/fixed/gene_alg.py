@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 import random
-from data.fixed.score import score
+from score import score
+from CONFIRM import confirm
 
 K_type = ['O','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','CD','C2','C3','C4','OB']
 K_type_dict = {0:'O',1:'A2',2:'A3',3:'A4',4:'A5',5:'MS',6:'AS',7:'P2',8:'P3',9:'P4',10:'P5',11:'N1',12:'M1',13:'W6',14:'CD',15:'C2',16:'C3',17:'C4',18:'OB'}
@@ -67,10 +68,9 @@ def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,per_month_di
     score_liz = []
     for i ,j in zip(i_nb,fix):
         score_liz.append((i,j, score(i,nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
-    # for i in range(gen):    #重複親代數量那麼多次
-    #     score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month)
-    score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
-    #上面是為求跑得完而做的修改
+    for i in range(gen):    #重複親代數量那麼多次
+        score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
+    
     result = np.vectorize(K_type_dict.get)(score_liz[0][0])
     print('\n\n基因演算法最佳解：',score_liz[0][2])
     return result
