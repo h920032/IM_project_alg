@@ -6,25 +6,25 @@ import datetime, calendar
 
 def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = './data/parameters/', per_month_dir = './data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
     A_t = pd.read_csv(fixed_dir + 'fix_class_time.csv', header = 0, index_col = 0)
-    B_t = pd.read_csv(fixed_dir + 'fix_class_time.csv', header = 0, index_col = 0).T
     DEMAND_t = pd.read_csv(per_month_dir+"Need"+NeedTest+".csv", header = 0, index_col = 0, engine = 'python').T
     EMPLOYEE_t = pd.read_csv(per_month_dir+"Employee"+EmployeeTest+".csv", header = 0, engine = 'python')
-    NM_t = EMPLOYEE_t['NM']
-    NW_t = EMPLOYEE_t['NW']
-    E_NAME = list(EMPLOYEE_t['Name_English'])   #E_NAME - 對照名字與員工index時使用
-    E_SENIOR_t = EMPLOYEE_t['Senior']
-    E_POSI_t = EMPLOYEE_t['Position']
-    E_SKILL_t = EMPLOYEE_t[['skill-phone','skill-CD','skill-chat','skill-outbound']]
-    SKILL_NAME = list(E_SKILL_t.columns)
+    #NM_t = EMPLOYEE_t['NM']
+    #NW_t = EMPLOYEE_t['NW']
+    #E_NAME = list(EMPLOYEE_t['Name_English'])   #E_NAME - 對照名字與員工index時使用
+    #E_SENIOR_t = EMPLOYEE_t['Senior']
+    #E_POSI_t = EMPLOYEE_t['Position']
+    #E_SKILL_t = EMPLOYEE_t[list(filter(lambda x: re.match('skill-',x), EMPLOYEE_t.columns))]
+    #SKILL_NAME = list(E_SKILL_t.columns)
     P_t = pd.read_csv(parameters_dir + 'weight_p1-4.csv', header = None, index_col = 0)
     Kset_t = pd.read_csv(fixed_dir + 'fix_classes.csv', header = None, index_col = 0)
-    SK = pd.read_csv(parameters_dir + 'skills_limits.csv', header = 0, engine = 'python')
-    M_t = pd.read_csv(per_month_dir+'Assign'+AssignTest+'.csv', header = None, skiprows=[0], engine = 'python')
-    L_t = pd.read_csv(parameters_dir+"lower_limit.csv", header = 0, engine='python')
-    U_t = pd.read_csv(parameters_dir+"upper_limit.csv", header = None, skiprows=[0])
-    Ratio_t = pd.read_csv(parameters_dir+"senior_limit.csv",header = None, skiprows=[0])
-    SENIOR_bp = Ratio_t[3]
-    timelimit = pd.read_csv(parameters_dir+"time_limit.csv", header=0)
+    Shift_name = Kset_t.iloc[0].tolist()
+    #SKset_t = pd.read_csv(parameters_dir + 'skill_class_limit.csv')  #class set for skills
+    #M_t = pd.read_csv(per_month_dir+'Assign'+AssignTest+'.csv', header = None, skiprows=[0], engine = 'python')
+    #L_t = pd.read_csv(parameters_dir+"lower_limit.csv", header = 0, engine='python')
+    #U_t = pd.read_csv(parameters_dir+"upper_limit.csv", header = None, skiprows=[0])
+    #Ratio_t = pd.read_csv(parameters_dir+"senior_limit.csv",header = None, skiprows=[0])
+    #SENIOR_bp = Ratio_t[3]
+    #timelimit = pd.read_csv(parameters_dir+"time_limit.csv", header=0)
     #nightdaylimit = pd.read_csv(dir_name+"晚班天數限制.csv", header = 0).loc[0][0]
     
     date = pd.read_csv(per_month_dir + 'Date.csv', header = None, index_col = 0)
@@ -34,8 +34,8 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     nEMPLOYEE = EMPLOYEE_t.shape[0]
     #nDAY = tl.get_nDAY(year,month)
     #nW = tl.get_nW(year,month)
-    nK = len(A_t.index)
-    nT = len(B_t.index)
+    nK = A_t.shape[0]
+    nT = 24
     mDAY = int(calendar.monthrange(year,month)[1])
     DEMAND = DEMAND_t.values.tolist()
 
@@ -43,21 +43,23 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     P1 = P_t[1]['P1']
     P2 = P_t[1]['P2']
     P3 = P_t[1]['P3']
-    P4 = P_t[1]['P4']
 
     SHIFTset= {}                                                    #SHIFTset - 通用的班別集合，S=1,…,nS
     for ki in range(len(Kset_t)):
         SHIFTset[Kset_t.index[ki]] = [ tl.Tran_t2n(x) for x in Kset_t.iloc[ki].dropna().values ]
-
+    for ki in range(len(Shift_name)):
+        SHIFTset[Shift_name[ki]] = [ki]
+    
     S_NIGHT = SHIFTset['night']                                     #S_NIGHT - 所有的晚班
     for i in range(len(S_NIGHT)):
         S_NIGHT[i] += 1
     
-    S_DEMAND = SHIFTset['demand']
+    S_DEMAND = SHIFTset['phone']
     for i in range(len(S_DEMAND)):
         S_DEMAND[i] += 1
     
     S_BREAK = [[11,12],[1,7,14,15],[2,8,16,18],[3,9,17],[4,10]]
+    
     DAY = [tmp for tmp in range(nDAY)]              #DAY - 日子集合，J=0,…,nJ-1
     DATES = [ int(x) for x in DEMAND_t.index ]    #所有的日期 - 對照用
     month_start = tl.get_startD(year,month)         #本月第一天是禮拜幾 (Mon=0, Tue=1..)

@@ -269,7 +269,7 @@ SHIFTset= {}                                                    #SHIFTset - 通�
 for ki in range(len(Kset_t)):
     SHIFTset[Kset_t.index[ki]] = [ tl.Tran_t2n(x, Shift_name) for x in Kset_t.iloc[ki].dropna().values ]
 for ki in range(len(Shift_name)):
-    SHIFTset[Shift_name[ki]] =ki
+    SHIFTset[Shift_name[ki]] = [ki]
 S_NIGHT = SHIFTset['night']                                     #S_NIGHT - 所有的晚班
 S_BREAK = [[11,12],[1,7,14,15],[2,8,16,18],[3,9,17],[4,10]]     #Kr - 午休方式為 r 的班別 
 
@@ -351,7 +351,7 @@ def ABLE(this_i,this_j,this_k):
     
     #only one work a day
     for k in SHIFT:
-        if( work[this_i,this_j,k] == 1):    
+        if( work[this_i,this_j,k] == 1 and k!=this_k):    
             ans = False
             return ans
     #被指定的排班及當天被排除的排班
@@ -364,7 +364,7 @@ def ABLE(this_i,this_j,this_k):
                 else:
                     ans = False
                     return ans
-
+    
     #判斷是否正在排晚班
     arrangenightshift = False
     for tmp in S_NIGHT:
@@ -440,28 +440,33 @@ def ABLE(this_i,this_j,this_k):
                 ans = False
                 return ans
 
-
+    
 
     
     #排特殊技能班別的上限
     
     #有每月總數上限
     for item in Upper_shift:
-        if(this_k == SHIFTset[item[0]]):
-            tmpcount = 0
-            for whichday in DAY:
-                if(work[this_i,whichday,this_k]==1):
-                    if(whichday == this_j):
-                        tmpcount+=0
-                    else:
-                        tmpcount+=1
-            if(tmpcount>=item[1]):
+        if(this_k in SHIFTset[item[0]]):
+            if(this_i in E_SKILL['phone']):
+                tmpcount = 0
+                for whichday in DAY:
+                    if(work[this_i,whichday,this_k]==1):
+                        if(whichday == this_j):
+                            tmpcount+=0
+                        else:
+                            tmpcount+=1
+                if(tmpcount>=item[1]):
+                    ans = False
+                    return ans
+            else:   #無此技能
                 ans = False
                 return ans
+    if(this_i==0 and this_j==8 and this_k==15):print('skill')
     
     #特殊技能排班
     for item in NOTPHONE_CLASS:
-        if(this_k == SHIFTset[item[0]]):
+        if(this_k in SHIFTset[item[0]]):
             if(this_i in E_SKILL[item[2]]):
                 tmpcount = 0
                 for people in EMPLOYEE:
@@ -479,7 +484,7 @@ def ABLE(this_i,this_j,this_k):
 
     #特殊技能排班（有假日後要多人的限制）
     for item in NOTPHONE_CLASS_special:
-        if(this_k == SHIFTset[item[0]]):
+        if(this_k in SHIFTset[item[0]]):
             if(this_i in E_SKILL[item[2]]):
                 tmpcount = 0
                 for people in EMPLOYEE:
@@ -544,7 +549,7 @@ for p in range(parent):
     #指定班別
     for c in ASSIGN:
         work[c[0],c[1],c[2]] = True
-        if c[2] in SHIFTset['demand']: #非其他班別
+        if c[2] in SHIFTset['phone']: #非其他班別時扣除需求
             for t in range(nT):
                 if CONTAIN[c[2]][t] == 1:
                     CURRENT_DEMAND[c[1]][t] -= 1
@@ -556,6 +561,7 @@ for p in range(parent):
     BOUND = [] #限制人數
     for l in range(len(LIMIT_LIST)):
         LIMIT = LIMIT_LIST[l]
+        #print(LIMIT)
         CSR_LIST = CSR_ORDER(char, LIMIT[0], LIMIT[1], EMPLOYEE_t) #員工沒用度排序
         for j in LIMIT[2]:
             if LIMIT[0] == 'lower' :
@@ -568,9 +574,10 @@ for p in range(parent):
                             break
                         elif ABLE(i, j, k) == True: #若此人可以排此班，就排
                             work[i, j, k] = True
-                            for t in range(nT):
-                                if CONTAIN[k][t] == 1:              
-                                    CURRENT_DEMAND[j][t] -= 1
+                            if k in SHIFTset['phone']: #非其他班別時扣除需求
+                                for t in range(nT):
+                                    if CONTAIN[k][t] == 1:              
+                                        CURRENT_DEMAND[j][t] -= 1
                             BOUND -= 1
                         else:
                             continue
@@ -582,9 +589,10 @@ for p in range(parent):
                             break
                         elif ABLE(i, j, k) == True: #若此人可以排此班，就排
                             work[i, j, k] = True
-                            for t in range(nT):
-                                if CONTAIN[k][t] == 1:              
-                                    CURRENT_DEMAND[j][t] -= 1
+                            if k in SHIFTset['phone']: #非其他班別時扣除需求
+                                for t in range(nT):
+                                    if CONTAIN[k][t] == 1:              
+                                        CURRENT_DEMAND[j][t] -= 1
                             BOUND -= 1
                         else:
                             continue
@@ -596,7 +604,22 @@ for p in range(parent):
                             break
                         elif ABLE(i, j, k) == True: #若此人可以排此班，就排
                             work[i, j, k] = True
-                            if LIMIT[3] == [12]:
+                            if k in SHIFTset['phone']: #非其他班別時扣除需求
+                                for t in range(nT):
+                                    if CONTAIN[k][t] == 1:              
+                                        CURRENT_DEMAND[j][t] -= 1
+                            BOUND -= 1
+                        else:
+                            continue
+            elif LIMIT[0] == 'skill_special':
+                for k in LIMIT[3]:
+                    BOUND = LIMIT[4]
+                    for i in CSR_LIST:
+                        if BOUND <= 0:
+                            break
+                        elif ABLE(i, j, k) == True: #若此人可以排此班，就排
+                            work[i, j, k] = True
+                            if k in SHIFTset['phone']: #非其他班別時扣除需求
                                 for t in range(nT):
                                     if CONTAIN[k][t] == 1:              
                                         CURRENT_DEMAND[j][t] -= 1
@@ -635,21 +658,24 @@ for p in range(parent):
                 for r in range(nK):
                     if ABLE(i,j,rand-1) == True:
                         work[i,j,rand-1] = True
-                        for t in range(nT):
-                            if CONTAIN[rand-1][t] == 1:              
-                                CURRENT_DEMAND[j][t] -= 1
+                        if rand-1 in SHIFTset['phone']: #非其他班別時扣除需求
+                            for t in range(nT):
+                                if CONTAIN[rand-1][t] == 1:              
+                                    CURRENT_DEMAND[j][t] -= 1
                         employee.append(0)
                         is_arrange = True
                         break
                     else:
                        rand = rd.randint(2,nK)
                 if is_arrange == False:
-                    for r in range(nK):
+                    reverse = list(reversed(range(nK)))
+                    for r in reverse:
                         if ABLE(i,j,r) == True:
                             work[i,j,r] = True
-                            for t in range(nT):
-                                if CONTAIN[r][t] == 1:              
-                                    CURRENT_DEMAND[j][t] -= 1
+                            if r in SHIFTset['phone']: #非其他班別時扣除需求
+                                for t in range(nT):
+                                    if CONTAIN[r][t] == 1:              
+                                        CURRENT_DEMAND[j][t] -= 1
                             employee.append(0)
                             is_arrange = True
                             break
@@ -722,12 +748,12 @@ for p in range(parent):
     df_x1 = pd.DataFrame(which_worktime2, index = employee_name, columns = DATES) #整數班表
     df_x2 = which_worktime2                                                       #confirm用
     
-
+    print(df_x)
     #=================================================================================================#
     #確認解是否可行
     #=================================================================================================#
     message = 'All constraints are met.'
-    message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR)
+    message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset)
         
     
     #====================================================================================================#

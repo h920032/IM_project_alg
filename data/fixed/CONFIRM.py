@@ -24,7 +24,7 @@ necessary constraints:
 
 #schedule為班表二維list
 
-def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, weekdaylist, PERCENT, E_SENIOR):
+def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, weekdaylist, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset):
     
 
     as_bool = True
@@ -135,10 +135,10 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
             l_limit_bool= False
             l_limit_err +='There are not enough '
             l_limit_err +=position
-            l_limit_err +=' for '
+            l_limit_err +=' 以上人員 for '
             l_limit_err +=class_type
             l_limit_err +=' class at '
-            l_limit_err +=str(i)
+            l_limit_err +=str(day)
             l_limit_err +='th working day '
             break
     if l_limit_bool == False:
@@ -181,22 +181,150 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
         return u_limit_err
     
     #=========================================================================================================================================================
-    #(6)有特定技能之員工排特定班別
-    #需要參數: schedule, E_SKILL, K_skill
-    #
+    #(6)在特定日子中的指定班別，針對特定技能的員工，有上班人數規定
+    #需要參數:schedule, NOTPHONE_CLASS, NOTPHONE_CLASS_special, DAYset, SHIFTset, E_SKILL, VACnextdayset, NOT_VACnextdayset
+    sk_limit_bool = True
+    sk_limit_err = ''
 
-    # c_phone = K_skill['phone']
-    # c_CD=K_skill['CD']
-    # c_chat=K_skill['chat']
-    # c_outbound=K_skill['outbound']
-    # e_phone = E_SKILL['phone']
-    # e_CD=E_SKILL['CD']
-    # e_chat=E_SKILL['chat']
-    # e_outbound=E_SKILL['outbound']
-    # if len(c_phone) != 0:
-    #     for i in c_phone:
-            
+    for i in range(len(NOTPHONE_CLASS)):
+        require_day = DAYset['all'] 
+        class_type = NOTPHONE_CLASS[i][0]
+        require_type = SHIFTset[class_type]
+        skill = NOTPHONE_CLASS[i][2] 
+        e_in_require_skill = E_SKILL[skill]
+        sk_limit = NOTPHONE_CLASS[i][1]
+
+        day1 = -1
+        day2 = -1
+        for k in require_day:  
+            for r in range(len(require_type)):
+                count = 0
+                for j in e_in_require_skill:
+                    if schedule[j][k] == require_type[r]:
+                        count+=1
+                        break
+
+            if count == sk_limit:
+                continue
+            elif count < sk_limit:
+                day1 = k
+                break
+            else:
+                day2 = k
+                break
+        
+        if count < sk_limit: 
+            sk_limit_bool= False
+            sk_limit_err +='There are not enough '
+            sk_limit_err +=skill
+            sk_limit_err +=' 技能人員 for '
+            sk_limit_err +=class_type
+            sk_limit_err +=' class at '
+            sk_limit_err +=str(day1)
+            sk_limit_err +='th working day '
+            break
+        elif count > sk_limit:
+            sk_limit_bool= False
+            sk_limit_err +='There are too many '
+            sk_limit_err +=skill
+            sk_limit_err +=' 技能人員 for '
+            sk_limit_err +=class_type
+            sk_limit_err +=' class at '
+            sk_limit_err +=str(day2)
+            sk_limit_err +='th working day '
+    if sk_limit_bool == False:
+        return sk_limit_err
     
+
+
+    for i in range(len(NOTPHONE_CLASS_special)):
+        require_day1 = NOT_VACnextdayset
+        require_day2 = VACnextdayset 
+        class_type = NOTPHONE_CLASS_special[i][0]
+        require_type = SHIFTset[class_type]
+        skill = NOTPHONE_CLASS_special[i][2] 
+        e_in_require_skill = E_SKILL[skill]
+        sk_limit1 = NOTPHONE_CLASS_special[i][1]
+        sk_limit2 = NOTPHONE_CLASS_special[i][3]
+        
+        day1 = -1
+        day2 = -1
+        for k in require_day1:    
+            for r in range(len(require_type)):
+                count = 0
+                for j in e_in_require_skill:
+                    if schedule[j][k] == require_type[r]:
+                        count+=1
+                        break
+
+            if count == sk_limit1:
+                continue
+            elif count < sk_limit1:
+                day1 = k
+                break
+            else:
+                day2 = k
+                break
+        
+        if count < sk_limit1: 
+            sk_limit_bool= False
+            sk_limit_err +='There are not enough '
+            sk_limit_err +=skill
+            sk_limit_err +=' 技能人員 for '
+            sk_limit_err +=class_type
+            sk_limit_err +=' class at '
+            sk_limit_err +=str(day1)
+            sk_limit_err +='th working day '
+            break
+        elif count > sk_limit1:
+            sk_limit_bool= False
+            sk_limit_err +='There are too many '
+            sk_limit_err +=skill
+            sk_limit_err +=' 技能人員 for '
+            sk_limit_err +=class_type
+            sk_limit_err +=' class at '
+            sk_limit_err +=str(day2)
+            sk_limit_err +='th working day '
+        
+        for k in require_day2:    
+            for r in range(len(require_type)):
+                count = 0
+                for j in e_in_require_skill:
+                    if schedule[j][k] == require_type[r]:
+                        count+=1
+                        break
+
+            if count == sk_limit2:
+                continue
+            elif count < sk_limit2:
+                day1 = k
+                break
+            else:
+                day2 = k
+                break
+        
+        if count < sk_limit2: 
+            sk_limit_bool= False
+            sk_limit_err +='There are not enough '
+            sk_limit_err +=skill
+            sk_limit_err +=' 技能人員 for '
+            sk_limit_err +=class_type
+            sk_limit_err +=' class at '
+            sk_limit_err +=str(day1)
+            sk_limit_err +='th working day '
+            break
+        elif count > sk_limit2:
+            sk_limit_bool= False
+            sk_limit_err +='There are too many '
+            sk_limit_err +=skill
+            sk_limit_err +=' 技能人員 for '
+            sk_limit_err +=class_type
+            sk_limit_err +=' class at '
+            sk_limit_err +=str(day2)
+            sk_limit_err +='th working day '
+        
+    if sk_limit_bool == False:
+        return sk_limit_err
     
     
     #=========================================================================================================================================================
@@ -235,6 +363,41 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
         return senior_err
     
 
+    
+    #=========================================================================================================================================================
+    #(8)針對特定技能的員工，有上班人數上限
+    #需要參數:schedule, Upper_shift, SHIFTset
+    us_limit_bool = True
+    us_limit_err =''
+    for i in range(len(Upper_shift)):
+        require_day = DAYset['all']
+        class_type = Upper_shift[i][0]
+        require_type = SHIFTset[class_type] 
+        e_in_require_skill = E_SKILL['phone']
+        us_limit = Upper_shift[i][1]
+       
+        for j in e_in_require_skill:
+            count = 0
+            day = 0
+            for k in require_day:
+                for r in range(len(require_type)):
+                    if schedule[j][k] == require_type[r]:
+                        count+=1
+                        break
+                if count > us_limit:
+                    us_limit_bool = False
+                    break
+            if count > us_limit:
+                us_limit_bool = False
+                us_limit_err +=str(j)
+                us_limit_err +='th employee is assinged too many '
+                us_limit_err +=class_type
+                us_limit_err +=' class in this month '
+                break
+
+    if us_limit_bool ==False:
+        return us_limit_err
+    
 
     success_mes = 'All constraints are met.'
     return success_mes

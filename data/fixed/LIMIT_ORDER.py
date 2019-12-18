@@ -70,13 +70,13 @@ def LIMIT_ORDER(N, L, SK, SK_S, S, Need, POSI, SENIOR, SKILL, DAY, VAC, nVAC, K,
 	# 	n = int(i[2])
 	# 	avg = avgNeed(i[0],i[1], DAY,K,K_TIME,Need)
 	# 	neck = float( n - avg )						#剩餘可動人手 = 上限人數 - 平均需求人數 (很可能是負數)
-	# 	limits.append([ 'upper', POSI['任意'], DAY[i[0]], K[i[1]], avg, neck])	#[-2]表示需要多少人
+	# 	limits.append([ 'upper', POSI['任意'], DAY[i[0]], K[i[1]], avg, neck])	
 
 	# lower limit: j, k_set, i(position), n
 	for i in L:
 		n = int(i[3])
 		neck = float( len(POSI[i[2]]) - n )
-		limits.append([ 'lower', POSI[i[2]], [int(i[0])], K[i[1]], n, neck])	#[-2]表示需要多少人
+		limits.append([ 'lower', POSI[i[2]], [int(i[0])], K[i[1]], n, neck])	
 
 	#senior limit: j_set, k_set, n, i(senior) 
 	for ii in range(len(S)):	#get SENIOR without index
@@ -85,14 +85,22 @@ def LIMIT_ORDER(N, L, SK, SK_S, S, Need, POSI, SENIOR, SKILL, DAY, VAC, nVAC, K,
 		bound = n*avgNeed(i[0], i[1], DAY,K,K_TIME,Need)
 		#計算瓶頸程度：總可用人數 - 需求人數(n*平均需求人數)
 		neck = len(SENIOR[ii]) - bound	#瓶頸程度=剩餘可動人手
-		limits.append([ 'ratio', SENIOR[ii], DAY[i[0]], K[i[1]], bound, neck])	#[-2]表示需要多少人
+		limits.append([ 'ratio', SENIOR[ii], DAY[i[0]], K[i[1]], bound, neck])	
 	
-	# skill limit: j, k_set, i(skill), n
+	# skill limit: k_set, need, i(skill)
 	for i in SK:
-		n = int(i[3])
+		n = int(i[1])
 		neck = float( len(SKILL[i[2]]) - n )
-		limits.append([ 'skill', SKILL[i[2]], DAY[i[0]], K[i[1]], n, neck])	#[-2]表示需要多少人
+		limits.append([ 'skill', SKILL[i[2]], DAY['all'], K[i[0]], n, neck])	
 	
+	# skill_special limit: k_set, need, i(skill), special_need
+	for i in SK_S:
+		n = int(i[1])
+		n_s = int(i[3])
+		neck = float( len(SKILL[i[2]]) - n )
+		neck_s = float( len(SKILL[i[2]]) - n_s )
+		limits.append([ 'skill', SKILL[i[2]], nVAC, K[i[0]], n, neck])
+		limits.append([ 'skill_special', SKILL[i[2]], VAC, K[i[0]], n_s, neck_s])	
 	"""===========================================
 	sort
 	==========================================="""

@@ -54,7 +54,7 @@ def CSR_ORDER(which_way,what_order,CSR_List,EMPLOYEE_t):
         available_CSR = len(CSR_List)
         
         index = range(0,1)
-        small_dataframe = pd.DataFrame(index=index,columns=['Name_English','Position'])
+        small_dataframe = pd.DataFrame(index=index,columns=['Name_English','Position','skill-phone','skill-CD','skill-chat','skill-outbound'])
   ## 把職位轉為數字以便排優先順序        
         for i in range (nEMPLOYEE) :            
             if (EMPLOYEE_t.iloc[i,4] == "專員"):                
@@ -65,7 +65,7 @@ def CSR_ORDER(which_way,what_order,CSR_List,EMPLOYEE_t):
                 EMPLOYEE_t.at[i,'Position'] = 3 
             elif (EMPLOYEE_t.iloc[i,4] == "副理"):
                 EMPLOYEE_t.at[i,'Position'] = 4                
-        temp_dataframe = EMPLOYEE_t.iloc[:,[0,4]]
+        temp_dataframe = EMPLOYEE_t.iloc[:,[0,4,5,6,7,8]]
         
         for i in range (nEMPLOYEE) :            
             for j in range (available_CSR):                
@@ -73,11 +73,12 @@ def CSR_ORDER(which_way,what_order,CSR_List,EMPLOYEE_t):
                     small_dataframe = pd.concat([temp_dataframe.iloc[[i],:],small_dataframe],sort = False)
         
         small_dataframe = small_dataframe.dropna(thresh=2)
-        sorted_dataframe = small_dataframe.sort_values('Position',ascending = True)
+        sorted_dataframe = small_dataframe.sort_values(['skill-chat','skill-outbound','skill-CD','skill-phone','Position'],ascending = True)
         
         newCSR_List = list()
         for i in range (len(sorted_dataframe)):           
-            newCSR_List.append(int(sorted_dataframe.index.values[i]))  
+            newCSR_List.append(int(sorted_dataframe.index.values[i]))
+  
   ## 隨機再生出五個CRS_list提供挑選，交換最不重要的幾個人的順序            
         if(which_way == "a"):
             order_a = newCSR_List.copy()
@@ -105,10 +106,10 @@ def CSR_ORDER(which_way,what_order,CSR_List,EMPLOYEE_t):
         nEMPLOYEE = EMPLOYEE_t.shape[0]
         available_CSR = len(CSR_List)
         
-        temp_dataframe = EMPLOYEE_t.iloc[:,[0,3]]
+        temp_dataframe = EMPLOYEE_t.iloc[:,[0,3,5,6,7,8]]
         
         index = range(0,1)
-        small_dataframe = pd.DataFrame(index=index,columns=['Name_English','Senior'])
+        small_dataframe = pd.DataFrame(index=index,columns=['Name_English','Senior','skill-phone','skill-CD','skill-chat','skill-outbound'])
         
         for i in range (nEMPLOYEE) :            
             for j in range (available_CSR):                
@@ -116,7 +117,7 @@ def CSR_ORDER(which_way,what_order,CSR_List,EMPLOYEE_t):
                     small_dataframe = pd.concat([temp_dataframe.iloc[[i],:],small_dataframe],sort = False)
         
         small_dataframe = small_dataframe.dropna(thresh=2)
-        sorted_dataframe = small_dataframe.sort_values('Senior',ascending = True)
+        sorted_dataframe = small_dataframe.sort_values(['skill-chat','skill-outbound','skill-CD','skill-phone','Senior'],ascending = True)
         
         newCSR_List = list()
         for i in range (len(sorted_dataframe)):           
@@ -145,22 +146,33 @@ def CSR_ORDER(which_way,what_order,CSR_List,EMPLOYEE_t):
         
         return (newCSR_List)
 ## 技能員工當中先排年資淺的員工      
-    elif (what_order == "skill"):
+    elif (what_order == "skill" or what_order == "skill_special"):
         nEMPLOYEE = EMPLOYEE_t.shape[0]
         available_CSR = len(CSR_List)
         
-        temp_dataframe = EMPLOYEE_t.iloc[:,[0,3]]
+        #temp_dataframe = EMPLOYEE_t.iloc[:,[0,3]]
         
         index = range(0,1)
-        small_dataframe = pd.DataFrame(index=index,columns=['Name_English','Senior'])
-        
+        small_dataframe = pd.DataFrame(index=index,columns=['Name_English','Senior','Position'])
+        ## 把職位轉為數字以便排優先順序        
+        for i in range (nEMPLOYEE) :            
+            if (EMPLOYEE_t.iloc[i,4] == "專員"):                
+                EMPLOYEE_t.at[i,'Position'] = 1
+            elif (EMPLOYEE_t.iloc[i,4] == "主任"):
+                EMPLOYEE_t.at[i,'Position'] = 2
+            elif (EMPLOYEE_t.iloc[i,4] == "襄理"):
+                EMPLOYEE_t.at[i,'Position'] = 3 
+            elif (EMPLOYEE_t.iloc[i,4] == "副理"):
+                EMPLOYEE_t.at[i,'Position'] = 4                
+        temp_dataframe = EMPLOYEE_t.iloc[:,[0,3,4]]
+
         for i in range (nEMPLOYEE) :            
             for j in range (available_CSR):                
                 if (CSR_List[j] == int(temp_dataframe.index.values[i])): 
                     small_dataframe = pd.concat([temp_dataframe.iloc[[i],:],small_dataframe],sort = False)
         
         small_dataframe = small_dataframe.dropna(thresh=2)
-        sorted_dataframe = small_dataframe.sort_values('Senior',ascending = True)
+        sorted_dataframe = small_dataframe.sort_values(['Position','Senior'],ascending = True)
         
         newCSR_List = list()
         for i in range (len(sorted_dataframe)):           

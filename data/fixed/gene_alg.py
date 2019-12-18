@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 import random
-from score import score
-from CONFIRM import confirm
+from data.fixed.score import score
+from data.fixed.CONFIRM import confirm
 
 K_type = ['O','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','CD','C2','C3','C4','OB']
 K_type_dict = {0:'O',1:'A2',2:'A3',3:'A4',4:'A5',5:'MS',6:'AS',7:'P2',8:'P3',9:'P4',10:'P5',11:'N1',12:'M1',13:'W6',14:'CD',15:'C2',16:'C3',17:'C4',18:'OB'}
