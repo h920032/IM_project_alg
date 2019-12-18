@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 import random
-from score import score
-from CONFIRM import confirm
+from data.fixed.score import score
+from data.fixed.CONFIRM import confirm
 
 #1.永遠只拿前幾名，抽兩個來交配
 #2.用更好的子代取代親代
