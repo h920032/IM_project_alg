@@ -19,17 +19,17 @@ K_type_dict = {0:'O',1:'A2',2:'A3',3:'A4',4:'A5',5:'MS',6:'AS',7:'P2',8:'P3',9:'
 def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
     sort = sorted(score_liz, key = lambda s: s[2],reverse = True) #親代排名
     new = np.copy(sort[:int(len(score_liz)/3)]) #取出前1/3
-    num_list = range(len(new))
+    num_list = list(range(len(new)))
     random.shuffle(num_list)
-    
     print(num_list[0],num_list[1], end=' ')
+
     union = np.logical_or(new[num_list[0]][1], new[num_list[1]][1])
     one_not_avb = union * new[num_list[0]][0]
     one_avb = new[num_list[0]][0] - one_not_avb
     two_not_avb = union * new[num_list[1]][0]
     two_avb = new[num_list[1]][0] - two_not_avb
-    one_org = new[num_list[0]][0] #沒有fix的班表
-    two_org = new[num_list[1]][0]
+    one_org = np.array(new[num_list[0]][0]) #沒有fix的班表
+    two_org = np.array(new[num_list[1]][0])
 
     #隨機決定切分點
     sp_row = random.randint(0,nDAY-1)
@@ -54,7 +54,7 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightd
     two_org_col_right = two_org[sp_col:]
     two_org_row_up = two_org.T[:sp_row].T
     two_org_row_down = two_org.T[:sp_row].T
- 
+    
     #將對應的一、二組片段重新組合
     #上下黏合
     a_one_one_two = np.concatenate((one_row_up, two_row_down), axis=1) + one_not_avb
@@ -72,31 +72,32 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightd
     b_org_one_two = np.concatenate((one_org_col_left, two_org_col_right), axis=0)
     b_org_two_one = np.concatenate((two_org_col_left, one_org_col_right), axis=0)
 
+
     #突變
     if random.randint(0,19) == 0:
-        a_one_one_two[random.randint(0,a_one_one_two.shape[0])][random.randint(0,a_one_one_two.shape[1])] = random.randint(0,18)
+        a_one_one_two[random.randint(0,a_one_one_two.shape[0]-1)][random.randint(0,a_one_one_two.shape[1]-1)] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        a_two_one_two[random.randint(0,a_two_one_two.shape[0])][random.randint(0,a_two_one_two.shape[1])] = random.randint(0,18)
+        a_two_one_two[random.randint(0,a_two_one_two.shape[0]-1)][random.randint(0,a_two_one_two.shape[1]-1)] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        a_one_two_one[random.randint(0,a_one_two_one.shape[0])][random.randint(0,a_one_two_one.shape[1])] = random.randint(0,18)
+        a_one_two_one[random.randint(0,a_one_two_one.shape[0]-1)][random.randint(0,a_one_two_one.shape[1]-1)] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        a_two_two_one[random.randint(0,a_two_two_one.shape[0])][random.randint(0,a_two_two_one.shape[1])] = random.randint(0,18)
+        a_two_two_one[random.randint(0,a_two_two_one.shape[0]-1)][random.randint(0,a_two_two_one.shape[1]-1)] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        a_org_one_two[random.randint(0,a_org_one_two.shape[0])][random.randint(0,a_org_one_two.shape[1])] = random.randint(0,18)
+        a_org_one_two[random.randint(0,a_org_one_two.shape[0]-1)][random.randint(0,a_org_one_two.shape[1]-1)] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        a_org_two_one[random.randint(0,a_org_two_one.shape[0])][random.randint(0,a_org_two_one.shape[1])] = random.randint(0,18)
+        a_org_two_one[random.randint(0,a_org_two_one.shape[0]-1)][random.randint(0,a_org_two_one.shape[1]-1)] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        b_one_one_two[random.randint(0,b_one_one_two.shape[0])][random.randint(0,b_one_one_two.shape[1])] = random.randint(0,18)
+        b_one_one_two[random.randint(0,b_one_one_two.shape[0]-1)][random.randint(0,b_one_one_two.shape[1]-1)] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        b_two_one_two[random.randint(0,b_two_one_two.shape[0])][random.randint(0,b_two_one_two.shape[1])] = random.randint(0,18)
+        b_two_one_two[random.randint(0,b_two_one_two.shape[0]-1)][random.randint(0,b_two_one_two.shape[1]-1)] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        b_one_two_one[random.randint(0,b_one_two_one.shape[0])][random.randint(0,b_one_two_one.shape[1])] = random.randint(0,18)
+        b_one_two_one[random.randint(0,b_one_two_one.shape[0]-1)][random.randint(0,b_one_two_one.shape[1]-1)] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        b_two_two_one[random.randint(0,b_two_two_one.shape[0])][random.randint(0,b_two_two_one.shape[1])] = random.randint(0,18)
+        b_two_two_one[random.randint(0,b_two_two_one.shape[0]-1)][random.randint(0,b_two_two_one.shape[1]-1)] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        b_org_one_two[random.randint(0,b_org_one_two.shape[0])][random.randint(0,b_org_one_two.shape[1])] = random.randint(0,18)
+        b_org_one_two[random.randint(0,b_org_one_two.shape[0]-1)][random.randint(0,b_org_one_two.shape[1]-1)] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        b_org_two_one[random.randint(0,b_org_two_one.shape[0])][random.randint(0,b_org_two_one.shape[1])] = random.randint(0,18)
+        b_org_two_one[random.randint(0,b_org_two_one.shape[0]-1)][random.randint(0,b_org_two_one.shape[1]-1)] = random.randint(0,18)
 
     #判斷是否符合
     if confirm(np.vectorize(K_type_dict.get)(a_one_one_two), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
