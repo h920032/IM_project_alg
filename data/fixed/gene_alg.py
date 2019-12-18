@@ -74,29 +74,29 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightd
 
     #突變
     if random.randint(0,19) == 0:
-        a_one_one_two[random.randint(0,a_one_one_two.shape[0])][random.randint(0,a_one_one_two.shape[1]] = random.randint(0,18)
+        a_one_one_two[random.randint(0,a_one_one_two.shape[0])][random.randint(0,a_one_one_two.shape[1])] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        a_two_one_two[random.randint(0,a_two_one_two.shape[0])][random.randint(0,a_two_one_two.shape[1]] = random.randint(0,18)
+        a_two_one_two[random.randint(0,a_two_one_two.shape[0])][random.randint(0,a_two_one_two.shape[1])] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        a_one_two_one[random.randint(0,a_one_two_one.shape[0])][random.randint(0,a_one_two_one.shape[1]] = random.randint(0,18)
+        a_one_two_one[random.randint(0,a_one_two_one.shape[0])][random.randint(0,a_one_two_one.shape[1])] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        a_two_two_one[random.randint(0,a_two_two_one.shape[0])][random.randint(0,a_two_two_one.shape[1]] = random.randint(0,18)
+        a_two_two_one[random.randint(0,a_two_two_one.shape[0])][random.randint(0,a_two_two_one.shape[1])] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        a_org_one_two[random.randint(0,a_org_one_two.shape[0])][random.randint(0,a_org_one_two.shape[1]] = random.randint(0,18)
+        a_org_one_two[random.randint(0,a_org_one_two.shape[0])][random.randint(0,a_org_one_two.shape[1])] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        a_org_two_one[random.randint(0,a_org_two_one.shape[0])][random.randint(0,a_org_two_one.shape[1]] = random.randint(0,18)
+        a_org_two_one[random.randint(0,a_org_two_one.shape[0])][random.randint(0,a_org_two_one.shape[1])] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        b_one_one_two[random.randint(0,b_one_one_two.shape[0])][random.randint(0,b_one_one_two.shape[1]] = random.randint(0,18)
+        b_one_one_two[random.randint(0,b_one_one_two.shape[0])][random.randint(0,b_one_one_two.shape[1])] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        b_two_one_two[random.randint(0,b_two_one_two.shape[0])][random.randint(0,b_two_one_two.shape[1]] = random.randint(0,18)
+        b_two_one_two[random.randint(0,b_two_one_two.shape[0])][random.randint(0,b_two_one_two.shape[1])] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        b_one_two_one[random.randint(0,b_one_two_one.shape[0])][random.randint(0,b_one_two_one.shape[1]] = random.randint(0,18)
+        b_one_two_one[random.randint(0,b_one_two_one.shape[0])][random.randint(0,b_one_two_one.shape[1])] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        b_two_two_one[random.randint(0,b_two_two_one.shape[0])][random.randint(0,b_two_two_one.shape[1]] = random.randint(0,18)
+        b_two_two_one[random.randint(0,b_two_two_one.shape[0])][random.randint(0,b_two_two_one.shape[1])] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        b_org_one_two[random.randint(0,b_org_one_two.shape[0])][random.randint(0,b_org_one_two.shape[1]] = random.randint(0,18)
+        b_org_one_two[random.randint(0,b_org_one_two.shape[0])][random.randint(0,b_org_one_two.shape[1])] = random.randint(0,18)
     if random.randint(0,19) == 0:
-        b_org_two_one[random.randint(0,b_org_two_one.shape[0])][random.randint(0,b_org_two_one.shape[1]] = random.randint(0,18)
+        b_org_two_one[random.randint(0,b_org_two_one.shape[0])][random.randint(0,b_org_two_one.shape[1])] = random.randint(0,18)
 
     #判斷是否符合
     if confirm(np.vectorize(K_type_dict.get)(a_one_one_two), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
