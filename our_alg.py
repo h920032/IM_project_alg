@@ -837,7 +837,7 @@ for i in range(parent):
 #=======================================================================================================#
 tstart_gen = time.time()
 print('\n基因演算法開始')
-gene_result = GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
+gene_result = GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
 
 
 #=======================================================================================================#
