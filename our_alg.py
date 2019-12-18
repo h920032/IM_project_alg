@@ -70,7 +70,7 @@ else:
     EmployeeTest = ""
     AssignTest = ""
     NeedTest = ""
-print(dir_name)
+print('資料輸入路徑:',dir_name)
 #=============================================================================#
 #每月更改的資料
 #=============================================================================#
@@ -80,18 +80,18 @@ year = int(date.iloc[0,0])
 month = int(date.iloc[1,0])
 
 #指定排班
-print(dir_name + 'per_month/Assign'+AssignTest+'.csv')
+print('指定排班表 :',dir_name + 'per_month/Assign'+AssignTest+'.csv')
 M_t = tl.readFile(dir_name + 'per_month/Assign'+AssignTest+'.csv')
 #M_t = tl.readFile(dir_name + 'per_month/Assign.csv')
 M_t[0] = [ str(x) for x in M_t[0] ]           #強制將ID設為string
 #進線需求預估
-print(dir_name+"per_month/Need"+NeedTest+".csv")
+print('連線需求表 :',dir_name+"per_month/Need"+NeedTest+".csv")
 DEMAND_t = pd.read_csv(dir_name+"per_month/Need"+NeedTest+".csv", header=0, index_col=0, engine='python').T
 #DEMAND_t = pd.read_csv(dir_name+"per_month/Need.csv", header=0, index_col=0, engine='python').T
 DATES = [ int(x) for x in DEMAND_t.index ]    #所有的日期 - 對照用
 
 #employees data
-print(dir_name+"per_month/Employee"+EmployeeTest+".csv")
+print('員工資料表 :',dir_name+"per_month/Employee"+EmployeeTest+".csv")
 EMPLOYEE_t = pd.read_csv(dir_name+"per_month/Employee"+EmployeeTest+".csv", header = 0, engine='python') 
 #EMPLOYEE_t = pd.read_csv(dir_name+"per_month/Employee.csv", header = 0) 
 E_NAME = list(EMPLOYEE_t['Name_English'])       #E_NAME - 對照名字與員工index時使用
@@ -101,7 +101,7 @@ E_POSI_t = EMPLOYEE_t['Position']
 E_SKILL_t = EMPLOYEE_t[ list(filter(lambda x: re.match('skill-',x), EMPLOYEE_t.columns)) ]  #抓出員工技能表
 
 
-print('len(employee) =',len(EMPLOYEE_t))
+print('員工總人數 :',len(EMPLOYEE_t),'人')
 #=============================================================================#
 ####NM 及 NW 從人壽提供之上個月的班表裡面計算
 if month>1:
@@ -337,7 +337,7 @@ class Pool():
 # Global Variables
 #========================================================================#
 # 產生親代的迴圈數
-parent = 20	# int
+parent = 10	# int
 
 # 生成Initial pool的100個親代
 INITIAL_POOL = []
