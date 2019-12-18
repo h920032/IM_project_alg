@@ -72,20 +72,33 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightd
     b_org_one_two = np.concatenate((one_org_col_left, two_org_col_right), axis=0)
     b_org_two_one = np.concatenate((two_org_col_left, one_org_col_right), axis=0)
 
-    result_list = []
-    result_list.append(a_one_one_two)
-    result_list.append(a_two_one_two)
-    result_list.append(a_one_two_one)
-    result_list.append(a_two_two_one)
-    result_list.append(a_org_one_two)
-    result_list.append(a_org_two_one)
-    result_list.append(b_one_one_two)
-    result_list.append(b_two_one_two)
-    result_list.append(b_one_two_one)
-    result_list.append(b_two_two_one)
-    result_list.append(b_org_one_two)
-    result_list.append(b_org_two_one)
+    #突變
+    if random.randint(0,19) == 0:
+        a_one_one_two[random.randint(0,a_one_one_two.shape[0])][random.randint(0,a_one_one_two.shape[1]] = random.randint(0,18)
+    if random.randint(0,19) == 0:
+        a_two_one_two[random.randint(0,a_two_one_two.shape[0])][random.randint(0,a_two_one_two.shape[1]] = random.randint(0,18)
+    if random.randint(0,19) == 0:
+        a_one_two_one[random.randint(0,a_one_two_one.shape[0])][random.randint(0,a_one_two_one.shape[1]] = random.randint(0,18)
+    if random.randint(0,19) == 0:
+        a_two_two_one[random.randint(0,a_two_two_one.shape[0])][random.randint(0,a_two_two_one.shape[1]] = random.randint(0,18)
+    if random.randint(0,19) == 0:
+        a_org_one_two[random.randint(0,a_org_one_two.shape[0])][random.randint(0,a_org_one_two.shape[1]] = random.randint(0,18)
+    if random.randint(0,19) == 0:
+        a_org_two_one[random.randint(0,a_org_two_one.shape[0])][random.randint(0,a_org_two_one.shape[1]] = random.randint(0,18)
+    if random.randint(0,19) == 0:
+        b_one_one_two[random.randint(0,b_one_one_two.shape[0])][random.randint(0,b_one_one_two.shape[1]] = random.randint(0,18)
+    if random.randint(0,19) == 0:
+        b_two_one_two[random.randint(0,b_two_one_two.shape[0])][random.randint(0,b_two_one_two.shape[1]] = random.randint(0,18)
+    if random.randint(0,19) == 0:
+        b_one_two_one[random.randint(0,b_one_two_one.shape[0])][random.randint(0,b_one_two_one.shape[1]] = random.randint(0,18)
+    if random.randint(0,19) == 0:
+        b_two_two_one[random.randint(0,b_two_two_one.shape[0])][random.randint(0,b_two_two_one.shape[1]] = random.randint(0,18)
+    if random.randint(0,19) == 0:
+        b_org_one_two[random.randint(0,b_org_one_two.shape[0])][random.randint(0,b_org_one_two.shape[1]] = random.randint(0,18)
+    if random.randint(0,19) == 0:
+        b_org_two_one[random.randint(0,b_org_two_one.shape[0])][random.randint(0,b_org_two_one.shape[1]] = random.randint(0,18)
 
+    #判斷是否符合
     if confirm(np.vectorize(K_type_dict.get)(a_one_one_two), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
         sort.append((a_one_one_two,new[num_list[0]][1],score(a_one_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     
