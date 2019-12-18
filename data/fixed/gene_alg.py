@@ -16,14 +16,13 @@ K_type_dict = {0:'O',1:'A2',2:'A3',3:'A4',4:'A5',5:'MS',6:'AS',7:'P2',8:'P3',9:'
 #def score(input):
 #    return random.randint(1,10000)
 
-def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
+def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest='',ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset):
     sort = sorted(score_liz, key = lambda s: s[2],reverse = True) #親代排名
-    sort = sort[:int(len(score_liz)/3)] #取出前1/3
-    new = np.copy(sort)
-    num_list = list(range(len(new)))
+    new = np.copy(sort[:int(len(score_liz)/3)]) #取出前1/3
+    num_list = range(len(new))
     random.shuffle(num_list)
     
-    #print(j, end=' ')
+    print(num_list[0],num_list[1], end=' ')
     union = np.logical_or(new[num_list[0]][1], new[num_list[1]][1])
     one_not_avb = union * new[num_list[0]][0]
     one_avb = new[num_list[0]][0] - one_not_avb
@@ -87,22 +86,48 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir='./data/per_month
     result_list.append(b_org_one_two)
     result_list.append(b_org_two_one)
 
+    if confirm(np.vectorize(K_type_dict.get)(a_one_one_two), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
+        sort.append((a_one_one_two,new[num_list[0]][1],score(a_one_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+    
+    if confirm(np.vectorize(K_type_dict.get)(a_two_one_two), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
+        sort.append((a_two_one_two,new[num_list[1]][1],score(a_two_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+    
+    if confirm(np.vectorize(K_type_dict.get)(a_one_two_one), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
+        sort.append((a_one_two_one,new[num_list[0]][1],score(a_one_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+    
+    if confirm(np.vectorize(K_type_dict.get)(a_two_two_one), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
+        sort.append((a_two_two_one,new[num_list[1]][1],score(a_two_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+    
+    if confirm(np.vectorize(K_type_dict.get)(a_org_one_two), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
+        sort.append((a_org_one_two,np.zeros(a_org_one_two.shape[0],a_org_one_two.shape[1]),score(a_org_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+    
+    if confirm(np.vectorize(K_type_dict.get)(a_org_two_one), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
+        sort.append((a_org_two_one,np.zeros(a_org_two_one.shape[0],a_org_two_one.shape[1]),score(a_org_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+    
+    if confirm(np.vectorize(K_type_dict.get)(b_one_one_two), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
+        sort.append((b_one_one_two,new[num_list[0]][1],score(b_one_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+    
+    if confirm(np.vectorize(K_type_dict.get)(b_two_one_two), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
+        sort.append((b_two_one_two,new[num_list[1]][1],score(b_two_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+    
+    if confirm(np.vectorize(K_type_dict.get)(b_one_two_one), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
+        sort.append((b_one_two_one,new[num_list[0]][1],score(b_one_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+    
+    if confirm(np.vectorize(K_type_dict.get)(b_two_two_one), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
+        sort.append((b_two_two_one,new[num_list[1]][1],score(b_two_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
 
+    if confirm(np.vectorize(K_type_dict.get)(b_org_one_two), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
+        sort.append((b_org_one_two,np.zeros(b_org_one_two.shape[0],b_org_one_two.shape[1]),score(b_org_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
 
-    sort.append((a_one_one_two,score_liz[i][1],score(a_one_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
-    sort.append((a_two_one_two,score_liz[j][1],score(a_two_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
-    sort.append((a_one_two_one,score_liz[i][1],score(a_one_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
-    sort.append((a_two_two_one,score_liz[j][1],score(a_two_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
-    sort.append((b_one_one_two,score_liz[i][1],score(b_one_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
-    sort.append((b_two_one_two,score_liz[j][1],score(b_two_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
-    sort.append((b_one_two_one,score_liz[i][1],score(b_one_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
-    sort.append((b_two_two_one,score_liz[j][1],score(b_two_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+    if confirm(np.vectorize(K_type_dict.get)(b_org_two_one), ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset) == 'All constraints are met.':
+        sort.append((b_org_two_one,np.zeros(b_org_two_one.shape[0],b_org_two_one.shape[1]),score(b_org_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+             
     # sort = sorted(sort, key = lambda s: s[2],reverse = True)
     sort = sorted(sort, key = lambda s: s[2])
     sort = sort[:len(score_liz)]
     return sort
 
-def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''): #avaliavle_sol 可行解列表 fix 不能移動的列表
+def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest='',ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset): #avaliavle_sol 可行解列表 fix 不能移動的列表
     i_nb = []
     
     for p in range(len(avaliable_sol)):
@@ -115,8 +140,7 @@ def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,per_month_di
         score_liz.append((i,j, score(i,nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     
     for i in range(gen):    #重複親代數量那麼多次
-        print('\n\n重複第',i+1,'次，共',gen,'次:')
-        score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
+        score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset)
     
     result = np.vectorize(K_type_dict.get)(score_liz[0][0])
     print('\n\n基因演算法最佳解：',score_liz[0][2])
