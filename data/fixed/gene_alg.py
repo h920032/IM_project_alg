@@ -4,6 +4,12 @@ import random
 from data.fixed.score import score
 from data.fixed.CONFIRM import confirm
 
+#1.永遠只拿前幾名，抽兩個來交配
+#2.用更好的子代取代親代
+#3.加入突變（新班表必然突變掉隨機一個班，若成不可行解就一百萬）
+#4.在gene中要做confirm，可能可能不用
+
+
 K_type = ['O','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','CD','C2','C3','C4','OB']
 K_type_dict = {0:'O',1:'A2',2:'A3',3:'A4',4:'A5',5:'MS',6:'AS',7:'P2',8:'P3',9:'P4',10:'P5',11:'N1',12:'M1',13:'W6',14:'CD',15:'C2',16:'C3',17:'C4',18:'OB'}
 
@@ -11,18 +17,21 @@ K_type_dict = {0:'O',1:'A2',2:'A3',3:'A4',4:'A5',5:'MS',6:'AS',7:'P2',8:'P3',9:'
 #    return random.randint(1,10000)
 
 def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
-    sort = sorted(score_liz, key = lambda s: s[2],reverse = True)
-    sort = sort[:int(len(score_liz)/3)]
-    for i in range(len(sort)):
+    sort = sorted(score_liz, key = lambda s: s[2],reverse = True) #親代排名
+    sort = sort[:int(len(score_liz)/3)] #取出前1/3
+    new = np.copy(sort)
+    for i in range(len(new)):
         print('\n\n   alg() #### i =',i,'#### range =',len(score_liz))
-        for j in range(len(sort)):
+        for j in range(len(new)):
             if i != j:
                 print(j, end=' ')
-                union = np.logical_or(score_liz[i][1], score_liz[j][1])
-                one_not_avb = union * score_liz[i][0]
-                one_avb = score_liz[i][0] - one_not_avb
-                two_not_avb = union * score_liz[j][0]
-                two_avb = score_liz[j][0] - two_not_avb
+                union = np.logical_or(new[i][1], new[j][1])
+                one_not_avb = union * new[i][0]
+                one_avb = new[i][0] - one_not_avb
+                two_not_avb = union * new[j][0]
+                two_avb = new[j][0] - two_not_avb
+                one_org = new[i][0]
+                two_org = new[j][0]
                 #隨機決定切分點
                 sp_row = random.randint(0,nDAY-1)
                 sp_col = random.randint(0,nEMPLOYEE-1)
@@ -66,8 +75,10 @@ def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,per_month_di
         i_nb.append(avaliable_sol[p])
         
     score_liz = []
+    
     for i ,j in zip(i_nb,fix):
         score_liz.append((i,j, score(i,nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+    
     for i in range(gen):    #重複親代數量那麼多次
         score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
     
