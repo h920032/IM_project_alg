@@ -337,7 +337,7 @@ class Pool():
 # Global Variables
 #========================================================================#
 # 產生親代的迴圈數
-parent = 10	# int
+parent = 20	# int
 
 # 生成Initial pool的100個親代
 INITIAL_POOL = []
@@ -462,7 +462,7 @@ def ABLE(this_i,this_j,this_k):
             else:   #無此技能
                 ans = False
                 return ans
-    if(this_i==0 and this_j==8 and this_k==15):print('skill')
+    
     
     #特殊技能排班
     for item in NOTPHONE_CLASS:
@@ -626,20 +626,24 @@ for p in range(parent):
                             BOUND -= 1
                         else:
                             continue
-    #sequence += 1
-    if char == 'a':
-        char = 'b'
-    elif char == 'b':
-        char = 'c'
-    elif char == 'c':
-        char = 'd'
-    elif char == 'd':
-        char = 'e'
-    elif char == 'e':
-        sequence += 1
-        char = 'a'
-    if sequence >= len(LIMIT_MATRIX):
+    sequence += 1
+    if sequence >= len(LIMIT_MATRIX) and char == 'a':
         sequence = 0
+        char = 'b'
+    elif sequence >= len(LIMIT_MATRIX) and char == 'b':
+        sequence = 0
+        char = 'c'
+    elif sequence >= len(LIMIT_MATRIX) and char == 'c':
+        sequence = 0
+        char = 'd'
+    elif sequence >= len(LIMIT_MATRIX) and char == 'd':
+        sequence = 0
+        char = 'e'
+    elif sequence >= len(LIMIT_MATRIX) and char == 'e':
+        sequence = 0
+        char = 'a'
+    
+    
     
     #=================================================================================================#
     #安排空班別
@@ -844,7 +848,7 @@ gene_result = GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, parent,year,month,per
 #====================================================================================================#
 #=======================================================================================================#
 print('基因演算法共耗時',time.time()-tstart_gen,'秒\n')
-schedule = pd.DataFrame(gene_result)
+schedule = pd.DataFrame(gene_result, index = employee_name, columns = DATES)
 print(schedule)
 schedule.to_csv(EmployeeTest[1:]+'_Schedul_2019_4.csv', encoding="utf-8_sig")
 

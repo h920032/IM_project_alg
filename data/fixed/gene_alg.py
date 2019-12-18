@@ -21,7 +21,7 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir='./data/per_month
     sort = sort[:int(len(score_liz)/3)] #取出前1/3
     new = np.copy(sort)
     for i in range(len(new)):
-        print('\n\n   alg() #### i =',i,'#### range =',len(score_liz))
+        print('\n\n   alg() #### i =',i,'#### range =',len(new))
         for j in range(len(new)):
             if i != j:
                 print(j, end=' ')
@@ -80,6 +80,7 @@ def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,per_month_di
         score_liz.append((i,j, score(i,nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     
     for i in range(gen):    #重複親代數量那麼多次
+        print('\n\n重複第',i+1,'次，共',gen,'次:')
         score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
     
     result = np.vectorize(K_type_dict.get)(score_liz[0][0])
