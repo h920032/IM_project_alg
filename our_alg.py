@@ -5,38 +5,27 @@ import numpy as np
 import pandas as pd
 import random as rd
 import data.fixed.tool as tl
-
 import data.fixed.gene_alg as gen
 from data.fixed.CSR_order import CSR_ORDER
 from data.fixed.LIMIT_ORDER import LIMIT_ORDER
-#from data.fixed.ARRANGEMENT import ARRANGEMENT
 from data.fixed.CONFIRM import confirm
 from data.fixed.score import score
 import datetime, calendar, sys
-"""============================================================================#
-12/3
-	- 建立主架構
-12/4
-	- 建立POOL
-12/6
-    - main function
-    - 在tool中建立製作WEEK_of_DAY的函數
-12/8
-    -ABLE函數完成
-    -檔名修改成英文(與solver同步)
-12/15
-    -修正bug
-12/18
-    -輸入格式統整
-============================================================================#"""
 
+#========================================================================#
+# Global Variables
+#========================================================================#
+# 產生親代的迴圈數
+parent = 100	    # int
+ordernum = 100      #limit_order的排序數量
+#基因演算法的世代數量
+generation = 100    
+
+# 生成Initial pool的100個親代
+INITIAL_POOL = []
+
+miniresult = 1000000 #親代最佳分數
 #=======================================================================================================#
-#====================================================================================================#
-#=================================================================================================#
-# 請大家把自己的函數放在 data/fixed/ (和tool.py同一個位置)
-# 再將自己的函數引進這裡 (這樣主程式的版本比較好控管)
-#=================================================================================================#
-#====================================================================================================#
 #=======================================================================================================#
 tstart_0 = time.time()  #計時用
 
@@ -332,19 +321,8 @@ class Pool():
         self.df_x1 = df_x1
 	
 
-
 #========================================================================#
-# Global Variables
-#========================================================================#
-# 產生親代的迴圈數
-parent = 100	# int
-
-# 生成Initial pool的100個親代
-INITIAL_POOL = []
-
-
-#========================================================================#
-# ABLE(i,j,k): 確認員工i在日子j是否可排班別k (嬿鎔)
+# ABLE(i,j,k): 確認員工i在日子j是否可排班別k 
 #========================================================================#
 def ABLE(this_i,this_j,this_k):
     ans = True
@@ -510,7 +488,7 @@ def ABLE(this_i,this_j,this_k):
     return ans                 
                     
 #========================================================================#
-# GENE(): 切分並交配的函數 (星宇)
+# GENE(): 切分並交配的函數 
 #========================================================================#
 def GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
 	return gen.gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
@@ -525,7 +503,7 @@ def GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S
 #====================================================================================================#
 #=======================================================================================================#
 
-LIMIT_MATRIX = LIMIT_ORDER(100,LOWER,NOTPHONE_CLASS,NOTPHONE_CLASS_special,PERCENT,DEMAND,E_POSITION,E_SENIOR,E_SKILL,DAYset,VACnextdayset,NOT_VACnextdayset,SHIFTset,CONTAIN) #生成多組限制式matrix
+LIMIT_MATRIX = LIMIT_ORDER(ordernum,LOWER,NOTPHONE_CLASS,NOTPHONE_CLASS_special,PERCENT,DEMAND,E_POSITION,E_SENIOR,E_SKILL,DAYset,VACnextdayset,NOT_VACnextdayset,SHIFTset,CONTAIN) #生成多組限制式matrix
 #print(LIMIT_MATRIX)
 sequence = 0 #限制式順序
 char = 'a' #CSR沒用度順序
@@ -783,6 +761,8 @@ for p in range(parent):
     #將結果放入INITIAL_POOL中
     #====================================================================================================#
     INITIAL_POOL.append(Pool(result, df_x1))
+    if result < miniresult:
+        miniresult = result
     
     for i in range(nEMPLOYEE):
         for j in range(nDAY):
@@ -815,10 +795,11 @@ for p in range(parent):
 
     if p == parent-1:
         print("\nINITIAL POOL completed")
+        
     #====================================================================================================#
     #====================================================================================================#
-print('\n產生',parent,'個結果於 initail pool (',success,'個合理解) ，共花費', (time.time()-tStart) ,'秒\n\n')
-
+print('\n產生',parent,'個結果於 initail pool (',success,'個合理解) ，共花費', (time.time()-tStart) ,'秒')
+print("\n親代最佳分數: result = ",miniresult,'\n\n')
 
 avaliable_sol = []
 
@@ -836,14 +817,14 @@ for i in range(parent):
 #=======================================================================================================#
 tstart_gen = time.time()
 print('\n基因演算法開始')
-generation = 100
+
 gene_result = GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
 
 
 #=======================================================================================================#
 #====================================================================================================#
 #=================================================================================================#
-#       輸出
+#  輸出
 #=================================================================================================#
 #====================================================================================================#
 #=======================================================================================================#
