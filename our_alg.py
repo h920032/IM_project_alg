@@ -525,7 +525,7 @@ def GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S
 #====================================================================================================#
 #=======================================================================================================#
 
-LIMIT_MATRIX = LIMIT_ORDER(25,LOWER,NOTPHONE_CLASS,NOTPHONE_CLASS_special,PERCENT,DEMAND,E_POSITION,E_SENIOR,E_SKILL,DAYset,VACnextdayset,NOT_VACnextdayset,SHIFTset,CONTAIN) #生成多組限制式matrix
+LIMIT_MATRIX = LIMIT_ORDER(100,LOWER,NOTPHONE_CLASS,NOTPHONE_CLASS_special,PERCENT,DEMAND,E_POSITION,E_SENIOR,E_SKILL,DAYset,VACnextdayset,NOT_VACnextdayset,SHIFTset,CONTAIN) #生成多組限制式matrix
 #print(LIMIT_MATRIX)
 sequence = 0 #限制式順序
 char = 'a' #CSR沒用度順序
