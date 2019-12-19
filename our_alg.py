@@ -19,7 +19,7 @@ import datetime, calendar, sys
 parent = 100	    # int
 ordernum = 100      #limit_order的排序數量
 #基因演算法的世代數量
-generation = 100    
+generation = 3000    
 
 # 生成Initial pool的100個親代
 INITIAL_POOL = []
@@ -761,8 +761,6 @@ for p in range(parent):
     #將結果放入INITIAL_POOL中
     #====================================================================================================#
     INITIAL_POOL.append(Pool(result, df_x1))
-    if result < miniresult:
-        miniresult = result
     
     for i in range(nEMPLOYEE):
         for j in range(nDAY):
@@ -792,7 +790,9 @@ for p in range(parent):
     print(message)
     if message != 'All constraints are met.':
         print('Some constraints fails.')
-
+    if INITIAL_POOL[p].result < miniresult:
+        miniresult = INITIAL_POOL[p].result
+    
     if p == parent-1:
         print("\nINITIAL POOL completed")
         
