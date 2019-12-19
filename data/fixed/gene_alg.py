@@ -153,14 +153,16 @@ def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,ASSIGN, S_NI
         i_nb.append(avaliable_sol[p])
         
     score_liz = []
-    
+    gene_log = []   
     for i ,j in zip(i_nb,fix):
         score_liz.append((i,j, score(i,nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     
     for i in range(gen):    #重複親代數量那麼多次
         score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
         print('第',i+1,'世代最佳分數：',score_liz[0][2])
-    
+        gene_log.append([i+1,score_liz[0][2]])
+    gene_log = pd.DataFrame(np.array(gene_log))
+    gene_log.to_csv('gene_log.csv')
     result = np.vectorize(K_type_dict.get)(score_liz[0][0])
     print('\n\n基因演算法最佳解：',score_liz[0][2])
     return result
