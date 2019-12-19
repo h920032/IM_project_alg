@@ -15,7 +15,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     #E_POSI_t = EMPLOYEE_t['Position']
     #E_SKILL_t = EMPLOYEE_t[list(filter(lambda x: re.match('skill-',x), EMPLOYEE_t.columns))]
     #SKILL_NAME = list(E_SKILL_t.columns)
-    P_t = pd.read_csv(parameters_dir + 'weight_p1-4.csv', header = None, index_col = 0)
+    P_t = pd.read_csv(parameters_dir + 'weight_p1-3.csv', header = None, index_col = 0)
     Kset_t = pd.read_csv(fixed_dir + 'fix_classes.csv', header = None, index_col = 0)
     Shift_name = Kset_t.iloc[0].tolist()
     #SKset_t = pd.read_csv(parameters_dir + 'skill_class_limit.csv')  #class set for skills

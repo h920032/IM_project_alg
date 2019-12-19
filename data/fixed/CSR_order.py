@@ -48,13 +48,13 @@ def CSR_ORDER(which_way,what_order,CSR_List,EMPLOYEE_t):
             order_e[0],order_e[2] = order_e[2],order_e[0]
             return (order_e)
         return(newCSR_List)
-## 以員工職位為優先        
+## 以員工技能少、年資低、職位低為優先        
     elif (what_order == "lower"):
         nEMPLOYEE = EMPLOYEE_t.shape[0]
         available_CSR = len(CSR_List)
         
         index = range(0,1)
-        small_dataframe = pd.DataFrame(index=index,columns=['Name_English','Position','skill-phone','skill-CD','skill-chat','skill-outbound'])
+        small_dataframe = pd.DataFrame(index=index,columns=['Name_English','Senior','Position','skill-phone','skill-CD','skill-chat','skill-outbound'])
   ## 把職位轉為數字以便排優先順序        
         for i in range (nEMPLOYEE) :            
             if (EMPLOYEE_t.iloc[i,4] == "專員"):                
@@ -65,7 +65,7 @@ def CSR_ORDER(which_way,what_order,CSR_List,EMPLOYEE_t):
                 EMPLOYEE_t.at[i,'Position'] = 3 
             elif (EMPLOYEE_t.iloc[i,4] == "副理"):
                 EMPLOYEE_t.at[i,'Position'] = 4                
-        temp_dataframe = EMPLOYEE_t.iloc[:,[0,4,5,6,7,8]]
+        temp_dataframe = EMPLOYEE_t.iloc[:,[0,3,4,5,6,7,8]]
         
         for i in range (nEMPLOYEE) :            
             for j in range (available_CSR):                
@@ -73,7 +73,7 @@ def CSR_ORDER(which_way,what_order,CSR_List,EMPLOYEE_t):
                     small_dataframe = pd.concat([temp_dataframe.iloc[[i],:],small_dataframe],sort = False)
         
         small_dataframe = small_dataframe.dropna(thresh=2)
-        sorted_dataframe = small_dataframe.sort_values(['skill-chat','skill-outbound','skill-CD','skill-phone','Position'],ascending = True)
+        sorted_dataframe = small_dataframe.sort_values(['skill-chat','skill-outbound','skill-CD','skill-phone','Senior','Position'],ascending = True)
         
         newCSR_List = list()
         for i in range (len(sorted_dataframe)):           
@@ -101,7 +101,7 @@ def CSR_ORDER(which_way,what_order,CSR_List,EMPLOYEE_t):
             order_e[0],order_e[2] = order_e[2],order_e[0]
             return (order_e)            
         return (newCSR_List)
-## 以年資為優先 
+## 以技能少、職位低、年資低為優先 
     elif (what_order == "ratio"):
         nEMPLOYEE = EMPLOYEE_t.shape[0]
         available_CSR = len(CSR_List)
@@ -109,7 +109,7 @@ def CSR_ORDER(which_way,what_order,CSR_List,EMPLOYEE_t):
         temp_dataframe = EMPLOYEE_t.iloc[:,[0,3,5,6,7,8]]
         
         index = range(0,1)
-        small_dataframe = pd.DataFrame(index=index,columns=['Name_English','Senior','skill-phone','skill-CD','skill-chat','skill-outbound'])
+        small_dataframe = pd.DataFrame(index=index,columns=['Name_English','Senior','Position','skill-phone','skill-CD','skill-chat','skill-outbound'])
         
         for i in range (nEMPLOYEE) :            
             for j in range (available_CSR):                
@@ -117,7 +117,7 @@ def CSR_ORDER(which_way,what_order,CSR_List,EMPLOYEE_t):
                     small_dataframe = pd.concat([temp_dataframe.iloc[[i],:],small_dataframe],sort = False)
         
         small_dataframe = small_dataframe.dropna(thresh=2)
-        sorted_dataframe = small_dataframe.sort_values(['skill-chat','skill-outbound','skill-CD','skill-phone','Senior'],ascending = True)
+        sorted_dataframe = small_dataframe.sort_values(['skill-chat','skill-outbound','skill-CD','skill-phone','Position','Senior'],ascending = True)
         
         newCSR_List = list()
         for i in range (len(sorted_dataframe)):           
@@ -145,7 +145,7 @@ def CSR_ORDER(which_way,what_order,CSR_List,EMPLOYEE_t):
             return (order_e)            
         
         return (newCSR_List)
-## 技能員工當中先排年資淺的員工      
+## 技能員工當中先排年資淺再排職位低的員工      
     elif (what_order == "skill" or what_order == "skill_special"):
         nEMPLOYEE = EMPLOYEE_t.shape[0]
         available_CSR = len(CSR_List)

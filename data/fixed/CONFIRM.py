@@ -126,7 +126,7 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
             for k in range(len(require_type)):
                 if schedule[j][day] == require_type[k]:
                     count+=1
-
+            
             if count >= l_limit:
                 break
         
