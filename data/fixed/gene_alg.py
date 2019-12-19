@@ -143,6 +143,7 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightd
     sort = sort[:len(score_liz)]
     #print(sort)
     #print(len(sort))
+    print('本世代最佳分數：',sort[0][2])
     return sort
 
 def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''): #avaliavle_sol 可行解列表 fix 不能移動的列表
