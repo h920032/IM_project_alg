@@ -24,7 +24,7 @@ necessary constraints:
 
 #schedule為班表二維list
 
-def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, weekdaylist, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset):
+def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, weekdaylist, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,nDAY):
     
 
     as_bool = True
@@ -53,11 +53,30 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
 
     #=========================================================================================================================================================
     #(3)每位員工每週只能排指定天數的晚班，且不能連續
-    #需要參數:班表(schedule) 晚班集合(S_NIGHT)  第 w 週中所包含的日子集合(D_WEEK)) 每位員工每周能排的晚班次數(nightdaylimit) 
+    #需要參數:班表(schedule) 晚班集合(S_NIGHT)  第 w 週中所包含的日子集合(D_WEEK)) 每位員工每周能排的晚班次數(nightdaylimit) (總日子數)nDAY
     
     night_bool = True
     night_err =''
     
+    #連續晚班
+    for i in range(len(schedule)):
+        for k in range(nDAY):
+            if k != (nDAY - 1):
+                if schedule[i][k] in S_NIGHT and schedule[i][k+1] in S_NIGHT:
+                    night_bool = False
+                    night_err += str(i)
+                    night_err += 'th employee'
+                    night_err += 'has been assigned night class continuously in '
+                    night_err += str(k)
+                    night_err += 'th day and'
+                    night_err += str(k+1)
+                    night_err += 'th day'
+                    break
+        if night_bool == False:
+            break
+
+    if night_bool == False:
+        return night_err
 
     for i in range(len(schedule)):
         nightdaylimit_int = int(nightdaylimit[i])
@@ -65,30 +84,14 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
         for j in range(len(D_WEEK)):
             
             night_count = 0
-            night=[]
             #第j周的第k天
             for k in D_WEEK[j]:
-                night_flag = False
                 for r in range(len(S_NIGHT)):
                     
                     if schedule[i][k] == S_NIGHT[r]:
                         night_count+=1
-                        night_flag = True
                       
                         break
-                night.append(night_flag)
-            #連續晚班
-            for k in range(len(D_WEEK[j])):
-                if k != (len(D_WEEK[j]) - 1):
-                    if night[k] == True & night[k+1] == True:
-                        night_bool = False
-                        night_err += str(i)
-                        night_err += 'th employee'
-                        night_err += 'has been assigned night class continuously at '
-                        night_err += str(j)
-                        night_err += 'th week'
-                        break
-            
             
             #晚班次數超過上限
             if night_count > nightdaylimit_int and night_err=='':
