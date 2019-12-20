@@ -16,7 +16,7 @@ K_type_dict = {0:'O',1:'A2',2:'A3',3:'A4',4:'A5',5:'MS',6:'AS',7:'P2',8:'P3',9:'
 #def score(input):
 #    return random.randint(1,10000)
 
-def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
+def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
     sort = sorted(score_liz, key = lambda s: s[2]) #親代排名
     new = np.copy(sort[:int(len(score_liz)/3)]) #取出前1/3
     num_list = list(range(len(new)))
@@ -101,40 +101,40 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightd
     
     #print(np.zeros(a_org_one_two.shape))
     #判斷是否符合
-    if confirm(a_one_one_two, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY) == 'All constraints are met.':
+    if confirm(a_one_one_two, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT) == 'All constraints are met.':
         sort.append((a_one_one_two,new[num_list[0]][1],score(a_one_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
        
-    if confirm(a_two_one_two, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY) == 'All constraints are met.':
+    if confirm(a_two_one_two, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT) == 'All constraints are met.':
         sort.append((a_two_one_two,new[num_list[1]][1],score(a_two_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     
-    if confirm(a_one_two_one, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY) == 'All constraints are met.':
+    if confirm(a_one_two_one, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT) == 'All constraints are met.':
         sort.append((a_one_two_one,new[num_list[0]][1],score(a_one_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     
-    if confirm(a_two_two_one, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY) == 'All constraints are met.':
+    if confirm(a_two_two_one, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT) == 'All constraints are met.':
         sort.append((a_two_two_one,new[num_list[1]][1],score(a_two_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     
-    if confirm(a_org_one_two, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY) == 'All constraints are met.':
+    if confirm(a_org_one_two, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT) == 'All constraints are met.':
         sort.append((a_org_one_two,np.zeros(a_org_one_two.shape),score(a_org_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     
-    if confirm(a_org_two_one, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY) == 'All constraints are met.':
+    if confirm(a_org_two_one, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT) == 'All constraints are met.':
         sort.append((a_org_two_one,np.zeros(a_org_two_one.shape),score(a_org_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     
-    if confirm(b_one_one_two, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY) == 'All constraints are met.':
+    if confirm(b_one_one_two, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT) == 'All constraints are met.':
         sort.append((b_one_one_two,new[num_list[0]][1],score(b_one_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     
-    if confirm(b_two_one_two, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY) == 'All constraints are met.':
+    if confirm(b_two_one_two, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT) == 'All constraints are met.':
         sort.append((b_two_one_two,new[num_list[1]][1],score(b_two_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     
-    if confirm(b_one_two_one, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY) == 'All constraints are met.':
+    if confirm(b_one_two_one, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT) == 'All constraints are met.':
         sort.append((b_one_two_one,new[num_list[0]][1],score(b_one_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     
-    if confirm(b_two_two_one, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY) == 'All constraints are met.':
+    if confirm(b_two_two_one, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT) == 'All constraints are met.':
         sort.append((b_two_two_one,new[num_list[1]][1],score(b_two_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
 
-    if confirm(b_org_one_two, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY) == 'All constraints are met.':
+    if confirm(b_org_one_two, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT) == 'All constraints are met.':
         sort.append((b_org_one_two,np.zeros(b_org_one_two.shape),score(b_org_one_two.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
 
-    if confirm(b_org_two_one, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY) == 'All constraints are met.':
+    if confirm(b_org_two_one, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT) == 'All constraints are met.':
         sort.append((b_org_two_one,np.zeros(b_org_two_one.shape),score(b_org_two_one.tolist(),nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
              
     # sort = sorted(sort, key = lambda s: s[2],reverse = True)
@@ -145,7 +145,7 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightd
     #print(len(sort))
     return sort
 
-def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''): #avaliavle_sol 可行解列表 fix 不能移動的列表
+def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''): #avaliavle_sol 可行解列表 fix 不能移動的列表
     i_nb = []
     
     for p in range(len(avaliable_sol)):
@@ -158,7 +158,7 @@ def gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,ASSIGN, S_NI
         score_liz.append((i,j, score(i,nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     
     for i in range(gen):    #重複親代數量那麼多次
-        score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
+        score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
         print('第',i+1,'世代最佳分數：',score_liz[0][2])
         gene_log.append([i+1,score_liz[0][2]])
     gene_log = pd.DataFrame(np.array(gene_log))

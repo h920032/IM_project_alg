@@ -24,7 +24,7 @@ necessary constraints:
 
 #schedule為班表二維list
 
-def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, weekdaylist, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,nDAY):
+def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, weekdaylist, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT):
     
 
     as_bool = True
@@ -61,6 +61,13 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
     #連續晚班
     for i in range(len(schedule)):
         for k in range(nDAY):
+            if k == 0:
+                if FRINIGHT[i] == 1 and schedule[i][0] in S_NIGHT:
+                    night_bool = False
+                    night_err += str(i)
+                    night_err += 'th employee'
+                    night_err += ' can not be assigned to night class on the 0th day because he or she has been assigned night class on the last day of last month '
+                    
             if k != (nDAY - 1):
                 if schedule[i][k] in S_NIGHT and schedule[i][k+1] in S_NIGHT:
                     night_bool = False
@@ -94,14 +101,24 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
                         break
             
             #晚班次數超過上限
-            if night_count > nightdaylimit_int and night_err=='':
-                night_bool = False
-                night_err += str(i)
-                night_err += 'th employee '
-                night_err += ' has been assigned too many night class at '
-                night_err += str(j)
-                night_err += 'th week'
-                break
+            if j != 0:
+                if night_count > nightdaylimit_int and night_err=='':
+                    night_bool = False
+                    night_err += str(i)
+                    night_err += 'th employee '
+                    night_err += ' has been assigned too many night class at '
+                    night_err += str(j)
+                    night_err += 'th week'
+                    break
+            else:
+                if night_count + LMNIGHT[i] > nightdaylimit_int and night_err=='':
+                    night_bool = False
+                    night_err += str(i)
+                    night_err += 'th employee '
+                    night_err += ' has been assigned too many night class at '
+                    night_err += str(j)
+                    night_err += 'th week'
+                    break
  
         
         if night_bool == False:

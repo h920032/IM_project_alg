@@ -490,8 +490,8 @@ def ABLE(this_i,this_j,this_k):
 #========================================================================#
 # GENE(): 切分並交配的函數 
 #========================================================================#
-def GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
-	return gen.gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
+def GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
+	return gen.gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
 
 
 
@@ -734,7 +734,7 @@ for p in range(parent):
     #確認解是否可行
     #=================================================================================================#
     message = 'All constraints are met.'
-    message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY)
+    message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT)
         
     
     #====================================================================================================#
@@ -818,7 +818,7 @@ for i in range(parent):
 tstart_gen = time.time()
 print('\n基因演算法開始')
 
-gene_result = GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
+gene_result = GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
 
 
 #=======================================================================================================#
