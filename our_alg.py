@@ -19,7 +19,7 @@ import datetime, calendar, sys
 parent = 100	    # int
 ordernum = 100      #limit_order的排序數量
 #基因演算法的世代數量
-generation = 20000    
+generation = 1000    
 
 # 生成Initial pool的100個親代
 INITIAL_POOL = []
@@ -635,31 +635,43 @@ for p in range(parent):
                     is_arrange = True
                     employee.append(1)
             if is_arrange == False:
-                rand = rd.randint(2,nK)
-                for r in range(nK):
-                    if ABLE(i,j,rand-1) == True:
-                        work[i,j,rand-1] = True
-                        if rand-1 in SHIFTset['phone']: #非其他班別時扣除需求
+                #優先排晚班
+                for r in S_NIGHT:
+                    if ABLE(i,j,r) == True:
+                        work[i,j,r] = True
+                        if r in SHIFTset['phone']: #非其他班別時扣除需求
                             for t in range(nT):
-                                if CONTAIN[rand-1][t] == 1:              
+                                if CONTAIN[r][t] == 1:              
                                     CURRENT_DEMAND[j][t] -= 1
                         employee.append(0)
                         is_arrange = True
                         break
-                    else:
-                       rand = rd.randint(2,nK)
                 if is_arrange == False:
-                    reverse = list(reversed(range(nK)))
-                    for r in reverse:
-                        if ABLE(i,j,r) == True:
-                            work[i,j,r] = True
-                            if r in SHIFTset['phone']: #非其他班別時扣除需求
+                    rand = rd.randint(2,nK)
+                    for r in range(nK):
+                        if ABLE(i,j,rand-1) == True:
+                            work[i,j,rand-1] = True
+                            if rand-1 in SHIFTset['phone']: #非其他班別時扣除需求
                                 for t in range(nT):
-                                    if CONTAIN[r][t] == 1:              
+                                    if CONTAIN[rand-1][t] == 1:              
                                         CURRENT_DEMAND[j][t] -= 1
                             employee.append(0)
                             is_arrange = True
                             break
+                        else:
+                            rand = rd.randint(2,nK)
+                    if is_arrange == False:
+                        reverse = list(reversed(range(nK)))
+                        for r in reverse:
+                            if ABLE(i,j,r) == True:
+                                work[i,j,r] = True
+                                if r in SHIFTset['phone']: #非其他班別時扣除需求
+                                    for t in range(nT):
+                                        if CONTAIN[r][t] == 1:              
+                                            CURRENT_DEMAND[j][t] -= 1
+                                employee.append(0)
+                                is_arrange = True
+                                break
         fix_temp.append(employee)
     #work, fix_temp, CURRENT_DEMAND = ARRANGEMENT(work, nEMPLOYEE, nDAY, nK, CONTAIN, CURRENT_DEMAND, nT)
     fix.append(fix_temp)
