@@ -146,7 +146,13 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightd
     #print(len(sort))
     return sort
 
-def gene_alg(timelimit,avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''): #avaliavle_sol 可行解列表 fix 不能移動的列表
+def gene_alg(timelimit,avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,\
+    ASSIGN, S_NIGHT, D_WEEK, nightdaylimit,\
+    LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, \
+    VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,\
+    per_month_dir='./data/per_month/',\
+    AssignTest='',NeedTest='',EmployeeTest=''): #avaliavle_sol 可行解列表 fix 不能移動的列表
+    print('per_month_dir =',per_month_dir)
     i_nb = []
     tStart = time.time()    #紀錄演算法開始的時間
     for p in range(len(avaliable_sol)):
@@ -156,13 +162,18 @@ def gene_alg(timelimit,avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,AS
     score_liz = []
     gene_log = []   
     for i ,j in zip(i_nb,fix):
-        score_liz.append((i,j, score(i,nDAY,nW,year=year,month=month,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
+        score_liz.append((i,j, score(i,nDAY,nW,year=year,month=month,\
+            per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)))
     
     for i in range(gen):    #重複指定的次數
         if time.time() - tStart > timelimit:    #如果時間已到，就跳出
             print('限制時間已至，於第',i,'世代跳出')
             break
-        score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
+        score_liz = alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,\
+            ASSIGN, S_NIGHT, D_WEEK, nightdaylimit,\
+            LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset,\
+            VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,\
+            per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
         print('第',i+1,'世代最佳分數：',score_liz[0][2])
         gene_log.append([i+1,score_liz[0][2]])
     gene_log = pd.DataFrame(np.array(gene_log))

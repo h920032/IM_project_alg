@@ -60,7 +60,7 @@ else:
     AssignTest = ""
     NeedTest = ""
 print('資料輸入路徑:',dir_name)
-#=============================================================================#
+#========================================s=====================================#
 #每月更改的資料
 #=============================================================================#
 #year/month
@@ -128,7 +128,9 @@ except:
     SENIOR_bp = []
 try:
     timelimit = pd.read_csv(dir_name + "parameters/time_limit.csv", header = 0, engine='python')
+    timelimit = int(timelimit.loc[0][0])
 except:
+    print('無法順利讀取 time_limit.csv 的數值，改用預測時間限制')
     timelimit = 300 #預設跑五分鐘
 nightdaylimit = EMPLOYEE_t['night_perWeek']
 
@@ -490,8 +492,8 @@ def ABLE(this_i,this_j,this_k):
 #========================================================================#
 # GENE(): 切分並交配的函數 
 #========================================================================#
-def GENE(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
-	return gen.gene_alg(avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
+def GENE(timelimit, avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
+	return gen.gene_alg(timelimit, avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
 
 
 
@@ -830,7 +832,11 @@ for i in range(parent):
 tstart_gen = time.time()
 print('\n基因演算法開始')
 print('time limit =',timelimit)
-gene_result = GENE(timelimit,avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
+gene_result = GENE(timelimit,avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,\
+    ASSIGN, S_NIGHT, D_WEEK, nightdaylimit,\
+    LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset,\
+    VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,\
+    per_month_dir=dir_name+'per_month/',AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
 
 
 #=======================================================================================================#
