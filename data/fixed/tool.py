@@ -166,7 +166,7 @@ def SetSENIOR(alist, bp):
 """===========================================
 	Text-numberID translate function
 ==========================================="""
-def Tran_t2n(text, names=K_type):
+def Tran_t2n(text, names):
     try:
         c = names.index(text)
     except:
