@@ -94,7 +94,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
             for k in range(nT):
                 #print(i,j,k)
                 if i_nb[i][j] in S_DEMAND:
-                    people[j][k] = people[j][k] + A_t.values[i_nb[i][j]-1][k]   #TypeError: unsupported operand type(s) for -: 'NoneType' and 'int'
+                    people[j][k] = people[j][k] + A_t.values[i_nb[i][j]-1][k]   
 
 
     output_people = (people - DEMAND).tolist()

@@ -605,6 +605,7 @@ for p in range(parent):
                             BOUND -= 1
                         else:
                             continue
+    
     sequence += 1
     if sequence >= len(LIMIT_MATRIX) and char == 'a':
         sequence = 0
