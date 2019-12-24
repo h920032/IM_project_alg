@@ -11,8 +11,8 @@ from data.fixed.CONFIRM import confirm
 #4.在gene中要做confirm，可能可能不用
 
 
-K_type = ['O','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','CD','C2','C3','C4','OB']
-K_type_dict = {0:'O',1:'A2',2:'A3',3:'A4',4:'A5',5:'MS',6:'AS',7:'P2',8:'P3',9:'P4',10:'P5',11:'N1',12:'M1',13:'W6',14:'CD',15:'C2',16:'C3',17:'C4',18:'OB'}
+#K_type = ['O','A2','A3','A4','A5','MS','AS','P2','P3','P4','P5','N1','M1','W6','CD','C2','C3','C4','OB']
+#K_type_dict = {0:'O',1:'A2',2:'A3',3:'A4',4:'A5',5:'MS',6:'AS',7:'P2',8:'P3',9:'P4',10:'P5',11:'N1',12:'M1',13:'W6',14:'CD',15:'C2',16:'C3',17:'C4',18:'OB'}
 
 #def score(input):
 #    return random.randint(1,10000)
@@ -146,7 +146,7 @@ def alg(score_liz, nDAY,nW, nEMPLOYEE,year,month,ASSIGN, S_NIGHT, D_WEEK, nightd
     #print(len(sort))
     return sort
 
-def gene_alg(timelimit,avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,\
+def gene_alg(K_type_dict, timelimit,avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,year,month,\
     ASSIGN, S_NIGHT, D_WEEK, nightdaylimit,\
     LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, \
     VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,\

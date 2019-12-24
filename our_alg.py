@@ -19,7 +19,7 @@ import datetime, calendar, sys
 parent = 100	    # int
 ordernum = 100      #limit_order的排序數量
 #基因演算法的世代數量
-generation = 1000    
+generation = 100    
 
 # 生成Initial pool的100個親代
 INITIAL_POOL = []
@@ -492,8 +492,8 @@ def ABLE(this_i,this_j,this_k):
 #========================================================================#
 # GENE(): 切分並交配的函數 
 #========================================================================#
-def GENE(timelimit, avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
-	return gen.gene_alg(timelimit, avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
+def GENE(K_type_dict, timelimit, avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
+	return gen.gene_alg(K_type_dict, timelimit, avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
 
 
 
@@ -717,7 +717,9 @@ for p in range(parent):
     #=================================================================================================#
     #Dataframe_x
     K_type = Shift_name
-
+    K_type_dict = {}
+    for i in range(len(K_type)):
+        K_type_dict[i] = K_type[i]
     
     employee_name = E_NAME
     employee_name2 = EMPLOYEE
@@ -832,7 +834,7 @@ for i in range(parent):
 tstart_gen = time.time()
 print('\n基因演算法開始')
 print('time limit =',timelimit)
-gene_result = GENE(timelimit,avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,\
+gene_result = GENE(K_type_dict, timelimit,avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,\
     ASSIGN, S_NIGHT, D_WEEK, nightdaylimit,\
     LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset,\
     VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,\
