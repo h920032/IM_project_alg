@@ -19,7 +19,7 @@ import datetime, calendar, sys
 parent = 100	    # int
 ordernum = 100      #limit_order的排序數量
 #基因演算法的世代數量
-generation = 2000    
+generation = 100    
 
 # 生成Initial pool的100個親代
 INITIAL_POOL = []

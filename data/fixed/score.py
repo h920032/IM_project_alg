@@ -50,11 +50,13 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     for ki in range(len(Shift_name)):
         SHIFTset[Shift_name[ki]] = [ki]
     
-    S_NIGHT = SHIFTset['night']                                     #S_NIGHT - 所有的晚班
+    S_NIGHT = []
+    S_NIGHT.extend(SHIFTset['night'])                                     #S_NIGHT - 所有的晚班
     for i in range(len(S_NIGHT)):
         S_NIGHT[i] += 1
     
-    S_DEMAND = SHIFTset['phone']
+    S_DEMAND = []
+    S_DEMAND.extend(SHIFTset['phone'])
     for i in range(len(S_DEMAND)):
         S_DEMAND[i] += 1
     
