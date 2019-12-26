@@ -85,7 +85,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     #i_nb = df_x
     #計算人力情形
 
-    people = np.zeros((nDAY,24))
+    people = np.zeros((nDAY,nT))
     #print(people)
 
     #print(nDAY)
