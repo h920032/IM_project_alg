@@ -114,7 +114,7 @@ NW_t = EMPLOYEE_t['NW']
 #=============================================================================#
 #半固定參數
 #=============================================================================#
-P_t = pd.read_csv(dir_name + 'parameters/weight_p1-3.csv', header = None, index_col = 0, engine='python') #權重
+P_t = pd.read_csv(dir_name + 'parameters/weight_p.csv', header = None, index_col = 0, engine='python') #權重
 L_t = pd.read_csv(dir_name + "parameters/lower_limit.csv", header = 0, engine='python')          #指定日期、班別、職位，人數下限
 U_t = tl.readFile(dir_name + "parameters/upper_limit.csv")                          #指定星期幾、班別，人數上限
 Ratio_t = tl.readFile(dir_name + "parameters/senior_limit.csv")                     #指定年資、星期幾、班別，要占多少比例以上
@@ -203,6 +203,7 @@ P0 = 100    					#目標式中的調整權重(lack)
 P1 = P_t[1]['P1']    			#目標式中的調整權重(surplus)
 P2 = P_t[1]['P2']   	    	#目標式中的調整權重(nightCount)
 P3 = P_t[1]['P3']    	   		#目標式中的調整權重(breakCount)
+P4 = P_t[1]['P4']    	   		#目標式中的調整權重(noonCount)
 
 #-----排班特殊限制-----#
 LOWER = L_t.values.tolist()       	#LOWER - 日期j，班別集合ks，職位p，上班人數下限
@@ -262,6 +263,7 @@ for ki in range(len(Kset_t)):
 for ki in range(len(Shift_name)):
     SHIFTset[Shift_name[ki]] = [ki]
 S_NIGHT = SHIFTset['night']                                     #S_NIGHT - 所有的晚班
+S_NOON = SHIFTset['noon']                                       #S_NOON  - 所有的午班
 S_BREAK = [[11,12],[1,7,14,15],[2,8,16,18],[3,9,17],[4,10]]     #Kr - 午休方式為 r 的班別 
 
 
@@ -287,8 +289,10 @@ for i in range(nEMPLOYEE):
     for w in range(nW):
         for r in range(nR):
             breakCount[i, w, r] = False
-"""
 
+noonCount = 0 #員工中每人排午班總次數的最大值
+
+"""
 #============================================================================#
 
 """============================================================================#
@@ -331,7 +335,7 @@ def ABLE(this_i,this_j,this_k):
     
     #only one work a day
     for k in SHIFT:
-        if( work[this_i,this_j,k] == 1 and k!=this_k):    
+        if( work[this_i,this_j,k] == 1):    
             ans = False
             return ans
     #被指定的排班及當天被排除的排班
@@ -492,8 +496,16 @@ def ABLE(this_i,this_j,this_k):
 #========================================================================#
 # GENE(): 切分並交配的函數 
 #========================================================================#
-def GENE(K_type_dict, timelimit, avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
-	return gen.gene_alg(K_type_dict, timelimit, avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
+def GENE(K_type_dict, timelimit, avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,\
+ASSIGN, S_NIGHT, D_WEEK, nightdaylimit,\
+    LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset,\
+    VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,\
+    per_month_dir='./data/per_month/',AssignTest='',NeedTest='',EmployeeTest=''):
+	return gen.gene_alg(K_type_dict, timelimit, avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generation,year,month,\
+        ASSIGN, S_NIGHT, D_WEEK, nightdaylimit,\
+        LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset,\
+        VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,\
+        per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
 
 
 
@@ -505,7 +517,8 @@ def GENE(K_type_dict, timelimit, avaliable_sol, fix, nDAY,nW, nEMPLOYEE, generat
 #====================================================================================================#
 #=======================================================================================================#
 
-LIMIT_MATRIX = LIMIT_ORDER(ordernum,LOWER,NOTPHONE_CLASS,NOTPHONE_CLASS_special,PERCENT,DEMAND,E_POSITION,E_SENIOR,E_SKILL,DAYset,VACnextdayset,NOT_VACnextdayset,SHIFTset,CONTAIN) #生成多組限制式matrix
+LIMIT_MATRIX = LIMIT_ORDER(ordernum,LOWER,NOTPHONE_CLASS,NOTPHONE_CLASS_special,\
+    PERCENT,DEMAND,E_POSITION,E_SENIOR,E_SKILL,DAYset,VACnextdayset,NOT_VACnextdayset,SHIFTset,CONTAIN) #生成多組限制式matrix
 #print(LIMIT_MATRIX)
 sequence = 0 #限制式順序
 char = 'a' #CSR沒用度順序
@@ -712,6 +725,17 @@ for p in range(parent):
                     for k in S_BREAK[r]:
                         if work[i, j, k] == True:
                             breakCount[i,w,r] = True
+    
+    noonCount_temp = {}
+    for i in EMPLOYEE:
+        noonCount_temp[i] = 0
+        for j in DAY:
+            for k in S_NOON:
+                if work[i, j, k] == True:
+                    noonCount_temp[i] += 1
+                    break
+        if noonCount_temp[i] > noonCount:
+            noonCount = noonCount_temp[i]
     """
     #=================================================================================================#
     # 輸出
@@ -751,7 +775,9 @@ for p in range(parent):
     #確認解是否可行
     #=================================================================================================#
     message = 'All constraints are met.'
-    message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT)
+    message = confirm(df_x2, ASSIGN, S_NIGHT, D_WEEK, nightdaylimit,\
+        LOWER, SHIFTset, E_POSITION, UPPER, DAYset, PERCENT, E_SENIOR, Upper_shift,\
+        NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT)
         
     
     #====================================================================================================#
@@ -771,8 +797,8 @@ for p in range(parent):
                 if breakCount[i,w,r] == True:
                     sumbreak += 1
     
-    result2 = P0 * sumlack + P1 * surplus + P2 * nightCount + P3 * sumbreak
-    print(result2, sumlack, surplus, nightCount, sumbreak)
+    result2 = P0 * sumlack + P1 * surplus + P2 * nightCount + P3 * sumbreak + P4 * noonCount
+    print(result2, sumlack, surplus, nightCount, sumbreak, noonCount)
     """
     #====================================================================================================#
     #將結果放入INITIAL_POOL中
@@ -796,6 +822,8 @@ for p in range(parent):
         for w in range(nW):
             for r in range(nR):
                 breakCount[i, w, r] = False
+    
+    noonCount = 0
     """
     
     if message != 'All constraints are met.':

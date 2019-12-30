@@ -15,7 +15,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     #E_POSI_t = EMPLOYEE_t['Position']
     #E_SKILL_t = EMPLOYEE_t[list(filter(lambda x: re.match('skill-',x), EMPLOYEE_t.columns))]
     #SKILL_NAME = list(E_SKILL_t.columns)
-    P_t = pd.read_csv(parameters_dir + 'weight_p1-3.csv', header = None, index_col = 0)
+    P_t = pd.read_csv(parameters_dir + 'weight_p.csv', header = None, index_col = 0)
     Kset_t = pd.read_csv(fixed_dir + 'fix_classes.csv', header = None, index_col = 0)
     Shift_name = Kset_t.iloc[0].tolist()
     #SKset_t = pd.read_csv(parameters_dir + 'skill_class_limit.csv')  #class set for skills
@@ -43,6 +43,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     P1 = P_t[1]['P1']
     P2 = P_t[1]['P2']
     P3 = P_t[1]['P3']
+    P4 = P_t[1]['P4']
 
     SHIFTset= {}                                                    #SHIFTset - 通用的班別集合，S=1,…,nS
     for ki in range(len(Kset_t)):
@@ -55,12 +56,17 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     for i in range(len(S_NIGHT)):
         S_NIGHT[i] += 1
     
+    S_NOON = []
+    S_NOON.extend(SHIFTset['noon'])                                       #S_NOON - 所有的午班
+    for i in range(len(S_NOON)):
+        S_NOON[i] += 1
+
     S_DEMAND = []
     S_DEMAND.extend(SHIFTset['phone'])
     for i in range(len(S_DEMAND)):
         S_DEMAND[i] += 1
     
-    S_BREAK = [[11,12],[1,7,14,15],[2,8,16,18],[3,9,17],[4,10]]
+    #S_BREAK = [[11,12],[1,7,14,15],[2,8,16,18],[3,9,17],[4,10]]
     
     DAY = [tmp for tmp in range(nDAY)]              #DAY - 日子集合，J=0,…,nJ-1
     DATES = [ int(x) for x in DEMAND_t.index ]    #所有的日期 - 對照用
@@ -98,8 +104,9 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
                 if i_nb[i][j] in S_DEMAND:
                     people[j][k] = people[j][k] + A_t.values[i_nb[i][j]-1][k]   
 
-
+    
     output_people = (people - DEMAND).tolist()
+    
     lack = 0
     for i in output_people:
         for j in i:
@@ -134,6 +141,15 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
                         breakCount[i][w_d][k] = 1
     breakCount = int(sum(sum(sum(breakCount))))
     
-    result = P0 * lack + P1 * surplus + P2 * nightcount + P3 * breakCount 
-    #print(result, lack, surplus, nightcount, breakCount)
+    nooncount = []
+    for i in i_nb:
+        count = 0
+        for j in i:
+            if j in S_NOON:
+                count = count + 1
+        nooncount.append(count)
+    nooncount = max(nooncount)
+
+    result = P0 * lack + P1 * surplus + P2 * nightcount + P3 * breakCount + P4 * nooncount
+    #print(result, lack, surplus, nightcount, breakCount, nooncount)
     return result
