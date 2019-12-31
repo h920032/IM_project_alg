@@ -19,7 +19,7 @@ import datetime, calendar, sys
 parent = 100	    # int
 ordernum = 100      #limit_order的排序數量
 #基因演算法的世代數量
-generation = 100    
+generation = 1000    
 
 # 生成Initial pool的100個親代
 INITIAL_POOL = []
@@ -899,12 +899,245 @@ gene_result = GENE(K_type_dict, timelimit,avaliable_sol, fix, nDAY,nW, nEMPLOYEE
 print('基因演算法共耗時',time.time()-tstart_gen,'秒\n')
 print('基因演算法進行',generation,'代\n')
 schedule = pd.DataFrame(gene_result, index = employee_name, columns = DATES)
-print(schedule)
-schedule.to_csv(EmployeeTest[1:]+'_Schedul_2019_4.csv', encoding="utf-8_sig")
+#print(schedule)
+#schedule.to_csv(EmployeeTest[1:]+'alg_Schedul_2019_4.csv', encoding="utf-8_sig")
+
+#輸出檔名
+result_x = './alg_Schedule_'+str(year)+'_'+str(month)+'.csv'
+result_y = './alg_lack&over_'+str(year)+'_'+str(month)+'.csv'
+result = './alg_schedule_data_'+str(year)+'_'+str(month)+'.xlsx'
 
 
+
+#============================================================================#
+#輸出班表
+#============================================================================#
+output_name = []
+output_id = []
+for i in range(0,nEMPLOYEE):
+    output_id.append(str(EMPLOYEE_t.ID.values.tolist()[i]))
+for i in range(0,nEMPLOYEE):
+    output_name.append(EMPLOYEE_t.Name_Chinese.values.tolist()[i])
+mDAY = int(calendar.monthrange(year,month)[1])
+date_list = []
+date_name = []
+for i in range(1,mDAY+1): #產生日期清單
+    weekday=""
+    date = datetime.datetime.strptime(str(year)+'-'+str(month)+'-'+str(i), "%Y-%m-%d")
+    date_list.append(date)
+    if date.weekday()==5:
+        weekday="六"
+    elif date.weekday()==6:
+        weekday="日"
+    elif date.weekday()==0:
+        weekday="一"
+    elif date.weekday()==1:
+        weekday="二"
+    elif date.weekday()==2:
+        weekday="三"
+    elif date.weekday()==3:
+        weekday="四"
+    else:
+        weekday="五"
+    date_name.append(date.strftime("%Y-%m-%d")+' ('+weekday+')')
+
+new = pd.DataFrame()
+new['name'] = output_name
+NO_WORK=[]
+for i in range(0,nEMPLOYEE): #假日全部填X
+    NO_WORK.append("X")
+
+for i in range(0,mDAY):
+    if (i+1) not in DATES:
+        new[date_name[i]] = NO_WORK
+    else:
+        new[date_name[i]] = schedule[i+1].values.tolist()
+print('check point 2\n')
+new['id']=output_id
+new.set_index("id",inplace=True)
+new.to_csv(result_x, encoding="utf-8_sig")
+#print(new)
+
+#============================================================================#
+#輸出冗員與缺工人數表
+#============================================================================#
+T_type = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30'
+        ,'15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30']
+
+
+K_type_dict= {}
+K_type_dict= {0:None}
+for ki in range(1,len(Shift_name)+1):
+    K_type_dict[ki] =Shift_name[ki-1]
+#K_type_dict = {0:'None',1:'O',2:'A2',3:'A3',4:'A4',5:'A5',6:'MS',7:'AS',8:'P2',9:'P3',10:'P4',11:'P5',12:'N1',13:'M1',14:'W6',15:'CD',16:'C2',17:'C3',18:'C4',19:'OB'}
+try:
+    x_nb = np.vectorize({v: k for k, v in K_type_dict.items()}.get)(np.array(schedule))
+except:
+    print('無法輸出缺工冗員表：排班班表不完整，請嘗試讓程式運行更多時間。')
+    try:
+        sys.exit(0)     #出錯的情況下，讓程式退出
+    except:
+        print('\n程式已結束。')
+S_DEMAND = []
+S_DEMAND.extend(SHIFTset['phone'])
+for i in range(len(S_DEMAND)):
+    S_DEMAND[i] += 1
+
+people = np.zeros((nDAY,nT))
+for i in range(nEMPLOYEE):
+    for j in range(nDAY):
+        for k in range(nT):
+            if x_nb[i][j] in S_DEMAND:
+                people[j][k] = people[j][k] + A_t.values[x_nb[i][j]-1][k]
+output_people = (people - DEMAND).tolist()
+
+NO_PEOPLE=[]
+new_2=pd.DataFrame()
+for i in range(0,24):
+    NO_PEOPLE.append('X')
+j = 0
+for i in range(0,mDAY):
+    if (i+1) not in DATES:
+        new_2[date_name[i]]=NO_PEOPLE
+    else:
+        new_2[date_name[i]]= [ int(x) for x in output_people[j] ]
+        j = j + 1
+new_2['name']=T_type
+new_2.set_index("name",inplace=True)
+new_2.to_csv(result_y, encoding="utf-8_sig")
+# print(new_2.T)
+
+# ============================================================================ #
+# 輸出其他資訊
+# ============================================================================ #
+S_NIGHT_dict = []
+S_NIGHT_dict.extend(SHIFTset['night'])                                     #S_NIGHT - 所有的晚班
+for i in range(len(S_NIGHT_dict)):
+    S_NIGHT_dict[i] += 1
+
+S_NOON_dict = []
+S_NOON_dict.extend(SHIFTset['noon'])                                       #S_NOON - 所有的午班
+for i in range(len(S_NOON_dict)):
+    S_NOON_dict[i] += 1
+
+#Dataframe_y
+lesspeople_count = []
+for j in DAY:
+    tmp = []
+    for x in output_people[j]:
+        if x < 0:
+            tmp.append(int(x)*(-1))
+        else:
+            tmp.append(0)
+    lesspeople_count.append(tmp)
+
+
+df_y = pd.DataFrame(lesspeople_count, index = DATES, columns = T_type) #which_day , columns = T_type)
+
+#計算總和
+df_y['SUM_per_day'] = df_y.sum(axis=1)
+df_y.loc['SUM_per_time'] = df_y.sum()
+
+#計算需求
+demand_day = DEMAND_t.sum(axis=1).values
+demand_time = DEMAND_t.sum().values
+#計算缺工比例
+less_percent_day = (df_y['SUM_per_day'].drop(['SUM_per_time']).values)/demand_day
+less_percent_time = (df_y.loc['SUM_per_time'].drop(['SUM_per_day']).values)/demand_time
+df_percent_day = pd.DataFrame(less_percent_day, index = DATES, columns = ["Percentage"]) #which_day , columns = ["Percentage"])
+df_percent_time = pd.DataFrame(less_percent_time, index = T_type , columns = ["Percentage"])
+
+
+#h1h2
+surplus = 0
+surplus_t = 0
+for i in output_people:
+    for j in i:
+        if j > 0:
+            surplus_t = j
+            if surplus_t > surplus:
+                surplus = surplus_t
+
+print("\n所有天每個時段人數與需求人數的差距中的最大值 = "+str(int(surplus))+"\n")
+
+
+
+#晚班次數dataframe
+night_work_total = []
+nightcount = []
+for i in x_nb:
+    count = 0
+    for j in i:
+        if j in S_NIGHT_dict:
+            count = count + 1
+    nightcount.append(count)
+    night_work_total.append(count)
+nightCount = max(nightcount)
+
+
+df_nightcount = pd.DataFrame(night_work_total, index = employee_name, columns = ['NightWork_count'])
+print("\n員工中每人排晚班總次數的最大值 = "+str(int(nightCount))+"\n")
+
+
+#午班次數dataframe
+noon_work_total = []
+nooncount = []
+for i in x_nb:
+    count = 0
+    for j in i:
+        if j in S_NOON_dict:
+            count = count + 1
+    nooncount.append(count)
+    noon_work_total.append(count)
+noonCount = max(nooncount)
+
+
+df_nooncount = pd.DataFrame(noon_work_total, index = employee_name, columns = ['NoonWork_count'])
+print("\n員工中每人排午班總次數的最大值 = "+str(int(noonCount))+"\n")
+
+      
+#休息時間 Dataframe_z
+breakCount = np.zeros((nEMPLOYEE,nW,5))
+for i in range(nEMPLOYEE):
+    for j in range(nDAY):
+        w_d = WEEK_of_DAY[j]
+        if x_nb[i][j]!=1 and x_nb[i][j]!=6 and x_nb[i][j]!=7 and x_nb[i][j]!=14:
+            for k in range(5):
+                if A_t.values[x_nb[i][j]-1][k+5] == 0 and A_t.values[x_nb[i][j]-1][k+6] == 0:
+                    breakCount[i][w_d][k] = 1
+
+
+R_type = ['11:30','12:00','12:30','13:00','13:30']     
+which_week = [tmp+1 for tmp in WEEK] 
+which_resttime = []     
+for i in EMPLOYEE:
+    tmp = []
+    for w in WEEK:
+        tmp2 = []
+        for r in BREAK:
+            if(breakCount[i][w][r]==1):
+                tmp2.append(R_type[r])
+        tmp.append(tmp2)
+    which_resttime.append(tmp)
+
+
+df_resttime = pd.DataFrame(which_resttime, index=employee_name, columns=which_week)
+
+
+
+
+with pd.ExcelWriter(result) as writer:
+    schedule.to_excel(writer, sheet_name="員工排班表")
+    df_nightcount.to_excel(writer, sheet_name="員工本月晚班次數")
+    df_percent_time.to_excel(writer, sheet_name="每個時段缺工百分比表")
+    df_percent_day.to_excel(writer, sheet_name="每天缺工百分比表")
+    df_nightcount.to_excel(writer, sheet_name="員工本月晚班次數")
+    df_nooncount.to_excel(writer, sheet_name="員工本月午班次數")
+    df_y.to_excel(writer, sheet_name="缺工人數表")
+    df_resttime.to_excel(writer, sheet_name="員工每週有哪幾種休息時間")
 
 #========================================================================#
 # program end
 #========================================================================#
+print(new)
 print('\n\n*** Done in', time.time()-tstart_0 ,'sec. ***')
