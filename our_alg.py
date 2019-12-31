@@ -335,7 +335,7 @@ def ABLE(this_i,this_j,this_k):
     
     #only one work a day
     for k in SHIFT:
-        if( work[this_i,this_j,k] == 1):    
+        if(work[this_i,this_j,k] == 1) and (k != this_k):    
             ans = False
             return ans
     #被指定的排班及當天被排除的排班
@@ -492,7 +492,14 @@ def ABLE(this_i,this_j,this_k):
                
     
     return ans                 
-                    
+
+def REPEAT(this_i,this_j,this_k):   #一次安排可滿足多條限制式時使用
+    ans = False
+    
+    for k in SHIFT:
+        if(work[this_i,this_j,k] == 1) and (k == this_k):    
+            ans = True
+    return ans                    
 #========================================================================#
 # GENE(): 切分並交配的函數 
 #========================================================================#
@@ -565,8 +572,11 @@ for p in range(parent):
                         if BOUND <= 0:
                             break
                         elif ABLE(i, j, k) == True: #若此人可以排此班，就排
+                            repeat = False
+                            if REPEAT(i, j, k) == True:
+                                repeat = True
                             work[i, j, k] = True
-                            if k in SHIFTset['phone']: #非其他班別時扣除需求
+                            if k in SHIFTset['phone'] and repeat == False: #非其他班別時扣除需求
                                 for t in range(nT):
                                     if CONTAIN[k][t] == 1:              
                                         CURRENT_DEMAND[j][t] -= 1
@@ -580,8 +590,11 @@ for p in range(parent):
                         if BOUND <= 0:
                             break
                         elif ABLE(i, j, k) == True: #若此人可以排此班，就排
+                            repeat = False
+                            if REPEAT(i, j, k) == True:
+                                repeat = True
                             work[i, j, k] = True
-                            if k in SHIFTset['phone']: #非其他班別時扣除需求
+                            if k in SHIFTset['phone'] and repeat == False: #非其他班別時扣除需求
                                 for t in range(nT):
                                     if CONTAIN[k][t] == 1:              
                                         CURRENT_DEMAND[j][t] -= 1
@@ -595,8 +608,11 @@ for p in range(parent):
                         if BOUND <= 0:
                             break
                         elif ABLE(i, j, k) == True: #若此人可以排此班，就排
+                            repeat = False
+                            if REPEAT(i, j, k) == True:
+                                repeat = True
                             work[i, j, k] = True
-                            if k in SHIFTset['phone']: #非其他班別時扣除需求
+                            if k in SHIFTset['phone'] and repeat == False: #非其他班別時扣除需求
                                 for t in range(nT):
                                     if CONTAIN[k][t] == 1:              
                                         CURRENT_DEMAND[j][t] -= 1
@@ -610,8 +626,11 @@ for p in range(parent):
                         if BOUND <= 0:
                             break
                         elif ABLE(i, j, k) == True: #若此人可以排此班，就排
+                            repeat = False
+                            if REPEAT(i, j, k) == True:
+                                repeat = True
                             work[i, j, k] = True
-                            if k in SHIFTset['phone']: #非其他班別時扣除需求
+                            if k in SHIFTset['phone'] and repeat == False: #非其他班別時扣除需求
                                 for t in range(nT):
                                     if CONTAIN[k][t] == 1:              
                                         CURRENT_DEMAND[j][t] -= 1
@@ -653,7 +672,7 @@ for p in range(parent):
             if is_arrange == False:
                 #優先排晚班
                 for r in S_NIGHT:
-                    if ABLE(i,j,r) == True:
+                    if ABLE(i,j,r) == True and REPEAT(i, j, r) == False:
                         work[i,j,r] = True
                         if r in SHIFTset['phone']: #非其他班別時扣除需求
                             for t in range(nT):
@@ -665,7 +684,7 @@ for p in range(parent):
                 if is_arrange == False:
                     rand = rd.randint(2,nK)
                     for r in range(nK):
-                        if ABLE(i,j,rand-1) == True:
+                        if ABLE(i,j,rand-1) == True and REPEAT(i, j, rand-1) == False:
                             work[i,j,rand-1] = True
                             if rand-1 in SHIFTset['phone']: #非其他班別時扣除需求
                                 for t in range(nT):
@@ -679,7 +698,7 @@ for p in range(parent):
                     if is_arrange == False:
                         reverse = list(reversed(range(nK)))
                         for r in reverse:
-                            if ABLE(i,j,r) == True:
+                            if ABLE(i,j,r) == True and REPEAT(i, j, r) == False:
                                 work[i,j,r] = True
                                 if r in SHIFTset['phone']: #非其他班別時扣除需求
                                     for t in range(nT):
