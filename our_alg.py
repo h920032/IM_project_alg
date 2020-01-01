@@ -411,16 +411,16 @@ def ABLE(this_i,this_j,this_k):
             
     #排班的上限
     for item in UPPER:
-        if(this_j in DAYset[item[0]] and this_k in SHIFTset[item[1]]):
+        if(this_i == item[0] and this_j in DAYset[item[1]] and this_k in SHIFTset[item[2]]):
             tmpcount = 0
-            for whichday in DAYset[item[0]]:
-                for tmp in  SHIFTset[item[1]]:
+            for whichday in DAYset[item[1]]:
+                for tmp in  SHIFTset[item[2]]:
                     if(work[this_i,whichday,tmp]==1):
                         if(whichday == this_j and tmp == this_k):
                             tmpcount+=0
                         else:
                             tmpcount+=1
-            if(tmpcount>=item[2]):
+            if(tmpcount>=item[3]):
                 ans = False
                 return ans
 
