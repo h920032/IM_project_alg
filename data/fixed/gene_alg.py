@@ -174,7 +174,7 @@ def gene_alg(K_type_dict, timelimit,avaliable_sol, fix, nDAY,nW, nEMPLOYEE, gen,
             LOWER, SHIFTset, E_POSITION, UPPER, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset,\
             VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,\
             per_month_dir=per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
-        print('第',i+1,'世代最佳分數：',score_liz[0][2])
+        print('第',i+1,'世代最佳分數：',score_liz[0][2], ' Time: ', int(time.time() - tStart),'s')
         gene_log.append([i+1,score_liz[0][2]])
     gene_log = pd.DataFrame(np.array(gene_log))
     gene_log.to_csv('gene_log.csv')

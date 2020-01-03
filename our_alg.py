@@ -117,6 +117,7 @@ NW_t = EMPLOYEE_t['NW']
 P_t = pd.read_csv(dir_name + 'parameters/weight_p.csv', header = None, index_col = 0, engine='python') #權重
 L_t = pd.read_csv(dir_name + "parameters/lower_limit.csv", header = 0, engine='python')          #指定日期、班別、職位，人數下限
 U_t = tl.readFile(dir_name + "parameters/upper_limit.csv")                          #指定星期幾、班別，人數上限
+U_t[0] = [ str(x) for x in U_t[0] ]           #強制將ID設為string
 Ratio_t = tl.readFile(dir_name + "parameters/senior_limit.csv")                     #指定年資、星期幾、班別，要占多少比例以上
 
 SKset_t = pd.read_csv(dir_name + 'parameters/skill_class_limit.csv')  #class set for skills
@@ -142,6 +143,7 @@ Kset_t = pd.read_csv(dir_name + 'fixed/fix_classes.csv', header = None, index_co
 A_t = pd.read_csv(dir_name + 'fixed/fix_class_time.csv', header = 0, index_col = 0)
 Posi = pd.read_csv(dir_name + 'fixed/position.csv', header = None, engine='python').iloc[0].tolist()
 Shift_name = Kset_t.iloc[0].tolist()
+Rset_t = pd.read_csv(dir_name + 'fixed/fix_resttime.csv', header = None, index_col = 0) #rest set
 
 #=======================================================================================================#
 #====================================================================================================#
@@ -174,7 +176,7 @@ nEMPLOYEE = EMPLOYEE_t.shape[0]     #總員工人數
 nDAY = len(DEMAND_t.index)          #總日數
 nK = A_t.shape[0]                   #班別種類數
 nT = 24                             #總時段數
-nR = 5                              #午休種類數
+nR = Rset_t.shape[0]                #午休種類數
 nW = tl.get_nW(year,month)          #總週數
 mDAY = int(calendar.monthrange(year,month)[1])
 
@@ -214,7 +216,7 @@ UPPER = []                          #UPPER - 員工i，日子集合js，班別�
 for c in range(U_t.shape[0]):
     e = tl.Tran_t2n(U_t.iloc[c,0], E_ID)
     #回報錯誤
-    if e!=e:
+    if e==None:
         print('指定排班表中發現不明ID：',U_t.iloc[c,0],'不在員工資料的ID列表中，請再次確認ID正確性（包含大小寫、空格、換行）')
     UPPER.append( (e, U_t.iloc[c,1], U_t.iloc[c,2], U_t.iloc[c,3]) )
 PERCENT = Ratio_t.values.tolist()	#PERCENT - 日子集合，班別集合，要求占比，年資分界線
@@ -268,6 +270,7 @@ for ki in range(len(Kset_t)):
     SHIFTset[Kset_t.index[ki]] = [ tl.Tran_t2n(x, Shift_name) for x in Kset_t.iloc[ki].dropna().values ]
 for ki in range(len(Shift_name)):
     SHIFTset[Shift_name[ki]] = [ki]
+S_MORNING = SHIFTset['morning']                                 #S_MORNING - 所有的早班
 S_NIGHT = SHIFTset['night']                                     #S_NIGHT - 所有的晚班
 S_NOON = SHIFTset['noon']                                       #S_NOON  - 所有的午班
 S_BREAK =[]
@@ -283,7 +286,9 @@ for i in range(nEMPLOYEE):
     for j in range(nDAY):
         for k in range(nK):
             work[i, j, k] = False  
-"""           
+
+"""
+#Test Variables
 lack = {}  #y_jt - 代表第j天中時段t的缺工人數
 for j in range(nDAY):
     for t in range(nT):
@@ -299,8 +304,8 @@ for i in range(nEMPLOYEE):
             breakCount[i, w, r] = False
 
 noonCount = 0 #員工中每人排午班總次數的最大值
-
 """
+
 #============================================================================#
 
 """============================================================================#
@@ -522,8 +527,32 @@ ASSIGN, S_NIGHT, D_WEEK, nightdaylimit,\
         VACnextdayset, NOT_VACnextdayset, FRINIGHT, LMNIGHT,\
         per_month_dir,AssignTest=AssignTest,NeedTest=NeedTest,EmployeeTest=EmployeeTest)
 
+#========================================================================#
+# SHIFT_ORDER(): 班別排序的函數 
+#========================================================================#
+def takeNeck(alist):
+	try:
+		return alist[-1]
+	except:
+		print('找不到項目 ',end='')
+		print(alist,end='')
+		print(' 的瓶頸程度參數')
+		return None
+def SHIFT_ORDER(demand, shift, nT, CONTAIN):
+    ans = []
+    for i in shift:
+        demand_t = []
+        demand_t.extend(demand)
+        for t in range(nT):
+            if CONTAIN[i][t] == 1:
+                demand_t[t] -=1
+        dem = np.array(demand_t)
+        d = np.sum(dem**2)
+        ans.append([i,d])
+    ans.sort(key=takeNeck, reverse=False)
 
-
+    return ans 
+   
 #=======================================================================================================#
 #====================================================================================================#
 #=================================================================================================#
@@ -678,48 +707,29 @@ for p in range(parent):
                     is_arrange = True
                     employee.append(1)
             if is_arrange == False:
-                #優先排晚班
-                for r in S_NIGHT:
+                DAY_DEMAND = []
+                DAY_DEMAND.extend(CURRENT_DEMAND[j])
+                SHIFT_SET = SHIFT_ORDER(DAY_DEMAND, SHIFTset['phone'], nT, CONTAIN)
+                SHIFT_LIST = []
+                for k in range(len(SHIFT_SET)):
+                    SHIFT_LIST.append(SHIFT_SET[k][0])
+                #優先排能減少缺工冗員最多的班
+                for r in SHIFT_LIST:
                     if ABLE(i,j,r) == True and REPEAT(i, j, r) == False:
                         work[i,j,r] = True
                         if r in SHIFTset['phone']: #非其他班別時扣除需求
                             for t in range(nT):
                                 if CONTAIN[r][t] == 1:              
                                     CURRENT_DEMAND[j][t] -= 1
-                        employee.append(0)
                         is_arrange = True
+                        employee.append(0)
                         break
-                if is_arrange == False:
-                    rand = rd.randint(2,nK)
-                    for r in range(nK):
-                        if ABLE(i,j,rand-1) == True and REPEAT(i, j, rand-1) == False:
-                            work[i,j,rand-1] = True
-                            if rand-1 in SHIFTset['phone']: #非其他班別時扣除需求
-                                for t in range(nT):
-                                    if CONTAIN[rand-1][t] == 1:              
-                                        CURRENT_DEMAND[j][t] -= 1
-                            employee.append(0)
-                            is_arrange = True
-                            break
-                        else:
-                            rand = rd.randint(2,nK)
-                    if is_arrange == False:
-                        reverse = list(reversed(range(nK)))
-                        for r in reverse:
-                            if ABLE(i,j,r) == True and REPEAT(i, j, r) == False:
-                                work[i,j,r] = True
-                                if r in SHIFTset['phone']: #非其他班別時扣除需求
-                                    for t in range(nT):
-                                        if CONTAIN[r][t] == 1:              
-                                            CURRENT_DEMAND[j][t] -= 1
-                                employee.append(0)
-                                is_arrange = True
-                                break
         fix_temp.append(employee)
     #work, fix_temp, CURRENT_DEMAND = ARRANGEMENT(work, nEMPLOYEE, nDAY, nK, CONTAIN, CURRENT_DEMAND, nT)
-    fix.append(fix_temp)
-
+    fix.append(fix_temp)    
     
+
+
     """
     #=================================================================================================#
     #計算變數
@@ -737,11 +747,13 @@ for p in range(parent):
     nightCount_temp = {}
     for i in EMPLOYEE:
         nightCount_temp[i] = 0
-        for j in DAY:
-            for k in S_NIGHT:
-                if work[i, j, k] == True:
-                    nightCount_temp[i] += 1
-                    break
+        if (nightdaylimit[i]>0):
+            for j in DAY:
+                for k in S_NIGHT:
+                    if work[i, j, k] == True:
+                        nightCount_temp[i] += 1
+                        break
+            nightCount_temp[i] = nightCount_temp[i] / nightdaylimit[i]
         if nightCount_temp[i] > nightCount:
             nightCount = nightCount_temp[i]
     
@@ -960,7 +972,7 @@ for i in range(0,mDAY):
         new[date_name[i]] = NO_WORK
     else:
         new[date_name[i]] = schedule[i+1].values.tolist()
-print('check point 2\n')
+
 new['id']=output_id
 new.set_index("id",inplace=True)
 new.to_csv(result_x, encoding="utf-8_sig")
@@ -1028,6 +1040,12 @@ S_NOON_dict.extend(SHIFTset['noon'])                                       #S_NO
 for i in range(len(S_NOON_dict)):
     S_NOON_dict[i] += 1
 
+S_BREAK_dict = [tmp for tmp in range(nR)]
+for r in range(nR):
+    S_BREAK_dict[r] = []
+    for j in range(len(S_BREAK[r])):
+        S_BREAK_dict[r].append(S_BREAK[r][j]+1)
+
 #Dataframe_y
 lesspeople_count = []
 for j in DAY:
@@ -1057,6 +1075,12 @@ df_percent_time = pd.DataFrame(less_percent_time, index = T_type , columns = ["P
 
 
 #h1h2
+lack = 0
+for i in output_people:
+    for j in i:
+        if j < 0:
+            lack = -j + lack
+
 surplus = 0
 surplus_t = 0
 for i in output_people:
@@ -1073,18 +1097,21 @@ print("\n所有天每個時段人數與需求人數的差距中的最大值 = "+
 #晚班次數dataframe
 night_work_total = []
 nightcount = []
-for i in x_nb:
-    count = 0
-    for j in i:
-        if j in S_NIGHT_dict:
-            count = count + 1
-    nightcount.append(count)
-    night_work_total.append(count)
+for i in range(len(x_nb)):
+    night_t = 0
+    if (nightdaylimit[i]>0):
+        count = 0
+        for j in x_nb[i]:
+            if j in S_NIGHT_dict:
+                count = count + 1
+        night_work_total.append(count)
+        night_t = count / nightdaylimit[i]
+    nightcount.append(night_t)     
 nightCount = max(nightcount)
 
 
 df_nightcount = pd.DataFrame(night_work_total, index = employee_name, columns = ['NightWork_count'])
-print("\n員工中每人排晚班總次數的最大值 = "+str(int(nightCount))+"\n")
+print("\n員工中每人排晚班次數加權平均的最大值 = "+str(int(nightCount))+"\n")
 
 
 #午班次數dataframe
@@ -1109,11 +1136,11 @@ breakCount = np.zeros((nEMPLOYEE,nW,5))
 for i in range(nEMPLOYEE):
     for j in range(nDAY):
         w_d = WEEK_of_DAY[j]
-        if x_nb[i][j]!=1 and x_nb[i][j]!=6 and x_nb[i][j]!=7 and x_nb[i][j]!=14:
-            for k in range(5):
-                if A_t.values[x_nb[i][j]-1][k+5] == 0 and A_t.values[x_nb[i][j]-1][k+6] == 0:
-                    breakCount[i][w_d][k] = 1
-
+        for r in range(len(S_BREAK_dict)):
+            if x_nb[i][j] in S_BREAK_dict[r]:
+                breakCount[i][w_d][r] = 1
+                break
+breakcount = int(sum(sum(sum(breakCount))))
 
 R_type = ['11:30','12:00','12:30','13:00','13:30']     
 which_week = [tmp+1 for tmp in WEEK] 
@@ -1147,5 +1174,11 @@ with pd.ExcelWriter(result) as writer:
 #========================================================================#
 # program end
 #========================================================================#
+print('\n\ncheck point 2\n')
 print(new)
+
+print('\nlack = ',lack, ', surplus = ',surplus, ', nightCount = ',nightCount, ', breakCount = ',breakcount, ', noonCount = ',noonCount)
+score = P0 * lack + P1 * surplus + P2 * nightCount + P3 * breakcount + P4 * noonCount
+print('score:',score)
+
 print('\n\n*** Done in', time.time()-tstart_0 ,'sec. ***')

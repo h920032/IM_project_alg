@@ -17,6 +17,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     #SKILL_NAME = list(E_SKILL_t.columns)
     P_t = pd.read_csv(parameters_dir + 'weight_p.csv', header = None, index_col = 0)
     Kset_t = pd.read_csv(fixed_dir + 'fix_classes.csv', header = None, index_col = 0)
+    Rset_t = pd.read_csv(fixed_dir + 'fix_resttime.csv', header = None, index_col = 0) #rest set
     Shift_name = Kset_t.iloc[0].tolist()
     #SKset_t = pd.read_csv(parameters_dir + 'skill_class_limit.csv')  #class set for skills
     #M_t = pd.read_csv(per_month_dir+'Assign'+AssignTest+'.csv', header = None, skiprows=[0], engine = 'python')
@@ -25,7 +26,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     #Ratio_t = pd.read_csv(parameters_dir+"senior_limit.csv",header = None, skiprows=[0])
     #SENIOR_bp = Ratio_t[3]
     #timelimit = pd.read_csv(parameters_dir+"time_limit.csv", header=0)
-    #nightdaylimit = pd.read_csv(dir_name+"晚班天數限制.csv", header = 0).loc[0][0]
+    nightdaylimit = EMPLOYEE_t['night_perWeek']
     
     date = pd.read_csv(per_month_dir + 'Date.csv', header = None, index_col = 0)
     #year = int(date.iloc[0,0])
@@ -36,6 +37,7 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     #nW = tl.get_nW(year,month)
     nK = A_t.shape[0]
     nT = 24
+    nR = Rset_t.shape[0]
     mDAY = int(calendar.monthrange(year,month)[1])
     DEMAND = DEMAND_t.values.tolist()
 
@@ -51,6 +53,10 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     for ki in range(len(Shift_name)):
         SHIFTset[Shift_name[ki]] = [ki]
     
+    BREAK_t =[]
+    for ki in range(len(Rset_t)):
+        BREAK_t.append([ tl.Tran_t2n(x, Shift_name) for x in Rset_t.iloc[ki].dropna().values ]) 
+    
     S_NIGHT = []
     S_NIGHT.extend(SHIFTset['night'])                                     #S_NIGHT - 所有的晚班
     for i in range(len(S_NIGHT)):
@@ -60,6 +66,12 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
     S_NOON.extend(SHIFTset['noon'])                                       #S_NOON - 所有的午班
     for i in range(len(S_NOON)):
         S_NOON[i] += 1
+
+    S_BREAK = [tmp for tmp in range(nR)]
+    for r in range(nR):
+        S_BREAK[r] = []
+        for j in range(len(BREAK_t[r])):
+            S_BREAK[r].append(BREAK_t[r][j]+1)
 
     S_DEMAND = []
     S_DEMAND.extend(SHIFTset['phone'])
@@ -123,22 +135,25 @@ def score(df_x,nDAY,nW,year,month,fixed_dir = './data/fixed/', parameters_dir = 
                     surplus = surplus_t
 
     nightcount = []
-    for i in i_nb:
-        count = 0
-        for j in i:
-            if j in S_NIGHT:
-                count = count + 1
-        nightcount.append(count)
+    for i in range(len(i_nb)):
+        night_t = 0
+        if (nightdaylimit[i]>0):
+            count = 0
+            for j in i_nb[i]:
+                if j in S_NIGHT:
+                    count = count + 1
+            night_t = count / nightdaylimit[i]
+        nightcount.append(night_t)
     nightcount = max(nightcount)
 
     breakCount = np.zeros((nEMPLOYEE,nW,5))
     for i in range(nEMPLOYEE):
         for j in range(nDAY):
             w_d = WEEK_of_DAY[j]
-            if i_nb[i][j]!=1 and i_nb[i][j]!=6 and i_nb[i][j]!=7 and i_nb[i][j]!=14:
-                for k in range(5):
-                    if A_t.values[i_nb[i][j]-1][k+5] == 0 and A_t.values[i_nb[i][j]-1][k+6] == 0:
-                        breakCount[i][w_d][k] = 1
+            for r in range(len(S_BREAK)):
+                if i_nb[i][j] in S_BREAK[r]:
+                    breakCount[i][w_d][r] = 1
+                    break
     breakCount = int(sum(sum(sum(breakCount))))
     
     nooncount = []

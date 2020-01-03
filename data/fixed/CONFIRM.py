@@ -171,13 +171,14 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
     u_limit_bool = True
     u_limit_err =''
     for i in range(len(UPPER)):
-        day = UPPER[i][0]
+        csr = UPPER[i][0]
+        day = UPPER[i][1]
         require_day = weekdaylist[day]
-        class_type = UPPER[i][1]
+        class_type = UPPER[i][2]
         require_type = SHIFTset[class_type]
-        u_limit = UPPER[i][2]
+        u_limit = UPPER[i][3]
        
-        for j in range(len(schedule)):
+        for j in [csr]:
             count = 0
             for k in require_day:
                 for r in range(len(require_type)):
