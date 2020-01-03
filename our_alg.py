@@ -210,7 +210,13 @@ LOWER = L_t.values.tolist()       	#LOWER - 日期j，班別集合ks，職位p�
 for i in range(len(LOWER)):
     d = tl.Tran_t2n( LOWER[i][0], DATES)
     LOWER[i][0] = d
-UPPER = U_t.values.tolist()		   	#UPPER - 員工i，日子集合js，班別集合ks，排班次數上限
+UPPER = []                          #UPPER - 員工i，日子集合js，班別集合ks，排班次數上限
+for c in range(U_t.shape[0]):
+    e = tl.Tran_t2n(U_t.iloc[c,0], E_ID)
+    #回報錯誤
+    if e!=e:
+        print('指定排班表中發現不明ID：',U_t.iloc[c,0],'不在員工資料的ID列表中，請再次確認ID正確性（包含大小寫、空格、換行）')
+    UPPER.append( (e, U_t.iloc[c,1], U_t.iloc[c,2], U_t.iloc[c,3]) )
 PERCENT = Ratio_t.values.tolist()	#PERCENT - 日子集合，班別集合，要求占比，年資分界線
 
 
@@ -264,7 +270,9 @@ for ki in range(len(Shift_name)):
     SHIFTset[Shift_name[ki]] = [ki]
 S_NIGHT = SHIFTset['night']                                     #S_NIGHT - 所有的晚班
 S_NOON = SHIFTset['noon']                                       #S_NOON  - 所有的午班
-S_BREAK = [[11,12],[1,7,14,15],[2,8,16,18],[3,9,17],[4,10]]     #Kr - 午休方式為 r 的班別 
+S_BREAK =[]
+for ki in range(len(Rset_t)):
+    S_BREAK.append([ tl.Tran_t2n(x, Shift_name) for x in Rset_t.iloc[ki].dropna().values ]) 
 
 
 #============================================================================#
