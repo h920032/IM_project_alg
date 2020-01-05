@@ -19,7 +19,7 @@ import datetime, calendar, sys
 parent = 100	    # int
 ordernum = 100      #limit_order的排序數量
 #基因演算法的世代數量
-generation = 1000    
+generation = 10000    
 
 # 生成Initial pool的100個親代
 INITIAL_POOL = []
@@ -600,6 +600,7 @@ for p in range(parent):
         #print(LIMIT)
         CSR_LIST = CSR_ORDER(char, LIMIT[0], LIMIT[1], EMPLOYEE_t) #員工沒用度排序
         for j in LIMIT[2]:
+            rd.shuffle(CSR_LIST)
             if LIMIT[0] == 'lower' :
                 BOUND = LIMIT[4]
                 for i in CSR_LIST:
