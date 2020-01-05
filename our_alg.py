@@ -19,7 +19,8 @@ import datetime, calendar, sys
 parent = 100	    # int
 ordernum = 100      #limit_order的排序數量
 #基因演算法的世代數量
-generation = 1000    
+generation = 1000
+shuffle = False    
 
 # 生成Initial pool的100個親代
 INITIAL_POOL = []
@@ -31,10 +32,10 @@ tstart_0 = time.time()  #計時用
 
 #測試檔案檔名 - 沒有要測試時請將TestPath留空白
 # TestPath = ""
-TestPath = ""
-EmployeeTest = "_40人"
-AssignTest = "_40人各休一"
-NeedTest = "_標準"
+EmployeeTest = "_20191230"
+AssignTest = "_20191230"
+NeedTest = ""
+U_ttest = "_20191230"
 
 #=======================================================================================================#
 #====================================================================================================#
@@ -52,13 +53,13 @@ if dir_name == "":
     dir_name = './data/'   #預設資料路徑：./data/
 
 # 測試用
-if TestPath != "":
-    dir_name = TestPath
-    parameters_dir = TestPath
-else:
-    EmployeeTest = ""
-    AssignTest = ""
-    NeedTest = ""
+#if TestPath != "":
+#    dir_name = TestPath
+#    parameters_dir = TestPath
+#else:
+#    EmployeeTest = ""
+#    AssignTest = ""
+#    NeedTest = ""
 print('資料輸入路徑:',dir_name)
 #========================================s=====================================#
 #每月更改的資料
@@ -116,7 +117,7 @@ NW_t = EMPLOYEE_t['NW']
 #=============================================================================#
 P_t = pd.read_csv(dir_name + 'parameters/weight_p.csv', header = None, index_col = 0, engine='python') #權重
 L_t = pd.read_csv(dir_name + "parameters/lower_limit.csv", header = 0, engine='python')          #指定日期、班別、職位，人數下限
-U_t = tl.readFile(dir_name + "parameters/upper_limit.csv")                          #指定星期幾、班別，人數上限
+U_t     = tl.readFile(dir_name + "parameters/upper_limit"+U_ttest+".csv")                      #指定星期幾、班別，人數上限
 U_t[0] = [ str(x) for x in U_t[0] ]           #強制將ID設為string
 Ratio_t = tl.readFile(dir_name + "parameters/senior_limit.csv")                     #指定年資、星期幾、班別，要占多少比例以上
 
@@ -600,13 +601,20 @@ for p in range(parent):
         #print(LIMIT)
         CSR_LIST = CSR_ORDER(char, LIMIT[0], LIMIT[1], EMPLOYEE_t) #員工沒用度排序
         for j in LIMIT[2]:
-            rd.shuffle(CSR_LIST)
+            if shuffle == True:
+                rd.shuffle(CSR_LIST)
             if LIMIT[0] == 'lower' :
                 BOUND = LIMIT[4]
+                DAY_DEMAND = []
+                DAY_DEMAND.extend(CURRENT_DEMAND[j])
+                SHIFT_SET = SHIFT_ORDER(DAY_DEMAND, LIMIT[3], nT, CONTAIN)
+                SHIFT_LIST = []
+                for k in range(len(SHIFT_SET)):
+                    SHIFT_LIST.append(SHIFT_SET[k][0])
                 for i in CSR_LIST:
                     if BOUND <= 0:  #若限制式參數(n)不合理，忽略之
                         break
-                    for k in LIMIT[3]:  
+                    for k in SHIFT_LIST:  
                         if BOUND <= 0:
                             break
                         elif ABLE(i, j, k) == True: #若此人可以排此班，就排
@@ -622,7 +630,13 @@ for p in range(parent):
                         else:
                             continue
             elif LIMIT[0] == 'ratio':
-                for k in LIMIT[3]:
+                DAY_DEMAND = []
+                DAY_DEMAND.extend(CURRENT_DEMAND[j])
+                SHIFT_SET = SHIFT_ORDER(DAY_DEMAND, LIMIT[3], nT, CONTAIN)
+                SHIFT_LIST = []
+                for k in range(len(SHIFT_SET)):
+                    SHIFT_LIST.append(SHIFT_SET[k][0])
+                for k in SHIFT_LIST:
                     BOUND = LIMIT[4]
                     for i in CSR_LIST:  
                         if BOUND <= 0:
@@ -705,8 +719,14 @@ for p in range(parent):
             is_arrange = False
             for k in range(nK):
                 if work[i,j,k] == True:
-                    is_arrange = True
-                    employee.append(1)
+                    for c in ASSIGN:
+                        if i == c[0] and j == c[1] and k == c[2]:
+                            is_arrange = True
+                            employee.append(1)
+                            break
+                    if is_arrange == False:
+                        is_arrange = True
+                        employee.append(1)
             if is_arrange == False:
                 DAY_DEMAND = []
                 DAY_DEMAND.extend(CURRENT_DEMAND[j])
