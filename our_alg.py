@@ -32,10 +32,10 @@ tstart_0 = time.time()  #計時用
 
 #測試檔案檔名 - 沒有要測試時請將TestPath留空白
 # TestPath = ""
-EmployeeTest = "_20191230"
-AssignTest = "_20191230"
+EmployeeTest = ""
+AssignTest = ""
 NeedTest = ""
-U_ttest = "_20191230"
+U_ttest = ""
 
 #=======================================================================================================#
 #====================================================================================================#
@@ -547,8 +547,15 @@ def SHIFT_ORDER(demand, shift, nT, CONTAIN):
         for t in range(nT):
             if CONTAIN[i][t] == 1:
                 demand_t[t] -=1
-        dem = np.array(demand_t)
-        d = np.sum(dem**2)
+        dem_l = np.array(demand_t)
+        dem_s = np.array(demand_t)
+        for j in range(len(dem_l)):
+            if dem_l[j] < 0:
+                dem_l[j] = 0
+        for j in range(len(dem_s)):
+            if dem_s[j] > 0:
+                dem_s[j] = 0
+        d = P0 * np.sum(dem_l**2) + P1 * np.sum(dem_s**2)
         ans.append([i,d])
     ans.sort(key=takeNeck, reverse=False)
 
@@ -598,8 +605,13 @@ for p in range(parent):
     BOUND = [] #限制人數
     for l in range(len(LIMIT_LIST)):
         LIMIT = LIMIT_LIST[l]
+        nightbound = False
         #print(LIMIT)
-        CSR_LIST = CSR_ORDER(char, LIMIT[0], LIMIT[1], EMPLOYEE_t) #員工沒用度排序
+        for n in S_NIGHT:
+            if LIMIT[3][0] == n:
+                nightbound = True
+                break
+        CSR_LIST = CSR_ORDER(char, LIMIT[0], LIMIT[1], EMPLOYEE_t, Posi, nightbound) #員工沒用度排序
         for j in LIMIT[2]:
             if shuffle == True:
                 rd.shuffle(CSR_LIST)
@@ -609,6 +621,8 @@ for p in range(parent):
                 DAY_DEMAND.extend(CURRENT_DEMAND[j])
                 SHIFT_SET = SHIFT_ORDER(DAY_DEMAND, LIMIT[3], nT, CONTAIN)
                 SHIFT_LIST = []
+                if nightbound == True:
+                    SHIFT_LIST.append(12)
                 for k in range(len(SHIFT_SET)):
                     SHIFT_LIST.append(SHIFT_SET[k][0])
                 for i in CSR_LIST:
@@ -634,6 +648,8 @@ for p in range(parent):
                 DAY_DEMAND.extend(CURRENT_DEMAND[j])
                 SHIFT_SET = SHIFT_ORDER(DAY_DEMAND, LIMIT[3], nT, CONTAIN)
                 SHIFT_LIST = []
+                if nightbound == True:
+                    SHIFT_LIST.append(12)
                 for k in range(len(SHIFT_SET)):
                     SHIFT_LIST.append(SHIFT_SET[k][0])
                 for k in SHIFT_LIST:
@@ -1198,7 +1214,7 @@ with pd.ExcelWriter(result) as writer:
 print('\n\ncheck point 2\n')
 print(new)
 
-print('\nlack = ',lack, ', surplus = ',surplus, ', nightCount = ',nightCount, ', breakCount = ',breakcount, ', noonCount = ',noonCount)
+print('\n\nlack = ',lack, ', surplus = ',surplus, ', nightCount = ',nightCount, ', breakCount = ',breakcount, ', noonCount = ',noonCount)
 score = P0 * lack + P1 * surplus + P2 * nightCount + P3 * breakcount + P4 * noonCount
 print('score:',score)
 
