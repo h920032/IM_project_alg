@@ -19,7 +19,7 @@ import datetime, calendar, sys
 parent = 100	    # int
 ordernum = 100      #limit_order的排序數量
 #基因演算法的世代數量
-generation = 1000
+generation = 10000
 shuffle = False    
 
 # 生成Initial pool的100個親代
@@ -560,7 +560,10 @@ def SHIFT_ORDER(demand, shift, nT, CONTAIN, day, csr=-1):
                 dem_s[j] = 0
         if i in S_NIGHT:
             if csr != -1:
-                dem_ni = 1/nightdaylimit[csr]
+                if nightdaylimit[csr] > 0:
+                    dem_ni = 1/nightdaylimit[csr]
+                else:
+                    dem_ni = 1000000
             else:
                 dem_ni = 1
         elif i in S_NOON:
