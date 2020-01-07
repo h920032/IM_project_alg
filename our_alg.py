@@ -587,12 +587,101 @@ def SHIFT_ORDER(demand, shift, nT, CONTAIN, day, csr=-1):
                     if found == True:
                         break
 
-        d = P0 * np.sum(dem_l**2) + P1 * np.sum(dem_s**2) + P2 * dem_ni + P3 * dem_br + P4 * dem_no
+        d = P0 * np.sum(dem_l) + P1 * max(dem_s) + P2 * dem_ni + P3 * dem_br + P4 * dem_no
         ans.append([i,d])
     ans.sort(key=takeNeck, reverse=False)
 
     return ans 
-   
+
+def RATIO_CSR_ORDER(demand, shift, nT, CONTAIN, day, csr_list):
+    ans = []
+    for i in csr_list:
+        demand_t = []
+        demand_t.extend(demand)
+        for t in range(nT):
+            if CONTAIN[shift][t] == 1:
+                demand_t[t] -=1
+        dem_l = np.array(demand_t)
+        dem_s = np.array(demand_t)
+        dem_ni = 0
+        dem_br = 0
+        dem_no = 0
+        for j in range(len(dem_l)):
+            if dem_l[j] < 0:
+                dem_l[j] = 0
+        for j in range(len(dem_s)):
+            if dem_s[j] > 0:
+                dem_s[j] = 0
+        if shift in S_NIGHT:
+            if nightdaylimit[i] > 0:
+                dem_ni = 1/nightdaylimit[i]
+            else:
+                dem_ni = 1000000
+        elif shift in S_NOON:
+            dem_no = 1
+        takebreak = -1
+        for r in range(len(S_BREAK)):
+            if shift in S_BREAK[r]:
+                takebreak = r
+                break
+        if takebreak != -1:
+            found = False
+            w = WEEK_of_DAY[day]
+            for y in D_WEEK[w]:
+                for k in SHIFT:
+                    if work[i,y,k] == True:
+                        if k in S_BREAK[takebreak]:
+                            dem_br = 0
+                            found = True
+                            break
+                        else:
+                            dem_br = 1
+                            break
+                if found == True:
+                    break
+
+        d = P0 * np.sum(dem_l) + P1 * max(dem_s) + P2 * dem_ni + P3 * dem_br + P4 * dem_no
+        ans.append([i,d])
+    ans.sort(key=takeNeck, reverse=False)
+
+    return ans
+
+def SPECIAL_CSR_ORDER(shift, nT, CONTAIN, day, csr_list):
+    ans = []
+    for i in csr_list:
+        dem_ni = 0
+        dem_br = 0
+        if shift in S_NIGHT:
+            if nightdaylimit[i] > 0:
+                dem_ni = 1/nightdaylimit[i]
+            else:
+                dem_ni = 1000000
+        takebreak = -1
+        for r in range(len(S_BREAK)):
+            if shift in S_BREAK[r]:
+                takebreak = r
+                break
+        if takebreak != -1:
+            found = False
+            w = WEEK_of_DAY[day]
+            for y in D_WEEK[w]:
+                for k in SHIFT:
+                    if work[i,y,k] == True:
+                        if k in S_BREAK[takebreak]:
+                            dem_br = 0
+                            found = True
+                            break
+                        else:
+                            dem_br = 1
+                            break
+                if found == True:
+                    break
+
+        d = P2 * dem_ni + P3 * dem_br
+        ans.append([i,d])
+    ans.sort(key=takeNeck, reverse=False)
+
+    return ans
 #=======================================================================================================#
 #====================================================================================================#
 #=================================================================================================#
@@ -686,7 +775,11 @@ for p in range(parent):
                     SHIFT_LIST.append(SHIFT_SET[k][0])
                 for k in SHIFT_LIST:
                     BOUND = LIMIT[4]
-                    for i in CSR_LIST:  
+                    RATIO_CSR_SET = RATIO_CSR_ORDER(DAY_DEMAND, k, nT, CONTAIN, j, CSR_LIST)
+                    RATIO_CSR_LIST = []
+                    for i in range(len(RATIO_CSR_SET)):
+                        RATIO_CSR_LIST.append(RATIO_CSR_SET[i][0])
+                    for i in RATIO_CSR_LIST:
                         if BOUND <= 0:
                             break
                         elif ABLE(i, j, k) == True: #若此人可以排此班，就排
@@ -704,7 +797,11 @@ for p in range(parent):
             elif LIMIT[0] == 'skill':
                 for k in LIMIT[3]:
                     BOUND = LIMIT[4]
-                    for i in CSR_LIST:
+                    SPECIAL_CSR_SET = SPECIAL_CSR_ORDER(k, nT, CONTAIN, j, CSR_LIST)
+                    SPECIAL_CSR_LIST = []
+                    for i in range(len(SPECIAL_CSR_SET)):
+                        SPECIAL_CSR_LIST.append(SPECIAL_CSR_SET[i][0])
+                    for i in SPECIAL_CSR_LIST:
                         if BOUND <= 0:
                             break
                         elif ABLE(i, j, k) == True: #若此人可以排此班，就排
@@ -722,7 +819,11 @@ for p in range(parent):
             elif LIMIT[0] == 'skill_special':
                 for k in LIMIT[3]:
                     BOUND = LIMIT[4]
-                    for i in CSR_LIST:
+                    SPECIAL_CSR_SET = SPECIAL_CSR_ORDER(k, nT, CONTAIN, j, CSR_LIST)
+                    SPECIAL_CSR_LIST = []
+                    for i in range(len(SPECIAL_CSR_SET)):
+                        SPECIAL_CSR_LIST.append(SPECIAL_CSR_SET[i][0])
+                    for i in SPECIAL_CSR_LIST:
                         if BOUND <= 0:
                             break
                         elif ABLE(i, j, k) == True: #若此人可以排此班，就排
