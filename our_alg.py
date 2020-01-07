@@ -539,7 +539,7 @@ def takeNeck(alist):
 		print(alist,end='')
 		print(' 的瓶頸程度參數')
 		return None
-def SHIFT_ORDER(demand, shift, nT, CONTAIN):
+def SHIFT_ORDER(demand, shift, nT, CONTAIN, day, csr=-1):
     ans = []
     for i in shift:
         demand_t = []
@@ -549,13 +549,45 @@ def SHIFT_ORDER(demand, shift, nT, CONTAIN):
                 demand_t[t] -=1
         dem_l = np.array(demand_t)
         dem_s = np.array(demand_t)
+        dem_ni = 0
+        dem_br = 0
+        dem_no = 0
         for j in range(len(dem_l)):
             if dem_l[j] < 0:
                 dem_l[j] = 0
         for j in range(len(dem_s)):
             if dem_s[j] > 0:
                 dem_s[j] = 0
-        d = P0 * np.sum(dem_l**2) + P1 * np.sum(dem_s**2)
+        if i in S_NIGHT:
+            if csr != -1:
+                dem_ni = 1/nightdaylimit[csr]
+            else:
+                dem_ni = 1
+        elif i in S_NOON:
+            dem_no = 1
+        if csr != -1:
+            takebreak = -1
+            for r in range(len(S_BREAK)):
+                if i in S_BREAK[r]:
+                    takebreak = r
+                    break
+            if takebreak != -1:
+                found = False
+                w = WEEK_of_DAY[day]
+                for y in D_WEEK[w]:
+                    for k in SHIFT:
+                        if work[csr,y,k] == True:
+                            if k in S_BREAK[takebreak]:
+                                dem_br = 0
+                                found = True
+                                break
+                            else:
+                                dem_br = 1
+                                break
+                    if found == True:
+                        break
+
+        d = P0 * np.sum(dem_l**2) + P1 * np.sum(dem_s**2) + P2 * dem_ni + P3 * dem_br + P4 * dem_no
         ans.append([i,d])
     ans.sort(key=takeNeck, reverse=False)
 
@@ -617,15 +649,15 @@ for p in range(parent):
                 rd.shuffle(CSR_LIST)
             if LIMIT[0] == 'lower' :
                 BOUND = LIMIT[4]
-                DAY_DEMAND = []
-                DAY_DEMAND.extend(CURRENT_DEMAND[j])
-                SHIFT_SET = SHIFT_ORDER(DAY_DEMAND, LIMIT[3], nT, CONTAIN)
-                SHIFT_LIST = []
-                if nightbound == True:
-                    SHIFT_LIST.append(12)
-                for k in range(len(SHIFT_SET)):
-                    SHIFT_LIST.append(SHIFT_SET[k][0])
                 for i in CSR_LIST:
+                    DAY_DEMAND = []
+                    DAY_DEMAND.extend(CURRENT_DEMAND[j])
+                    SHIFT_SET = SHIFT_ORDER(DAY_DEMAND, LIMIT[3], nT, CONTAIN, j, i)
+                    SHIFT_LIST = []
+                    if nightbound == True:
+                        SHIFT_LIST.append(12)
+                    for k in range(len(SHIFT_SET)):
+                        SHIFT_LIST.append(SHIFT_SET[k][0])
                     if BOUND <= 0:  #若限制式參數(n)不合理，忽略之
                         break
                     for k in SHIFT_LIST:  
@@ -646,7 +678,7 @@ for p in range(parent):
             elif LIMIT[0] == 'ratio':
                 DAY_DEMAND = []
                 DAY_DEMAND.extend(CURRENT_DEMAND[j])
-                SHIFT_SET = SHIFT_ORDER(DAY_DEMAND, LIMIT[3], nT, CONTAIN)
+                SHIFT_SET = SHIFT_ORDER(DAY_DEMAND, LIMIT[3], nT, CONTAIN, j)
                 SHIFT_LIST = []
                 if nightbound == True:
                     SHIFT_LIST.append(12)
@@ -746,7 +778,7 @@ for p in range(parent):
             if is_arrange == False:
                 DAY_DEMAND = []
                 DAY_DEMAND.extend(CURRENT_DEMAND[j])
-                SHIFT_SET = SHIFT_ORDER(DAY_DEMAND, SHIFTset['phone'], nT, CONTAIN)
+                SHIFT_SET = SHIFT_ORDER(DAY_DEMAND, SHIFTset['phone'], nT, CONTAIN, j, i)
                 SHIFT_LIST = []
                 for k in range(len(SHIFT_SET)):
                     SHIFT_LIST.append(SHIFT_SET[k][0])
