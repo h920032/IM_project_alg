@@ -1742,3 +1742,95 @@ score = P0 * lack + P1 * surplus + P2 * nightCount + P3 * breakcount + P4 * noon
 print('score:',score)
 
 print('\n\n*** Done in', time.time()-tstart_0 ,'sec. ***')
+
+
+
+def RATIO_CSR_ORDER(demand, shift, day, maxsurplus, maxnight, maxnoon, csr_list, skilled):
+    ans = []
+    for i in csr_list:
+        demand_t = []
+        demand_t.extend(demand)
+        for t in range(nT):
+            if CONTAIN[shift][t] == 1:
+                demand_t[t] -=1
+        dem_l = np.array(demand_t)
+        dem_s = np.array(demand_t)
+        dem_su = 0
+        dem_ni = 0
+        dem_br = 0
+        dem_no = 0
+        for j in range(len(dem_l)):
+            if dem_l[j] < 0:
+                dem_l[j] = 0
+        for j in range(len(dem_s)):
+            if dem_s[j] > 0:
+                dem_s[j] = 0
+            if min(dem_s)*(-1) >= maxsurplus:
+                dem_su = 1
+            else:
+                dem_su = 0
+        if shift in S_NIGHT:
+            if nightdaylimit[i] > 0:
+                ni = 0
+                for y in range(nDAY):
+                    for z in S_NIGHT:
+                        if work[i,y,z] == True:
+                            ni += 1
+                            break
+                ni = ni / nightdaylimit[i]
+                if ni >= maxnight:
+                    dem_ni = 1
+                else:
+                    dem_ni = 0
+            else:
+                dem_ni = 1000000
+        elif shift in S_NOON:
+            no = 0
+            for y in range(nDAY):
+                for z in S_NOON:
+                    if work[i,y,z] == True:
+                        no += 1
+                        break
+            if no >= maxnoon: 
+                dem_no = 1
+            else:
+                dem_no = 0
+        takebreak = -1
+        for r in range(len(S_BREAK)):
+            if shift in S_BREAK[r]:
+                takebreak = r
+                break
+        if takebreak != -1:
+            found = False
+            w = WEEK_of_DAY[day]
+            for y in D_WEEK[w]:
+                for k in SHIFT:
+                    if work[i,y,k] == True:
+                        if k in S_BREAK[takebreak]:
+                            dem_br = 0
+                            found = True
+                            break
+                        else:
+                            dem_br = 1
+                            break
+                    else:
+                        dem_br = 1
+                        continue
+                if found == True:
+                    break
+
+        d = P0 * np.sum(dem_l) + P1 * dem_su + P2 * dem_ni + P3 * dem_br + P4 * dem_no
+        if i in E_SKILL['CD'] and skilled['CD',day] == False:
+            d = d * 1000000
+        elif i in E_SKILL['chat'] and skilled['C2',day] == False:
+            d = d * 1000000
+        elif i in E_SKILL['chat'] and skilled['C3',day] == False:
+            d = d * 1000000
+        elif i in E_SKILL['chat'] and skilled['C4',day] == False:
+            d = d * 1000000
+        elif i in E_SKILL['outbound'] and skilled['OB',day] == False:
+            d = d * 1000000
+        ans.append([i,d])
+    ans.sort(key=takeNeck, reverse=False)
+
+    return ans
