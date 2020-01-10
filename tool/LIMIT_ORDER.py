@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import pandas as pd
-# import data.fixed.tool as tl
+import tool.tool as tl
 """============================================================================#
 input：
 	LOWER 		- 日期j，班別集合ks，職位p，上班人數下限
@@ -59,9 +59,21 @@ def exchange(index1, index2, alist):
 #=============================================================================#
 # main function
 
-def LIMIT_ORDER(N, L, SK, SK_S, S, Need, POSI, SENIOR, SKILL, DAY, VAC, nVAC, K, K_TIME):
+def LIMIT_ORDER(N):
 	limits = []	#裝第一組（完全照順序排序）的list
-
+	L = tl.LOWER
+	SK = tl.NOTPHONE_CLASS
+	SK_S = tl.NOTPHONE_CLASS_special
+	S = tl.PERCENT
+	Need = tl.DEMAND
+	POSI  = tl.E_POSI_set                  
+	SKILL     = tl.E_SKILL_set                   
+	SENIOR    = tl.E_SENIOR_set
+	DAY = tl.D_WDAY_set
+	VAC = tl.AH_list                 
+	nVAC = tl.NAH_list
+	K = tl.K_CLASS_set
+	K_TIME = tl.CONTAIN
 	"""===========================================
 	資料前處理
 	==========================================="""

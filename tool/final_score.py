@@ -1,7 +1,7 @@
 #initial
 import numpy as np
 import pandas as pd
-import fixed.tool as tl
+import tool.tool as tl
 import datetime, calendar
 """
 
@@ -54,7 +54,7 @@ for i in pd.read_csv("Schedule_2019_4.csv", header = 0, index_col = 0).drop('nam
 
 """
 
-def score(year, month, A_t, nEMPLOYEE, nDAY, nW, nK, nT, nR, DEMAND, P0, P1, P2, P3, P4, SHIFTset, Shift_name, WEEK_of_DAY, nightdaylimit, BREAK, df_x):
+def final_score(year, month, A_t, nEMPLOYEE, nDAY, nW, nK, nT, nR, DEMAND, P0, P1, P2, P3, P4, SHIFTset, Shift_name, WEEK_of_DAY, nightdaylimit, BREAK, df_x):
 
     S_DEMAND = []
     S_DEMAND.extend(SHIFTset['phone'])

@@ -1,4 +1,5 @@
 import pandas as pd
+import tool.tool as tl
 
 """
 To confiirm if schedule generated meets the necessary constraints
@@ -24,8 +25,30 @@ necessary constraints:
 
 #schedule為班表二維list
 
-def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E_POSITION, UPPER, weekdaylist, PERCENT, E_SENIOR, Upper_shift, NOTPHONE_CLASS, NOTPHONE_CLASS_special, E_SKILL, DAYset, VACnextdayset, NOT_VACnextdayset, nDAY, FRINIGHT, LMNIGHT):
+def confirm(schedule):
     
+    nDAY      = tl.nD
+    LMNIGHT  = tl.LastWEEK_night 
+    FRINIGHT = tl.LastDAY_night
+    
+    EMPLOYEE_t = tl.Employee_t
+    assign = tl.ASSIGN
+    SHIFTset= tl.K_CLASS_set                       
+    S_NIGHT = SHIFTset['night']                    
+    D_WEEK = tl.D_WEEK_set
+    nightdaylimit = EMPLOYEE_t['night_perWeek']
+    E_POSITION  = tl.E_POSI_set
+    E_SKILL     = tl.E_SKILL_set
+    E_SENIOR    = tl.E_SENIOR_set
+    LOWER = tl.LOWER
+    UPPER = tl.UPPER
+    Upper_shift = tl.Upper_shift
+    weekdaylist = tl.D_WDAY_set
+    PERCENT = tl.PERCENT
+    NOTPHONE_CLASS = tl.NOTPHONE_CLASS
+    NOTPHONE_CLASS_special = tl.NOTPHONE_CLASS_special
+    VACnextdayset = tl.AH_list
+    NOT_VACnextdayset = tl.NAH_list
 
     as_bool = True
     as_err=''
@@ -202,12 +225,12 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
     
     #=========================================================================================================================================================
     #(6)在特定日子中的指定班別，針對特定技能的員工，有上班人數規定
-    #需要參數:schedule, NOTPHONE_CLASS, NOTPHONE_CLASS_special, DAYset, SHIFTset, E_SKILL, VACnextdayset, NOT_VACnextdayset
+    #需要參數:schedule, NOTPHONE_CLASS, NOTPHONE_CLASS_special, weekdaylist, SHIFTset, E_SKILL, VACnextdayset, NOT_VACnextdayset
     sk_limit_bool = True
     sk_limit_err = ''
 
     for i in range(len(NOTPHONE_CLASS)):
-        require_day = DAYset['all'] 
+        require_day = weekdaylist['all'] 
         class_type = NOTPHONE_CLASS[i][0]
         require_type = SHIFTset[class_type]
         skill = NOTPHONE_CLASS[i][2] 
@@ -387,7 +410,7 @@ def confirm(schedule, assign, S_NIGHT, D_WEEK, nightdaylimit, LOWER, SHIFTset, E
     us_limit_bool = True
     us_limit_err =''
     for i in range(len(Upper_shift)):
-        require_day = DAYset['all']
+        require_day = weekdaylist['all']
         class_type = Upper_shift[i][0]
         require_type = SHIFTset[class_type] 
         e_in_require_skill = E_SKILL['phone']
