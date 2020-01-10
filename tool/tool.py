@@ -1,6 +1,6 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import math, re, sys, calendar
+import math, re, sys, calendar, os
 import pandas as pd
 import numpy as np
 from datetime import datetime, date
@@ -19,10 +19,10 @@ from datetime import datetime, date
 #測試檔案檔名 - 沒有要測試時請將TestPath留空白
 # TestPath = ""
 global EmployeeTest, AssignTest, NeedTest, U_ttest
-EmployeeTest = ""
-AssignTest = ""
+EmployeeTest = "_20191230"
+AssignTest = "_20191230"
 NeedTest = ""
-U_ttest = ""
+U_ttest = "_20191230"
 
 """================================================================================================================
     globle參數
@@ -396,6 +396,19 @@ def calculate_NM (Employee_t,lastday_ofMONTH,lastday_row,lastday_column,lastMONT
 """================================================================================================================
 import data
 ================================================================================================================"""
+# 清除舊的報錯檔案
+def _deleteError():
+    if os.path.isfile('./ERROR.log'):
+        try:
+            os.remove('./ERROR.log')
+            PRINT('已移除舊的錯誤紀錄檔')
+        except:
+            PRINT('無法刪除舊的紀錄檔')
+    else:
+        PRINT('沒有找到舊的錯誤紀錄檔')
+    PRINT('tool.py開始讀檔')
+_deleteError()
+
 # 讀檔路徑 path.txt
 def READ_path():
     global DIR, DIR_PARA, DIR_PER_MONTH
@@ -858,6 +871,8 @@ class OUTPUT:
         df_rest = self._breakCount()
 
         # 輸出
+        df = self.printSchedule(makeFile=makeFile)
+        df_lackover = self.printLackAndOver(makeFile=makeFile)
         with pd.ExcelWriter(self.outputName['all']) as writer:
             (self.printSchedule(makeFile=makeFile)).to_excel(writer, sheet_name="班表")
             (self.printLackAndOver(makeFile=makeFile)).to_excel(writer, sheet_name="缺工冗員表")
@@ -867,7 +882,7 @@ class OUTPUT:
             df_classCount.to_excel(writer, sheet_name="午、晚班次數")
             df_rest.to_excel(writer, sheet_name="每週休息時間")
         PRINT('Output results has save as '+self.outputName['all'])
-        return 'Output results has save as '+self.outputName['all']
+        return (df, df_lackover)
 #end class OUTPUT
 
 
