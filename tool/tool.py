@@ -12,10 +12,10 @@ from datetime import datetime, date
 
 #測試檔案檔名 - 沒有要測試時請留空白
 global EmployeeTest, AssignTest, NeedTest, U_ttest
-EmployeeTest = "_20191230"
-AssignTest = "_20191230"
+EmployeeTest = ""
+AssignTest = ""
 NeedTest = ""
-U_ttest = "_20191230"
+U_ttest = ""
 
 """================================================================================================================
     globle參數
