@@ -456,7 +456,7 @@ def READ_parameters(path=DIR_PARA):
     for ki in range(nR):
         BREAK_list.append( str(RSet_t.index[ki]) )
         K_BREAK_set.append( [ Tran_t2n(x, CLASS_list) for x in RSet_t.iloc[ki].dropna().values ] )
-
+    
     # position
     POSI_list   = readFile(path+'fixed/position.csv').iloc[0].tolist()  #職位高低(低到高)
     
@@ -506,7 +506,7 @@ def READ_per_MONTH(path=DIR_PER_MONTH):
     E_NAME      = list(Employee_t['Name_English'])
     E_POSI_set  = SetPOSI(Employee_t['Position'], POSI_list)                        #某職稱以上的員工集合      
     
-
+    
     # Schedule (NM 及 NW 從人壽提供之上個月的班表裡面計算)
     if MONTH>1:
         Schedule_t = readFile(path+'Schedule_'+str(YEAR)+'_'+str(MONTH-1)+'.csv', skiprows_=[0])
@@ -526,7 +526,7 @@ def READ_per_MONTH(path=DIR_PER_MONTH):
     Employee_t['NM'] = pd.DataFrame([0] * nE)
     calculate_NM(Employee_t,lastday_ofMONTH,lastday_row,lastday_column,Schedule_t,nE)
     LastWEEK_night = list(Employee_t['NM'].values)     #上月底斷頭周
-
+    
 
     # Need
     Need_t = readFile(path+'Need'+NeedTest+'.csv', header_=0, index_col_=0).T
@@ -539,7 +539,7 @@ def READ_per_MONTH(path=DIR_PER_MONTH):
     D_WEEK_set  = SetDAYW(MONTH_start+1,mDAY,nW, list(range(nD)), DATE_list)    #第 w 週包含的日期集合
     D_WDAY_set  = SetDAY(MONTH_start, nD, DATE_list)                #DAYset - 通用日子集合 [all,Mon,Tue...]
     WEEK_list   = SetWEEKD(D_WEEK_set, nW)                          #WEEK_list - 日子j所屬的那一週 
-
+    
 
     # Assign
     Assign_t = readFile(path+'Assign'+AssignTest+'.csv', skiprows_=[0])
